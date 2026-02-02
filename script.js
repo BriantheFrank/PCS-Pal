@@ -1432,6 +1432,12 @@ const itineraryEndDateInput = document.querySelector(
 const customEventsContainer = document.querySelector("#custom-events");
 const customEventTemplate = document.querySelector("#custom-event-template");
 const addCustomEventButton = document.querySelector("#add-custom-event");
+const itineraryMapPanel = document.querySelector("#itinerary-map-panel");
+const itineraryMapContainer = document.querySelector("#itinerary-map");
+const itineraryMapStatus = document.querySelector("#itinerary-map-status");
+const googleMapsApiKeyMeta = document.querySelector(
+  "meta[name='google-maps-api-key']"
+);
 
 if (calendarGrid && calendarLabel) {
   const calendarState = {
@@ -1801,6 +1807,359 @@ if (calendarGrid && calendarLabel) {
     }
   }
 
+  const mapState = {
+    map: null,
+    markers: [],
+    infoWindow: null,
+    directionsService: null,
+    directionsRenderer: null,
+    geocoder: null,
+    updateTimer: null,
+    lastSignature: "",
+    cache: new Map(),
+    readyPromise: null,
+  };
+
+  const mapApiKey =
+    (googleMapsApiKeyMeta && googleMapsApiKeyMeta.content.trim()) ||
+    window.GOOGLE_MAPS_API_KEY ||
+    "";
+
+  const updateMapStatus = (message) => {
+    if (!itineraryMapStatus) {
+      return;
+    }
+    if (message) {
+      itineraryMapStatus.textContent = message;
+      itineraryMapStatus.classList.remove("is-hidden");
+    } else {
+      itineraryMapStatus.textContent = "";
+      itineraryMapStatus.classList.add("is-hidden");
+    }
+  };
+
+  const loadGeocodeCache = () => {
+    if (!window.localStorage) {
+      return;
+    }
+    const stored = window.localStorage.getItem("pcs-pal-geocode-cache");
+    if (!stored) {
+      return;
+    }
+    try {
+      const parsed = JSON.parse(stored);
+      Object.entries(parsed).forEach(([key, value]) => {
+        if (value && typeof value.lat === "number" && typeof value.lng === "number") {
+          mapState.cache.set(key, value);
+        }
+      });
+    } catch (error) {
+      console.warn("Unable to read cached map coordinates.", error);
+    }
+  };
+
+  const persistGeocodeCache = () => {
+    if (!window.localStorage) {
+      return;
+    }
+    const payload = {};
+    mapState.cache.forEach((value, key) => {
+      payload[key] = value;
+    });
+    window.localStorage.setItem("pcs-pal-geocode-cache", JSON.stringify(payload));
+  };
+
+  const initMap = () => {
+    if (!itineraryMapContainer || mapState.map) {
+      return;
+    }
+    mapState.map = new google.maps.Map(itineraryMapContainer, {
+      zoom: 4,
+      center: { lat: 39.5, lng: -98.35 },
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
+    mapState.infoWindow = new google.maps.InfoWindow();
+    mapState.geocoder = new google.maps.Geocoder();
+    mapState.directionsService = new google.maps.DirectionsService();
+    mapState.directionsRenderer = new google.maps.DirectionsRenderer({
+      suppressMarkers: true,
+      preserveViewport: true,
+      polylineOptions: {
+        strokeColor: "#2558c5",
+        strokeOpacity: 0.8,
+        strokeWeight: 4,
+      },
+    });
+    mapState.directionsRenderer.setMap(mapState.map);
+    loadGeocodeCache();
+  };
+
+  const loadGoogleMaps = () => {
+    if (!itineraryMapContainer) {
+      return Promise.reject(new Error("Map container missing."));
+    }
+    if (mapState.readyPromise) {
+      return mapState.readyPromise;
+    }
+    if (!mapApiKey) {
+      updateMapStatus(
+        "Add a Google Maps API key in the environment variables to enable the map."
+      );
+      return Promise.reject(new Error("Missing API key."));
+    }
+
+    mapState.readyPromise = new Promise((resolve, reject) => {
+      window.initItineraryMap = () => {
+        initMap();
+        resolve();
+      };
+
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
+        mapApiKey
+      )}&callback=initItineraryMap`;
+      script.async = true;
+      script.defer = true;
+      script.onerror = () => {
+        updateMapStatus("Unable to load Google Maps. Check the API key settings.");
+        reject(new Error("Google Maps failed to load."));
+      };
+      document.head.appendChild(script);
+    });
+
+    return mapState.readyPromise;
+  };
+
+  const clearMarkers = () => {
+    mapState.markers.forEach((marker) => marker.setMap(null));
+    mapState.markers = [];
+  };
+
+  const resetDirections = () => {
+    if (mapState.directionsRenderer) {
+      mapState.directionsRenderer.set("directions", null);
+    }
+  };
+
+  const geocodeLocation = (query) => {
+    if (!query) {
+      return Promise.resolve(null);
+    }
+    if (mapState.cache.has(query)) {
+      return Promise.resolve(mapState.cache.get(query));
+    }
+    if (!mapState.geocoder) {
+      return Promise.resolve(null);
+    }
+    return new Promise((resolve) => {
+      mapState.geocoder.geocode({ address: query }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          const location = results[0].geometry.location;
+          const coords = { lat: location.lat(), lng: location.lng() };
+          mapState.cache.set(query, coords);
+          persistGeocodeCache();
+          resolve(coords);
+          return;
+        }
+        resolve(null);
+      });
+    });
+  };
+
+  const collectItineraryLocations = () => {
+    const stops = [];
+    const startName = itineraryStartLocationInput
+      ? itineraryStartLocationInput.value.trim()
+      : "";
+    if (startName) {
+      stops.push({
+        type: "Start",
+        name: startName,
+        address: "",
+        label: "S",
+      });
+    }
+
+    if (itineraryStopsContainer) {
+      const stopElements = Array.from(
+        itineraryStopsContainer.querySelectorAll(".itinerary-stop")
+      );
+      stopElements.forEach((stopElement, index) => {
+        const cityInput = stopElement.querySelector("[data-role='stop-city']");
+        const addressInput = stopElement.querySelector("[data-role='stop-address']");
+        const city = cityInput ? cityInput.value.trim() : "";
+        const address = addressInput ? addressInput.value.trim() : "";
+        if (!city && !address) {
+          return;
+        }
+        stops.push({
+          type: "Overnight",
+          name: city || address,
+          address,
+          label: String(index + 1),
+        });
+      });
+    }
+
+    const endName = itineraryEndLocationInput
+      ? itineraryEndLocationInput.value.trim()
+      : "";
+    if (endName) {
+      stops.push({
+        type: "End",
+        name: endName,
+        address: "",
+        label: "E",
+      });
+    }
+
+    return stops;
+  };
+
+  const buildLocationSignature = (locations) =>
+    JSON.stringify(
+      locations.map((location) => ({
+        type: location.type,
+        name: location.name,
+        address: location.address,
+      }))
+    );
+
+  const buildInfoWindowContent = (location) => {
+    const addressLine = location.address
+      ? `<p>${location.address}</p>`
+      : "";
+    return `
+      <div class="map-info-window">
+        <strong>${location.name}</strong>
+        ${addressLine}
+        <p>Stop type: ${location.type}</p>
+      </div>
+    `;
+  };
+
+  const renderDirections = (locations, resolved) => {
+    if (!mapState.directionsService || !mapState.directionsRenderer) {
+      return;
+    }
+    if (locations.length < 2 || resolved.length !== locations.length) {
+      resetDirections();
+      return;
+    }
+
+    const waypoints = resolved.slice(1, -1).map((coords) => ({
+      location: coords,
+      stopover: true,
+    }));
+
+    mapState.directionsService.route(
+      {
+        origin: resolved[0],
+        destination: resolved[resolved.length - 1],
+        waypoints,
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === "OK" && result) {
+          mapState.directionsRenderer.setDirections(result);
+        } else {
+          resetDirections();
+        }
+      }
+    );
+  };
+
+  const updateItineraryMap = async () => {
+    if (!itineraryMapContainer || !mapState.map) {
+      return;
+    }
+
+    const locations = collectItineraryLocations();
+    const signature = buildLocationSignature(locations);
+    if (signature === mapState.lastSignature) {
+      return;
+    }
+    mapState.lastSignature = signature;
+
+    clearMarkers();
+    resetDirections();
+
+    if (locations.length === 0) {
+      updateMapStatus("Add itinerary locations to see them on the map.");
+      return;
+    }
+
+    const resolvedLocations = [];
+    for (const location of locations) {
+      const query = location.address
+        ? `${location.address} ${location.name}`.trim()
+        : location.name;
+      const coords = await geocodeLocation(query);
+      if (!coords) {
+        resolvedLocations.push(null);
+        continue;
+      }
+      resolvedLocations.push(coords);
+
+      const marker = new google.maps.Marker({
+        position: coords,
+        map: mapState.map,
+        title: location.name,
+        label: location.label,
+      });
+      marker.addListener("click", () => {
+        if (mapState.infoWindow) {
+          mapState.infoWindow.setContent(buildInfoWindowContent(location));
+          mapState.infoWindow.open(mapState.map, marker);
+        }
+      });
+      mapState.markers.push(marker);
+    }
+
+    const validCoords = resolvedLocations.filter(Boolean);
+    if (validCoords.length === 0) {
+      updateMapStatus("We could not find coordinates for the itinerary locations.");
+      return;
+    }
+
+    updateMapStatus("");
+    const bounds = new google.maps.LatLngBounds();
+    validCoords.forEach((coords) => bounds.extend(coords));
+    mapState.map.fitBounds(bounds);
+    if (validCoords.length === 1) {
+      mapState.map.setZoom(10);
+      mapState.map.setCenter(validCoords[0]);
+    }
+
+    renderDirections(locations, resolvedLocations.filter(Boolean));
+  };
+
+  const scheduleMapUpdate = () => {
+    if (!itineraryMapContainer) {
+      return;
+    }
+    if (!mapApiKey) {
+      updateMapStatus(
+        "Add a Google Maps API key in the environment variables to enable the map."
+      );
+      return;
+    }
+    if (mapState.updateTimer) {
+      window.clearTimeout(mapState.updateTimer);
+    }
+    mapState.updateTimer = window.setTimeout(() => {
+      loadGoogleMaps()
+        .then(updateItineraryMap)
+        .catch(() => {});
+    }, 200);
+  };
+
+  if (itineraryMapPanel && window.matchMedia("(max-width: 700px)").matches) {
+    itineraryMapPanel.removeAttribute("open");
+  }
+
   const updateItineraryEndpoints = () => {
     if (itineraryStartDateInput && itineraryStartDateInput.value) {
       const startLocation = itineraryStartLocationInput
@@ -1833,6 +2192,8 @@ if (calendarGrid && calendarLabel) {
     } else {
       removeEvent("itinerary-end");
     }
+
+    scheduleMapUpdate();
   };
 
   const itineraryInputs = [
@@ -1881,6 +2242,8 @@ if (calendarGrid && calendarLabel) {
         return;
       }
 
+      scheduleMapUpdate();
+
       const eventId = `itinerary-${stopId}`;
       if (!dateInput.value) {
         removeEvent(eventId);
@@ -1902,7 +2265,7 @@ if (calendarGrid && calendarLabel) {
 
     const inputs = Array.from(
       stopElement.querySelectorAll(
-        "[data-role='stop-city'], [data-role='stop-date']"
+        "[data-role='stop-city'], [data-role='stop-date'], [data-role='stop-address']"
       )
     );
 
@@ -1917,6 +2280,7 @@ if (calendarGrid && calendarLabel) {
         removeEvent(`itinerary-${stopId}`);
         stopElement.remove();
         updateStopOrderLabels();
+        scheduleMapUpdate();
       });
     }
 
@@ -1927,6 +2291,7 @@ if (calendarGrid && calendarLabel) {
         if (previous) {
           itineraryStopsContainer.insertBefore(stopElement, previous);
           updateStopOrderLabels();
+          scheduleMapUpdate();
         }
       });
     }
@@ -1938,12 +2303,14 @@ if (calendarGrid && calendarLabel) {
         if (next) {
           itineraryStopsContainer.insertBefore(next, stopElement);
           updateStopOrderLabels();
+          scheduleMapUpdate();
         }
       });
     }
 
     itineraryStopsContainer.appendChild(stopElement);
     updateStopOrderLabels();
+    scheduleMapUpdate();
   };
 
   if (addItineraryStopButton) {
@@ -2077,4 +2444,5 @@ if (calendarGrid && calendarLabel) {
   });
 
   renderCalendar();
+  scheduleMapUpdate();
 }

@@ -7,6 +7,7 @@
     <!--
       Move logistics page for tracking calendar events and key contacts.
     -->
+    <meta name="google-maps-api-key" content="" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -82,6 +83,38 @@
 
         <div class="calendar-grid" id="calendar-grid" role="grid"></div>
       </section>
+
+      <details
+        class="info-panel map-panel"
+        id="itinerary-map-panel"
+        aria-labelledby="itinerary-map-title"
+        open
+      >
+        <summary class="map-panel-summary">
+          <span>Itinerary Map</span>
+          <span class="map-panel-toggle">Tap to view the map</span>
+        </summary>
+        <div class="map-panel-header">
+          <div>
+            <p class="eyebrow">Family Itinerary</p>
+            <h2 id="itinerary-map-title">Itinerary Map</h2>
+          </div>
+          <p class="map-hint">
+            The map updates automatically based on the Family Itinerary details.
+          </p>
+        </div>
+        <div class="map-panel-body">
+          <p class="map-status" id="itinerary-map-status" role="status">
+            Add a Google Maps API key to visualize the itinerary.
+          </p>
+          <div
+            class="itinerary-map"
+            id="itinerary-map"
+            role="application"
+            aria-label="Family itinerary map"
+          ></div>
+        </div>
+      </details>
 
       <section class="logistics-accordion" aria-label="Move logistics events">
         <details

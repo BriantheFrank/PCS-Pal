@@ -924,6 +924,86 @@ main {
   gap: 1.25rem;
 }
 
+.map-panel {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.map-panel-summary {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.map-panel-summary::-webkit-details-marker {
+  display: none;
+}
+
+.map-panel-toggle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.map-panel-header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.map-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.map-panel-body {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.map-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.map-status.is-hidden {
+  display: none;
+}
+
+.itinerary-map {
+  width: 100%;
+  min-height: 320px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+@media (min-width: 900px) {
+  .logistics-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "calendar map"
+      "accordion accordion";
+    align-items: start;
+  }
+
+  .calendar-panel {
+    grid-area: calendar;
+  }
+
+  .map-panel {
+    grid-area: map;
+  }
+
+  .logistics-accordion {
+    grid-area: accordion;
+  }
+}
+
 .calendar-panel-header {
   display: grid;
   gap: 0.35rem;
@@ -1416,5 +1496,13 @@ main {
 
   .item-help {
     margin-left: 1.75rem;
+  }
+
+  .map-panel-summary {
+    display: flex;
+  }
+
+  .map-panel[open] .map-panel-toggle {
+    display: none;
   }
 }
