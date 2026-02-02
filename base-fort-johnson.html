@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PCS Pal | Fort Johnson - Army Duty Station</title>
+    <meta name="google-maps-api-key" content="" />
     <!--
       Detail page for Fort Johnson.
     -->
@@ -33,6 +34,108 @@
     </header>
 
     <main class="container">
+
+      <section class="info-panel base-map-section" aria-labelledby="base-map-title">
+        <div class="base-map-header">
+          <div>
+            <p class="eyebrow">Destination Base Map</p>
+            <h2 id="base-map-title">Fort Johnson Map</h2>
+          </div>
+          <p class="map-hint">
+            Explore key installation points of interest curated for PCS families.
+          </p>
+        </div>
+                <div class="base-map-controls" role="group" aria-label="Filter points of interest">
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Installation HQ" checked />
+            Installation HQ
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Main Gate" checked />
+            Main Gate
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Medical Facility" checked />
+            Medical Facility
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Housing Office" checked />
+            Housing Office
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="On-base Lodging" checked />
+            On-base Lodging
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Schools / CDC" checked />
+            Schools / CDC
+          </label>
+        </div>
+        <p class="map-status" data-base-map-status role="status">
+          Add a Google Maps API key in the environment variables to enable the map.
+        </p>
+        <div
+          class="base-map"
+          data-base-map
+          role="application"
+          aria-label="Fort Johnson map"
+        ></div>
+        <script type="application/json" data-base-map-config>
+{
+  "baseName": "Fort Johnson",
+  "center": {
+    "lat": 31.044,
+    "lng": -93.197
+  },
+  "zoom": 12,
+  "pois": [
+    {
+      "name": "Fort Johnson Headquarters",
+      "category": "Installation HQ",
+      "lat": 31.054,
+      "lng": -93.197,
+      "address": "Fort Johnson, Louisiana"
+    },
+    {
+      "name": "Fort Johnson Main Gate",
+      "category": "Main Gate",
+      "lat": 31.036,
+      "lng": -93.185,
+      "address": "Fort Johnson, Louisiana"
+    },
+    {
+      "name": "Fort Johnson Medical Center",
+      "category": "Medical Facility",
+      "lat": 31.05,
+      "lng": -93.209,
+      "address": "Fort Johnson, Louisiana"
+    },
+    {
+      "name": "Fort Johnson Housing Office",
+      "category": "Housing Office",
+      "lat": 31.032,
+      "lng": -93.203,
+      "address": "Fort Johnson, Louisiana"
+    },
+    {
+      "name": "Fort Johnson Lodging",
+      "category": "On-base Lodging",
+      "lat": 31.048,
+      "lng": -93.181,
+      "address": "Fort Johnson, Louisiana"
+    },
+    {
+      "name": "Fort Johnson Child Development Center",
+      "category": "Schools / CDC",
+      "lat": 31.03,
+      "lng": -93.193,
+      "address": "Fort Johnson, Louisiana"
+    }
+  ]
+}
+        </script>
+      </section>
+
       <section class="base-detail">
         <h2>Post / Installation Information</h2>
         <div class="base-grid">
@@ -179,5 +282,6 @@
         <p>Plan ahead for every duty station on your PCS journey.</p>
       </div>
     </footer>
+    <script src="script.js"></script>
   </body>
 </html>
