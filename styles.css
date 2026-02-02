@@ -1093,6 +1093,12 @@ main {
   font-size: 0.95rem;
 }
 
+.logistics-summary {
+  margin: 0.75rem 0 0;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
 .itinerary-group {
   border-top: 1px solid var(--border);
   padding-top: 1.25rem;
@@ -1120,9 +1126,36 @@ main {
   gap: 1rem;
 }
 
+.itinerary-stop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 .itinerary-stop-header h4 {
   margin: 0;
   font-size: 1rem;
+}
+
+.logistics-details {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: var(--bg);
+}
+
+.logistics-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+
+.custom-events {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .logistics-checkbox {
