@@ -1417,6 +1417,21 @@ const logisticsSections = Array.from(
 const itineraryStopsContainer = document.querySelector("#itinerary-stops");
 const itineraryTemplate = document.querySelector("#itinerary-stop-template");
 const addItineraryStopButton = document.querySelector("#add-itinerary-stop");
+const itineraryStartLocationInput = document.querySelector(
+  "[data-role='itinerary-start-location']"
+);
+const itineraryStartDateInput = document.querySelector(
+  "[data-role='itinerary-start-date']"
+);
+const itineraryEndLocationInput = document.querySelector(
+  "[data-role='itinerary-end-location']"
+);
+const itineraryEndDateInput = document.querySelector(
+  "[data-role='itinerary-end-date']"
+);
+const customEventsContainer = document.querySelector("#custom-events");
+const customEventTemplate = document.querySelector("#custom-event-template");
+const addCustomEventButton = document.querySelector("#add-custom-event");
 
 if (calendarGrid && calendarLabel) {
   const calendarState = {
@@ -1431,6 +1446,48 @@ if (calendarGrid && calendarLabel) {
       String(date.getMonth() + 1).padStart(2, "0"),
       String(date.getDate()).padStart(2, "0"),
     ].join("-");
+
+  const parseDateValue = (value) => {
+    if (!value) {
+      return null;
+    }
+    const [year, month, day] = value.split("-").map(Number);
+    if (!year || !month || !day) {
+      return null;
+    }
+    return new Date(year, month - 1, day);
+  };
+
+  const addDays = (date, days) => {
+    const next = new Date(date);
+    next.setDate(next.getDate() + days);
+    return next;
+  };
+
+  const enumerateDateKeys = (startDate, endDate) => {
+    const keys = [];
+    if (!startDate) {
+      return keys;
+    }
+    const end = endDate && endDate >= startDate ? endDate : startDate;
+    let cursor = new Date(startDate);
+    // Inclusive range ensures multi-day events render on every date in the span.
+    while (cursor <= end) {
+      keys.push(toDateKey(cursor));
+      cursor = addDays(cursor, 1);
+    }
+    return keys;
+  };
+
+  const ensureRangeOrder = (startValue, endValue) => {
+    if (!startValue || !endValue) {
+      return { startValue, endValue };
+    }
+    if (endValue < startValue) {
+      return { startValue, endValue: startValue };
+    }
+    return { startValue, endValue };
+  };
 
   const parseTime = (value) => {
     if (!value) {
@@ -1495,13 +1552,20 @@ if (calendarGrid && calendarLabel) {
 
     const eventsByDate = {};
     events.forEach((event) => {
-      if (!event.date) {
+      const startValue = event.startDate || event.date;
+      const endValue = event.endDate || event.date;
+      const startDate = parseDateValue(startValue);
+      const endDate = parseDateValue(endValue);
+      if (!startDate) {
         return;
       }
-      if (!eventsByDate[event.date]) {
-        eventsByDate[event.date] = [];
-      }
-      eventsByDate[event.date].push(event);
+      const dateKeys = enumerateDateKeys(startDate, endDate);
+      dateKeys.forEach((dateKey) => {
+        if (!eventsByDate[dateKey]) {
+          eventsByDate[dateKey] = [];
+        }
+        eventsByDate[dateKey].push(event);
+      });
     });
 
     Object.values(eventsByDate).forEach((dayEvents) => {
@@ -1601,7 +1665,8 @@ if (calendarGrid && calendarLabel) {
     upsertEvent({
       id: eventId,
       title,
-      date: dateValue,
+      startDate: dateValue,
+      endDate: dateValue,
       time: timeInput ? timeInput.value : "",
       location: locationInput ? locationInput.value.trim() : "",
       notes: notesInput ? notesInput.value.trim() : "",
@@ -1623,6 +1688,8 @@ if (calendarGrid && calendarLabel) {
     const clearButton = section.querySelector("[data-action='clear-event']");
     const dateInput = section.querySelector("[data-role='date']");
     const timeInput = section.querySelector("[data-role='time']");
+    const rangeStartInput = section.querySelector("[data-role='packers-start-date']");
+    const rangeEndInput = section.querySelector("[data-role='packers-end-date']");
 
     if (clearButton && dateInput) {
       clearButton.addEventListener("click", () => {
@@ -1633,11 +1700,166 @@ if (calendarGrid && calendarLabel) {
         updateEventFromSection(section);
       });
     }
+
+    if (clearButton && !dateInput && (rangeStartInput || rangeEndInput)) {
+      clearButton.addEventListener("click", () => {
+        if (rangeStartInput) {
+          rangeStartInput.value = "";
+        }
+        if (rangeEndInput) {
+          rangeEndInput.value = "";
+        }
+        updatePackersEvent(section);
+      });
+    }
   };
 
   logisticsSections.forEach((section) => {
     attachSectionListeners(section);
   });
+
+  const updateRangeValidity = (startInput, endInput, message) => {
+    if (!startInput || !endInput) {
+      return;
+    }
+    if (!startInput.value || !endInput.value) {
+      endInput.setCustomValidity("");
+      return;
+    }
+    if (endInput.value < startInput.value) {
+      endInput.setCustomValidity(message);
+    } else {
+      endInput.setCustomValidity("");
+    }
+  };
+
+  const updatePackersEvent = (section) => {
+    const startInput = section.querySelector("[data-role='packers-start-date']");
+    const endInput = section.querySelector("[data-role='packers-end-date']");
+    const locationInput = section.querySelector("[data-role='location']");
+    const summary = section.querySelector("[data-role='packers-summary']");
+    const eventId = section.dataset.eventId;
+    const title = section.dataset.eventTitle || "Packers On Site";
+
+    if (!startInput || !eventId) {
+      return;
+    }
+
+    updateRangeValidity(
+      startInput,
+      endInput,
+      "End date cannot be before the start date."
+    );
+
+    if (endInput && !endInput.checkValidity()) {
+      removeEvent(eventId);
+      return;
+    }
+
+    if (!startInput.value) {
+      removeEvent(eventId);
+      if (summary) {
+        summary.innerHTML =
+          "Packers will be on site from <strong>Start Date</strong> to <strong>End Date</strong>.";
+      }
+      return;
+    }
+
+    const range = ensureRangeOrder(startInput.value, endInput?.value || "");
+    if (summary) {
+      const endText = range.endValue ? range.endValue : range.startValue;
+      summary.innerHTML = `Packers will be on site from <strong>${range.startValue}</strong> to <strong>${endText}</strong>.`;
+    }
+
+    upsertEvent({
+      id: eventId,
+      title,
+      startDate: range.startValue,
+      endDate: range.endValue || range.startValue,
+      time: "",
+      location: locationInput ? locationInput.value.trim() : "",
+    });
+  };
+
+  const packersSection = logisticsSections.find(
+    (section) => section.dataset.eventId === "packers"
+  );
+  if (packersSection) {
+    const packersInputs = Array.from(
+      packersSection.querySelectorAll(
+        "[data-role='packers-start-date'], [data-role='packers-end-date'], [data-role='location']"
+      )
+    );
+    packersInputs.forEach((input) => {
+      input.addEventListener("input", () => updatePackersEvent(packersSection));
+      input.addEventListener("change", () => updatePackersEvent(packersSection));
+    });
+    const notesInput = packersSection.querySelector("[data-role='notes']");
+    if (notesInput) {
+      notesInput.addEventListener("input", () => updatePackersEvent(packersSection));
+      notesInput.addEventListener("change", () => updatePackersEvent(packersSection));
+    }
+  }
+
+  const updateItineraryEndpoints = () => {
+    if (itineraryStartDateInput && itineraryStartDateInput.value) {
+      const startLocation = itineraryStartLocationInput
+        ? itineraryStartLocationInput.value.trim()
+        : "";
+      upsertEvent({
+        id: "itinerary-start",
+        title: startLocation ? `Depart: ${startLocation}` : "Depart: Start location",
+        startDate: itineraryStartDateInput.value,
+        endDate: itineraryStartDateInput.value,
+        time: "",
+        location: startLocation,
+      });
+    } else {
+      removeEvent("itinerary-start");
+    }
+
+    if (itineraryEndDateInput && itineraryEndDateInput.value) {
+      const endLocation = itineraryEndLocationInput
+        ? itineraryEndLocationInput.value.trim()
+        : "";
+      upsertEvent({
+        id: "itinerary-end",
+        title: endLocation ? `Arrive: ${endLocation}` : "Arrive: End location",
+        startDate: itineraryEndDateInput.value,
+        endDate: itineraryEndDateInput.value,
+        time: "",
+        location: endLocation,
+      });
+    } else {
+      removeEvent("itinerary-end");
+    }
+  };
+
+  const itineraryInputs = [
+    itineraryStartLocationInput,
+    itineraryStartDateInput,
+    itineraryEndLocationInput,
+    itineraryEndDateInput,
+  ].filter(Boolean);
+  itineraryInputs.forEach((input) => {
+    input.addEventListener("input", updateItineraryEndpoints);
+    input.addEventListener("change", updateItineraryEndpoints);
+  });
+
+  const updateStopOrderLabels = () => {
+    if (!itineraryStopsContainer) {
+      return;
+    }
+    const stops = Array.from(
+      itineraryStopsContainer.querySelectorAll(".itinerary-stop")
+    );
+    stops.forEach((stop, index) => {
+      const heading = stop.querySelector(".itinerary-stop-header h4");
+      if (heading) {
+        heading.textContent = `Overnight Stop ${index + 1}`;
+      }
+    });
+  };
 
   const renderItineraryStop = () => {
     if (!itineraryStopsContainer || !itineraryTemplate) {
@@ -1654,36 +1876,33 @@ if (calendarGrid && calendarLabel) {
     const updateStopEvent = () => {
       const dateInput = stopElement.querySelector("[data-role='stop-date']");
       const cityInput = stopElement.querySelector("[data-role='stop-city']");
-      const lodgingInput = stopElement.querySelector("[data-role='stop-lodging']");
-      const calendarToggle = stopElement.querySelector("[data-role='stop-calendar']");
 
-      if (!dateInput || !calendarToggle) {
+      if (!dateInput) {
         return;
       }
 
       const eventId = `itinerary-${stopId}`;
-      if (!calendarToggle.checked || !dateInput.value) {
+      if (!dateInput.value) {
         removeEvent(eventId);
         return;
       }
 
       const city = cityInput ? cityInput.value.trim() : "";
-      const lodging = lodgingInput ? lodgingInput.value.trim() : "";
-      const title = city ? `Itinerary stop: ${city}` : "Itinerary stop";
-      const locationDetail = lodging || city;
+      const title = city ? `Overnight Stop: ${city}` : "Overnight Stop";
 
       upsertEvent({
         id: eventId,
         title,
-        date: dateInput.value,
+        startDate: dateInput.value,
+        endDate: dateInput.value,
         time: "",
-        location: locationDetail,
+        location: city,
       });
     };
 
     const inputs = Array.from(
       stopElement.querySelectorAll(
-        "[data-role='stop-city'], [data-role='stop-date'], [data-role='stop-lodging'], [data-role='stop-calendar']"
+        "[data-role='stop-city'], [data-role='stop-date']"
       )
     );
 
@@ -1697,14 +1916,123 @@ if (calendarGrid && calendarLabel) {
       removeButton.addEventListener("click", () => {
         removeEvent(`itinerary-${stopId}`);
         stopElement.remove();
+        updateStopOrderLabels();
+      });
+    }
+
+    const moveUpButton = stopElement.querySelector("[data-action='move-stop-up']");
+    if (moveUpButton) {
+      moveUpButton.addEventListener("click", () => {
+        const previous = stopElement.previousElementSibling;
+        if (previous) {
+          itineraryStopsContainer.insertBefore(stopElement, previous);
+          updateStopOrderLabels();
+        }
+      });
+    }
+
+    const moveDownButton = stopElement.querySelector("[data-action='move-stop-down']");
+    if (moveDownButton) {
+      moveDownButton.addEventListener("click", () => {
+        const next = stopElement.nextElementSibling;
+        if (next) {
+          itineraryStopsContainer.insertBefore(next, stopElement);
+          updateStopOrderLabels();
+        }
       });
     }
 
     itineraryStopsContainer.appendChild(stopElement);
+    updateStopOrderLabels();
   };
 
   if (addItineraryStopButton) {
     addItineraryStopButton.addEventListener("click", renderItineraryStop);
+  }
+
+  const renderCustomEvent = () => {
+    if (!customEventsContainer || !customEventTemplate) {
+      return;
+    }
+    const clone = customEventTemplate.content.cloneNode(true);
+    const customElement = clone.querySelector(".custom-event");
+    if (!customElement) {
+      return;
+    }
+    const customId = `custom-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    customElement.dataset.customId = customId;
+
+    const updateCustomEvent = () => {
+      const titleInput = customElement.querySelector("[data-role='custom-title']");
+      const startInput = customElement.querySelector(
+        "[data-role='custom-start-date']"
+      );
+      const endInput = customElement.querySelector(
+        "[data-role='custom-end-date']"
+      );
+      const addressInput = customElement.querySelector(
+        "[data-role='custom-address']"
+      );
+      const notesInput = customElement.querySelector("[data-role='custom-notes']");
+
+      if (!titleInput || !startInput) {
+        return;
+      }
+
+      updateRangeValidity(
+        startInput,
+        endInput,
+        "End date cannot be before the start date."
+      );
+
+      if (endInput && !endInput.checkValidity()) {
+        removeEvent(customId);
+        return;
+      }
+
+      if (!titleInput.value.trim() || !startInput.value) {
+        removeEvent(customId);
+        return;
+      }
+
+      const range = ensureRangeOrder(startInput.value, endInput?.value || "");
+
+      upsertEvent({
+        id: customId,
+        title: titleInput.value.trim(),
+        startDate: range.startValue,
+        endDate: range.endValue || range.startValue,
+        time: "",
+        location: addressInput ? addressInput.value.trim() : "",
+        notes: notesInput ? notesInput.value.trim() : "",
+      });
+    };
+
+    const inputs = Array.from(
+      customElement.querySelectorAll(
+        "[data-role='custom-title'], [data-role='custom-start-date'], [data-role='custom-end-date'], [data-role='custom-address'], [data-role='custom-phone'], [data-role='custom-contact'], [data-role='custom-notes']"
+      )
+    );
+    inputs.forEach((input) => {
+      input.addEventListener("input", updateCustomEvent);
+      input.addEventListener("change", updateCustomEvent);
+    });
+
+    const removeButton = customElement.querySelector(
+      "[data-action='remove-custom']"
+    );
+    if (removeButton) {
+      removeButton.addEventListener("click", () => {
+        removeEvent(customId);
+        customElement.remove();
+      });
+    }
+
+    customEventsContainer.appendChild(customElement);
+  };
+
+  if (addCustomEventButton) {
+    addCustomEventButton.addEventListener("click", renderCustomEvent);
   }
 
   calendarToggleButtons.forEach((button) => {

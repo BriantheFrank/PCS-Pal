@@ -156,7 +156,7 @@
         <details
           class="checklist-section logistics-section"
           data-event-id="packers"
-          data-event-title="Packers"
+          data-event-title="Packers On Site"
         >
           <summary>
             <h2>Packers</h2>
@@ -196,23 +196,28 @@
                     <input type="text" data-role="location" />
                   </label>
                   <label class="logistics-field">
-                    Date
-                    <input type="date" data-role="date" />
+                    Start date
+                    <input type="date" data-role="packers-start-date" />
                   </label>
                   <label class="logistics-field">
-                    Time
-                    <input type="time" data-role="time" />
+                    End date
+                    <input type="date" data-role="packers-end-date" />
                   </label>
                   <label class="logistics-field">
                     Notes (optional)
                     <textarea rows="2" data-role="notes"></textarea>
                   </label>
                 </div>
+                <p class="logistics-summary" data-role="packers-summary">
+                  Packers will be on site from <strong>Start Date</strong> to
+                  <strong>End Date</strong>.
+                </p>
               </div>
               <div class="logistics-group">
                 <h3>Calendar Integration</h3>
                 <p class="logistics-hint">
-                  Add a date and time to place this event on the master calendar.
+                  Choose a start date (and optional end date) to place this event on
+                  the master calendar.
                 </p>
                 <button type="button" class="label-action secondary" data-action="clear-event">
                   Clear event from calendar
@@ -514,66 +519,73 @@
             </p>
             <div class="logistics-form">
               <div class="logistics-group">
-                <h3>Contact Information</h3>
+                <h3>Start Location</h3>
                 <div class="logistics-field-grid">
                   <label class="logistics-field">
-                    Name
-                    <input type="text" data-role="contact-name" />
+                    Location name
+                    <input type="text" data-role="itinerary-start-location" />
                   </label>
                   <label class="logistics-field">
-                    Company (if applicable)
-                    <input type="text" data-role="contact-company" />
-                  </label>
-                  <label class="logistics-field">
-                    Phone number
-                    <input type="tel" data-role="contact-phone" />
-                  </label>
-                  <label class="logistics-field">
-                    Email address
-                    <input type="email" data-role="contact-email" />
+                    Departure date
+                    <input type="date" data-role="itinerary-start-date" />
                   </label>
                 </div>
               </div>
               <div class="logistics-group">
-                <h3>Event Details</h3>
+                <h3>End Location</h3>
                 <div class="logistics-field-grid">
                   <label class="logistics-field">
-                    Location
-                    <input type="text" data-role="location" />
+                    Location name
+                    <input type="text" data-role="itinerary-end-location" />
                   </label>
                   <label class="logistics-field">
-                    Date
-                    <input type="date" data-role="date" />
-                  </label>
-                  <label class="logistics-field">
-                    Time
-                    <input type="time" data-role="time" />
-                  </label>
-                  <label class="logistics-field">
-                    Notes (optional)
-                    <textarea rows="2" data-role="notes"></textarea>
+                    Arrival date
+                    <input type="date" data-role="itinerary-end-date" />
                   </label>
                 </div>
-              </div>
-              <div class="logistics-group">
-                <h3>Calendar Integration</h3>
-                <p class="logistics-hint">
-                  Add a date and time to place this event on the master calendar.
-                </p>
-                <button type="button" class="label-action secondary" data-action="clear-event">
-                  Clear event from calendar
-                </button>
               </div>
 
               <div class="logistics-group itinerary-group">
                 <h3>Itinerary Stops</h3>
                 <p class="logistics-hint">
-                  Add one stop per overnight stay. You can also add each stop to
-                  the master calendar.
+                  Add one stop per overnight stay. Each stop appears on the master
+                  calendar automatically.
                 </p>
                 <div class="itinerary-stops" id="itinerary-stops"></div>
                 <button type="button" class="label-action" id="add-itinerary-stop">
                   Add overnight stop
+                </button>
+              </div>
+              <div class="logistics-group">
+                <h3>Calendar Integration</h3>
+                <p class="logistics-hint">
+                  The start, each overnight stop, and the end location are added to
+                  the master calendar as all-day entries.
+                </p>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="checklist-section logistics-section" data-event-id="custom-events">
+          <summary>
+            <h2>Custom Events</h2>
+          </summary>
+          <div class="checklist-section-body logistics-section-body">
+            <p class="checklist-intro">
+              Add personal move-related events that are not tied to the itinerary,
+              such as school tours, housing appointments, or temporary storage.
+            </p>
+            <div class="logistics-form">
+              <div class="logistics-group">
+                <h3>Custom Event List</h3>
+                <p class="logistics-hint">
+                  Each custom event appears on the master calendar as an all-day
+                  entry. Add an end date to show a date range.
+                </p>
+                <div class="custom-events" id="custom-events"></div>
+                <button type="button" class="label-action" id="add-custom-event">
+                  Add custom event
                 </button>
               </div>
             </div>
@@ -595,9 +607,17 @@
       <div class="itinerary-stop" data-stop-id="">
         <div class="itinerary-stop-header">
           <h4>Overnight Stop</h4>
-          <button type="button" class="link-button" data-action="remove-stop">
-            Remove stop
-          </button>
+          <div class="itinerary-stop-actions">
+            <button type="button" class="link-button" data-action="move-stop-up">
+              Move up
+            </button>
+            <button type="button" class="link-button" data-action="move-stop-down">
+              Move down
+            </button>
+            <button type="button" class="link-button" data-action="remove-stop">
+              Remove stop
+            </button>
+          </div>
         </div>
         <div class="logistics-field-grid">
           <label class="logistics-field">
@@ -605,30 +625,73 @@
             <input type="text" data-role="stop-city" />
           </label>
           <label class="logistics-field">
-            Date
+            Arrival date
             <input type="date" data-role="stop-date" />
           </label>
+        </div>
+        <details class="logistics-details">
+          <summary>Lodging details (optional)</summary>
+          <div class="logistics-field-grid">
+            <label class="logistics-field">
+              Lodging name
+              <input type="text" data-role="stop-lodging" />
+            </label>
+            <label class="logistics-field">
+              Street address
+              <input type="text" data-role="stop-address" />
+            </label>
+            <label class="logistics-field">
+              Phone number
+              <input type="tel" data-role="stop-phone" />
+            </label>
+          </div>
+        </details>
+      </div>
+    </template>
+
+    <template id="custom-event-template">
+      <div class="itinerary-stop custom-event" data-custom-id="">
+        <div class="itinerary-stop-header">
+          <h4>Custom Event</h4>
+          <button type="button" class="link-button" data-action="remove-custom">
+            Remove event
+          </button>
+        </div>
+        <div class="logistics-field-grid">
           <label class="logistics-field">
-            Lodging name
-            <input type="text" data-role="stop-lodging" />
+            Event title
+            <input type="text" data-role="custom-title" required />
           </label>
           <label class="logistics-field">
-            Lodging address
-            <input type="text" data-role="stop-address" />
+            Start date
+            <input type="date" data-role="custom-start-date" required />
           </label>
           <label class="logistics-field">
-            Lodging phone number
-            <input type="tel" data-role="stop-phone" />
-          </label>
-          <label class="logistics-field">
-            Notes (optional)
-            <textarea rows="2" data-role="stop-notes"></textarea>
+            End date (optional)
+            <input type="date" data-role="custom-end-date" />
           </label>
         </div>
-        <label class="logistics-checkbox">
-          <input type="checkbox" data-role="stop-calendar" />
-          Add this stop to the master calendar
-        </label>
+        <details class="logistics-details">
+          <summary>Optional details</summary>
+          <div class="logistics-field-grid">
+            <label class="logistics-field">
+              Address
+              <input type="text" data-role="custom-address" />
+            </label>
+            <label class="logistics-field">
+              Phone number
+              <input type="tel" data-role="custom-phone" />
+            </label>
+            <label class="logistics-field">
+              Contact name
+              <input type="text" data-role="custom-contact" />
+            </label>
+            <label class="logistics-field">
+              Notes
+              <textarea rows="2" data-role="custom-notes"></textarea>
+            </label>
+          </div>
+        </details>
       </div>
     </template>
 
