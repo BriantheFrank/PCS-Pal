@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PCS Pal | Fort Stewart - Army Duty Station</title>
+    <meta name="google-maps-api-key" content="" />
     <!--
       Detail page for Fort Stewart.
     -->
@@ -33,6 +34,108 @@
     </header>
 
     <main class="container">
+
+      <section class="info-panel base-map-section" aria-labelledby="base-map-title">
+        <div class="base-map-header">
+          <div>
+            <p class="eyebrow">Destination Base Map</p>
+            <h2 id="base-map-title">Fort Stewart Map</h2>
+          </div>
+          <p class="map-hint">
+            Explore key installation points of interest curated for PCS families.
+          </p>
+        </div>
+                <div class="base-map-controls" role="group" aria-label="Filter points of interest">
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Installation HQ" checked />
+            Installation HQ
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Main Gate" checked />
+            Main Gate
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Medical Facility" checked />
+            Medical Facility
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Housing Office" checked />
+            Housing Office
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="On-base Lodging" checked />
+            On-base Lodging
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Schools / CDC" checked />
+            Schools / CDC
+          </label>
+        </div>
+        <p class="map-status" data-base-map-status role="status">
+          Add a Google Maps API key in the environment variables to enable the map.
+        </p>
+        <div
+          class="base-map"
+          data-base-map
+          role="application"
+          aria-label="Fort Stewart map"
+        ></div>
+        <script type="application/json" data-base-map-config>
+{
+  "baseName": "Fort Stewart",
+  "center": {
+    "lat": 31.869,
+    "lng": -81.611
+  },
+  "zoom": 12,
+  "pois": [
+    {
+      "name": "Fort Stewart Headquarters",
+      "category": "Installation HQ",
+      "lat": 31.879,
+      "lng": -81.611,
+      "address": "Fort Stewart, Georgia"
+    },
+    {
+      "name": "Fort Stewart Main Gate",
+      "category": "Main Gate",
+      "lat": 31.861,
+      "lng": -81.599,
+      "address": "Fort Stewart, Georgia"
+    },
+    {
+      "name": "Fort Stewart Medical Center",
+      "category": "Medical Facility",
+      "lat": 31.875,
+      "lng": -81.623,
+      "address": "Fort Stewart, Georgia"
+    },
+    {
+      "name": "Fort Stewart Housing Office",
+      "category": "Housing Office",
+      "lat": 31.857,
+      "lng": -81.617,
+      "address": "Fort Stewart, Georgia"
+    },
+    {
+      "name": "Fort Stewart Lodging",
+      "category": "On-base Lodging",
+      "lat": 31.873,
+      "lng": -81.595,
+      "address": "Fort Stewart, Georgia"
+    },
+    {
+      "name": "Fort Stewart Child Development Center",
+      "category": "Schools / CDC",
+      "lat": 31.855,
+      "lng": -81.607,
+      "address": "Fort Stewart, Georgia"
+    }
+  ]
+}
+        </script>
+      </section>
+
       <section class="base-detail">
         <h2>Post / Installation Information</h2>
         <div class="base-grid">
@@ -179,5 +282,6 @@
         <p>Plan ahead for every duty station on your PCS journey.</p>
       </div>
     </footer>
+    <script src="script.js"></script>
   </body>
 </html>

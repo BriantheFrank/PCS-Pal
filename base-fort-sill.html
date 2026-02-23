@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PCS Pal | Fort Sill - Army Duty Station</title>
+    <meta name="google-maps-api-key" content="" />
     <!--
       Detail page for Fort Sill.
     -->
@@ -33,6 +34,108 @@
     </header>
 
     <main class="container">
+
+      <section class="info-panel base-map-section" aria-labelledby="base-map-title">
+        <div class="base-map-header">
+          <div>
+            <p class="eyebrow">Destination Base Map</p>
+            <h2 id="base-map-title">Fort Sill Map</h2>
+          </div>
+          <p class="map-hint">
+            Explore key installation points of interest curated for PCS families.
+          </p>
+        </div>
+                <div class="base-map-controls" role="group" aria-label="Filter points of interest">
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Installation HQ" checked />
+            Installation HQ
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Main Gate" checked />
+            Main Gate
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Medical Facility" checked />
+            Medical Facility
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Housing Office" checked />
+            Housing Office
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="On-base Lodging" checked />
+            On-base Lodging
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Schools / CDC" checked />
+            Schools / CDC
+          </label>
+        </div>
+        <p class="map-status" data-base-map-status role="status">
+          Add a Google Maps API key in the environment variables to enable the map.
+        </p>
+        <div
+          class="base-map"
+          data-base-map
+          role="application"
+          aria-label="Fort Sill map"
+        ></div>
+        <script type="application/json" data-base-map-config>
+{
+  "baseName": "Fort Sill",
+  "center": {
+    "lat": 34.663,
+    "lng": -98.4
+  },
+  "zoom": 12,
+  "pois": [
+    {
+      "name": "Fort Sill Headquarters",
+      "category": "Installation HQ",
+      "lat": 34.673,
+      "lng": -98.4,
+      "address": "Fort Sill, Oklahoma"
+    },
+    {
+      "name": "Fort Sill Main Gate",
+      "category": "Main Gate",
+      "lat": 34.655,
+      "lng": -98.388,
+      "address": "Fort Sill, Oklahoma"
+    },
+    {
+      "name": "Fort Sill Medical Center",
+      "category": "Medical Facility",
+      "lat": 34.669,
+      "lng": -98.412,
+      "address": "Fort Sill, Oklahoma"
+    },
+    {
+      "name": "Fort Sill Housing Office",
+      "category": "Housing Office",
+      "lat": 34.651,
+      "lng": -98.406,
+      "address": "Fort Sill, Oklahoma"
+    },
+    {
+      "name": "Fort Sill Lodging",
+      "category": "On-base Lodging",
+      "lat": 34.667,
+      "lng": -98.384,
+      "address": "Fort Sill, Oklahoma"
+    },
+    {
+      "name": "Fort Sill Child Development Center",
+      "category": "Schools / CDC",
+      "lat": 34.649,
+      "lng": -98.396,
+      "address": "Fort Sill, Oklahoma"
+    }
+  ]
+}
+        </script>
+      </section>
+
       <section class="base-detail">
         <h2>Post / Installation Information</h2>
         <div class="base-grid">
@@ -178,5 +281,6 @@
         <p>Plan ahead for every duty station on your PCS journey.</p>
       </div>
     </footer>
+    <script src="script.js"></script>
   </body>
 </html>

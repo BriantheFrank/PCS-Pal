@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PCS Pal | Fort Leonard Wood - Army Duty Station</title>
+    <meta name="google-maps-api-key" content="" />
     <!--
       Detail page for Fort Leonard Wood.
     -->
@@ -33,6 +34,108 @@
     </header>
 
     <main class="container">
+
+      <section class="info-panel base-map-section" aria-labelledby="base-map-title">
+        <div class="base-map-header">
+          <div>
+            <p class="eyebrow">Destination Base Map</p>
+            <h2 id="base-map-title">Fort Leonard Wood Map</h2>
+          </div>
+          <p class="map-hint">
+            Explore key installation points of interest curated for PCS families.
+          </p>
+        </div>
+                <div class="base-map-controls" role="group" aria-label="Filter points of interest">
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Installation HQ" checked />
+            Installation HQ
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Main Gate" checked />
+            Main Gate
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Medical Facility" checked />
+            Medical Facility
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Housing Office" checked />
+            Housing Office
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="On-base Lodging" checked />
+            On-base Lodging
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Schools / CDC" checked />
+            Schools / CDC
+          </label>
+        </div>
+        <p class="map-status" data-base-map-status role="status">
+          Add a Google Maps API key in the environment variables to enable the map.
+        </p>
+        <div
+          class="base-map"
+          data-base-map
+          role="application"
+          aria-label="Fort Leonard Wood map"
+        ></div>
+        <script type="application/json" data-base-map-config>
+{
+  "baseName": "Fort Leonard Wood",
+  "center": {
+    "lat": 37.705,
+    "lng": -92.157
+  },
+  "zoom": 12,
+  "pois": [
+    {
+      "name": "Fort Leonard Wood Headquarters",
+      "category": "Installation HQ",
+      "lat": 37.715,
+      "lng": -92.157,
+      "address": "Fort Leonard Wood, Missouri"
+    },
+    {
+      "name": "Fort Leonard Wood Main Gate",
+      "category": "Main Gate",
+      "lat": 37.697,
+      "lng": -92.145,
+      "address": "Fort Leonard Wood, Missouri"
+    },
+    {
+      "name": "Fort Leonard Wood Medical Center",
+      "category": "Medical Facility",
+      "lat": 37.711,
+      "lng": -92.169,
+      "address": "Fort Leonard Wood, Missouri"
+    },
+    {
+      "name": "Fort Leonard Wood Housing Office",
+      "category": "Housing Office",
+      "lat": 37.693,
+      "lng": -92.163,
+      "address": "Fort Leonard Wood, Missouri"
+    },
+    {
+      "name": "Fort Leonard Wood Lodging",
+      "category": "On-base Lodging",
+      "lat": 37.709,
+      "lng": -92.141,
+      "address": "Fort Leonard Wood, Missouri"
+    },
+    {
+      "name": "Fort Leonard Wood Child Development Center",
+      "category": "Schools / CDC",
+      "lat": 37.691,
+      "lng": -92.153,
+      "address": "Fort Leonard Wood, Missouri"
+    }
+  ]
+}
+        </script>
+      </section>
+
       <section class="base-detail">
         <h2>Post / Installation Information</h2>
         <div class="base-grid">
@@ -179,5 +282,6 @@
         <p>Plan ahead for every duty station on your PCS journey.</p>
       </div>
     </footer>
+    <script src="script.js"></script>
   </body>
 </html>

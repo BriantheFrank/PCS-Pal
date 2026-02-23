@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PCS Pal | Fort Riley - Army Duty Station</title>
+    <meta name="google-maps-api-key" content="" />
     <!--
       Detail page for Fort Riley.
     -->
@@ -33,6 +34,108 @@
     </header>
 
     <main class="container">
+
+      <section class="info-panel base-map-section" aria-labelledby="base-map-title">
+        <div class="base-map-header">
+          <div>
+            <p class="eyebrow">Destination Base Map</p>
+            <h2 id="base-map-title">Fort Riley Map</h2>
+          </div>
+          <p class="map-hint">
+            Explore key installation points of interest curated for PCS families.
+          </p>
+        </div>
+                <div class="base-map-controls" role="group" aria-label="Filter points of interest">
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Installation HQ" checked />
+            Installation HQ
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Main Gate" checked />
+            Main Gate
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Medical Facility" checked />
+            Medical Facility
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Housing Office" checked />
+            Housing Office
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="On-base Lodging" checked />
+            On-base Lodging
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Schools / CDC" checked />
+            Schools / CDC
+          </label>
+        </div>
+        <p class="map-status" data-base-map-status role="status">
+          Add a Google Maps API key in the environment variables to enable the map.
+        </p>
+        <div
+          class="base-map"
+          data-base-map
+          role="application"
+          aria-label="Fort Riley map"
+        ></div>
+        <script type="application/json" data-base-map-config>
+{
+  "baseName": "Fort Riley",
+  "center": {
+    "lat": 39.076,
+    "lng": -96.766
+  },
+  "zoom": 12,
+  "pois": [
+    {
+      "name": "Fort Riley Headquarters",
+      "category": "Installation HQ",
+      "lat": 39.086,
+      "lng": -96.766,
+      "address": "Fort Riley, Kansas"
+    },
+    {
+      "name": "Fort Riley Main Gate",
+      "category": "Main Gate",
+      "lat": 39.068,
+      "lng": -96.754,
+      "address": "Fort Riley, Kansas"
+    },
+    {
+      "name": "Fort Riley Medical Center",
+      "category": "Medical Facility",
+      "lat": 39.082,
+      "lng": -96.778,
+      "address": "Fort Riley, Kansas"
+    },
+    {
+      "name": "Fort Riley Housing Office",
+      "category": "Housing Office",
+      "lat": 39.064,
+      "lng": -96.772,
+      "address": "Fort Riley, Kansas"
+    },
+    {
+      "name": "Fort Riley Lodging",
+      "category": "On-base Lodging",
+      "lat": 39.08,
+      "lng": -96.75,
+      "address": "Fort Riley, Kansas"
+    },
+    {
+      "name": "Fort Riley Child Development Center",
+      "category": "Schools / CDC",
+      "lat": 39.062,
+      "lng": -96.762,
+      "address": "Fort Riley, Kansas"
+    }
+  ]
+}
+        </script>
+      </section>
+
       <section class="base-detail">
         <h2>Post / Installation Information</h2>
         <div class="base-grid">
@@ -178,5 +281,6 @@
         <p>Plan ahead for every duty station on your PCS journey.</p>
       </div>
     </footer>
+    <script src="script.js"></script>
   </body>
 </html>

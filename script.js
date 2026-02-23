@@ -1435,6 +1435,14 @@ const addCustomEventButton = document.querySelector("#add-custom-event");
 const itineraryMapPanel = document.querySelector("#itinerary-map-panel");
 const itineraryMapContainer = document.querySelector("#itinerary-map");
 const itineraryMapStatus = document.querySelector("#itinerary-map-status");
+const baseMapContainer = document.querySelector("[data-base-map]");
+const baseMapStatus = document.querySelector("[data-base-map-status]");
+const baseMapConfigScript = document.querySelector(
+  "script[data-base-map-config]"
+);
+const baseMapFilterInputs = Array.from(
+  document.querySelectorAll("[data-poi-filter]")
+);
 const googleMapsApiKeyMeta = document.querySelector(
   "meta[name='google-maps-api-key']"
 );
@@ -1820,6 +1828,24 @@ if (calendarGrid && calendarLabel) {
     readyPromise: null,
   };
 
+  const baseMapState = {
+    map: null,
+    markers: [],
+    infoWindow: null,
+    config: null,
+  };
+
+  const BASE_POI_STYLES = {
+    "Installation HQ": { color: "#2558c5", label: "HQ" },
+    "Main Gate": { color: "#2e8540", label: "Gate" },
+    "Medical Facility": { color: "#b42318", label: "Med" },
+    "Housing Office": { color: "#6b4eff", label: "House" },
+    "On-base Lodging": { color: "#b35c00", label: "Stay" },
+    "Schools / CDC": { color: "#00897b", label: "CDC" },
+  };
+
+  const DEFAULT_BASE_ZOOM = 12;
+
   const mapApiKey =
     (googleMapsApiKeyMeta && googleMapsApiKeyMeta.content.trim()) ||
     window.GOOGLE_MAPS_API_KEY ||
@@ -1835,6 +1861,40 @@ if (calendarGrid && calendarLabel) {
     } else {
       itineraryMapStatus.textContent = "";
       itineraryMapStatus.classList.add("is-hidden");
+    }
+  };
+
+  const updateBaseMapStatus = (message) => {
+    if (!baseMapStatus) {
+      return;
+    }
+    if (message) {
+      baseMapStatus.textContent = message;
+      baseMapStatus.classList.remove("is-hidden");
+    } else {
+      baseMapStatus.textContent = "";
+      baseMapStatus.classList.add("is-hidden");
+    }
+  };
+
+  const readBaseMapConfig = () => {
+    if (!baseMapConfigScript) {
+      return null;
+    }
+    try {
+      const parsed = JSON.parse(baseMapConfigScript.textContent || "{}");
+      if (
+        !parsed ||
+        !parsed.center ||
+        typeof parsed.center.lat !== "number" ||
+        typeof parsed.center.lng !== "number"
+      ) {
+        return null;
+      }
+      return parsed;
+    } catch (error) {
+      console.warn("Unable to parse base map configuration.", error);
+      return null;
     }
   };
 
@@ -1869,7 +1929,7 @@ if (calendarGrid && calendarLabel) {
     window.localStorage.setItem("pcs-pal-geocode-cache", JSON.stringify(payload));
   };
 
-  const initMap = () => {
+  const initItineraryMap = () => {
     if (!itineraryMapContainer || mapState.map) {
       return;
     }
@@ -1896,9 +1956,104 @@ if (calendarGrid && calendarLabel) {
     loadGeocodeCache();
   };
 
+  const clearBaseMarkers = () => {
+    baseMapState.markers.forEach((marker) => marker.setMap(null));
+    baseMapState.markers = [];
+  };
+
+  const buildBaseInfoWindowContent = (poi) => {
+    const addressLine = poi.address ? `<p>${poi.address}</p>` : "";
+    return `
+      <div class="map-info-window">
+        <strong>${poi.name}</strong>
+        <p>Category: ${poi.category}</p>
+        ${addressLine}
+      </div>
+    `;
+  };
+
+  const renderBaseMarkers = () => {
+    if (!baseMapState.map || !baseMapState.config) {
+      return;
+    }
+    clearBaseMarkers();
+    const pois = Array.isArray(baseMapState.config.pois)
+      ? baseMapState.config.pois
+      : [];
+    const activeCategories = new Set(
+      baseMapFilterInputs
+        .filter((input) => input.checked)
+        .map((input) => input.dataset.poiFilter)
+    );
+
+    pois.forEach((poi) => {
+      if (
+        typeof poi.lat !== "number" ||
+        typeof poi.lng !== "number" ||
+        !poi.category
+      ) {
+        return;
+      }
+      const style = BASE_POI_STYLES[poi.category] || {
+        color: "#444",
+        label: poi.category,
+      };
+      const isVisible = activeCategories.size === 0 || activeCategories.has(poi.category);
+      const marker = new google.maps.Marker({
+        position: { lat: poi.lat, lng: poi.lng },
+        map: baseMapState.map,
+        title: poi.name,
+        visible: isVisible,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: style.color,
+          fillOpacity: 0.95,
+          strokeColor: "#ffffff",
+          strokeWeight: 1.5,
+          scale: 8,
+        },
+      });
+      marker.addListener("click", () => {
+        if (baseMapState.infoWindow) {
+          baseMapState.infoWindow.setContent(buildBaseInfoWindowContent(poi));
+          baseMapState.infoWindow.open(baseMapState.map, marker);
+        }
+      });
+      baseMapState.markers.push(marker);
+    });
+  };
+
+  const initBaseMap = () => {
+    if (!baseMapContainer || baseMapState.map) {
+      return;
+    }
+    const config = readBaseMapConfig();
+    if (!config) {
+      updateBaseMapStatus("Map unavailable.");
+      return;
+    }
+    baseMapState.config = config;
+    baseMapState.map = new google.maps.Map(baseMapContainer, {
+      zoom: typeof config.zoom === "number" ? config.zoom : DEFAULT_BASE_ZOOM,
+      center: config.center,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
+    baseMapState.infoWindow = new google.maps.InfoWindow();
+    renderBaseMarkers();
+    updateBaseMapStatus("");
+  };
+
+  const handleBaseFilterChange = () => {
+    renderBaseMarkers();
+  };
+
   const loadGoogleMaps = () => {
-    if (!itineraryMapContainer) {
-      return Promise.reject(new Error("Map container missing."));
+    if (window.google && window.google.maps) {
+      initItineraryMap();
+      initBaseMap();
+      return Promise.resolve();
     }
     if (mapState.readyPromise) {
       return mapState.readyPromise;
@@ -1907,23 +2062,28 @@ if (calendarGrid && calendarLabel) {
       updateMapStatus(
         "Add a Google Maps API key in the environment variables to enable the map."
       );
+      updateBaseMapStatus(
+        "Add a Google Maps API key in the environment variables to enable the map."
+      );
       return Promise.reject(new Error("Missing API key."));
     }
 
     mapState.readyPromise = new Promise((resolve, reject) => {
-      window.initItineraryMap = () => {
-        initMap();
+      window.initGoogleMaps = () => {
+        initItineraryMap();
+        initBaseMap();
         resolve();
       };
 
       const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
         mapApiKey
-      )}&callback=initItineraryMap`;
+      )}&callback=initGoogleMaps`;
       script.async = true;
       script.defer = true;
       script.onerror = () => {
         updateMapStatus("Unable to load Google Maps. Check the API key settings.");
+        updateBaseMapStatus("Unable to load Google Maps. Check the API key settings.");
         reject(new Error("Google Maps failed to load."));
       };
       document.head.appendChild(script);
@@ -2158,6 +2318,19 @@ if (calendarGrid && calendarLabel) {
 
   if (itineraryMapPanel && window.matchMedia("(max-width: 700px)").matches) {
     itineraryMapPanel.removeAttribute("open");
+  }
+
+  if (baseMapContainer) {
+    baseMapFilterInputs.forEach((input) => {
+      input.addEventListener("change", handleBaseFilterChange);
+    });
+    if (!mapApiKey) {
+      updateBaseMapStatus(
+        "Add a Google Maps API key in the environment variables to enable the map."
+      );
+    } else {
+      loadGoogleMaps().catch(() => {});
+    }
   }
 
   const updateItineraryEndpoints = () => {

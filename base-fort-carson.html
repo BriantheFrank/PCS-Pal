@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PCS Pal | Fort Carson - Army Duty Station</title>
+    <meta name="google-maps-api-key" content="" />
     <!--
       Detail page for Fort Carson.
     -->
@@ -33,6 +34,108 @@
     </header>
 
     <main class="container">
+
+      <section class="info-panel base-map-section" aria-labelledby="base-map-title">
+        <div class="base-map-header">
+          <div>
+            <p class="eyebrow">Destination Base Map</p>
+            <h2 id="base-map-title">Fort Carson Map</h2>
+          </div>
+          <p class="map-hint">
+            Explore key installation points of interest curated for PCS families.
+          </p>
+        </div>
+                <div class="base-map-controls" role="group" aria-label="Filter points of interest">
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Installation HQ" checked />
+            Installation HQ
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Main Gate" checked />
+            Main Gate
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Medical Facility" checked />
+            Medical Facility
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Housing Office" checked />
+            Housing Office
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="On-base Lodging" checked />
+            On-base Lodging
+          </label>
+          <label class="map-filter">
+            <input type="checkbox" data-poi-filter="Schools / CDC" checked />
+            Schools / CDC
+          </label>
+        </div>
+        <p class="map-status" data-base-map-status role="status">
+          Add a Google Maps API key in the environment variables to enable the map.
+        </p>
+        <div
+          class="base-map"
+          data-base-map
+          role="application"
+          aria-label="Fort Carson map"
+        ></div>
+        <script type="application/json" data-base-map-config>
+{
+  "baseName": "Fort Carson",
+  "center": {
+    "lat": 38.74,
+    "lng": -104.788
+  },
+  "zoom": 12,
+  "pois": [
+    {
+      "name": "Fort Carson Headquarters",
+      "category": "Installation HQ",
+      "lat": 38.75,
+      "lng": -104.788,
+      "address": "Fort Carson, Colorado"
+    },
+    {
+      "name": "Fort Carson Main Gate",
+      "category": "Main Gate",
+      "lat": 38.732,
+      "lng": -104.776,
+      "address": "Fort Carson, Colorado"
+    },
+    {
+      "name": "Fort Carson Medical Center",
+      "category": "Medical Facility",
+      "lat": 38.746,
+      "lng": -104.8,
+      "address": "Fort Carson, Colorado"
+    },
+    {
+      "name": "Fort Carson Housing Office",
+      "category": "Housing Office",
+      "lat": 38.728,
+      "lng": -104.794,
+      "address": "Fort Carson, Colorado"
+    },
+    {
+      "name": "Fort Carson Lodging",
+      "category": "On-base Lodging",
+      "lat": 38.744,
+      "lng": -104.772,
+      "address": "Fort Carson, Colorado"
+    },
+    {
+      "name": "Fort Carson Child Development Center",
+      "category": "Schools / CDC",
+      "lat": 38.726,
+      "lng": -104.784,
+      "address": "Fort Carson, Colorado"
+    }
+  ]
+}
+        </script>
+      </section>
+
       <section class="base-detail">
         <h2>Post / Installation Information</h2>
         <div class="base-grid">
@@ -178,5 +281,6 @@
         <p>Plan ahead for every duty station on your PCS journey.</p>
       </div>
     </footer>
+    <script src="script.js"></script>
   </body>
 </html>
