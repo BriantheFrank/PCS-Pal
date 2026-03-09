@@ -1,4 +1,4 @@
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
     return res.status(405).json({ error: "Method not allowed" });
@@ -18,4 +18,4 @@ export default function handler(req, res) {
     supabaseUrl,
     supabaseAnonKey,
   });
-}
+};
