@@ -13,12 +13,11 @@ const SYNC_MARKERS = {
   reloadFlag: "pcs-sync-needs-reload-once",
 };
 
-const DEFAULT_WORKSPACE_PATH = "/pcs-checklist.html";
-
 const state = {
   supabase: null,
   session: null,
   user: null,
+  profile: null,
   pendingKeys: new Set(),
   syncTimer: null,
   storagePatched: false,
@@ -27,6 +26,7 @@ const state = {
   logisticsHydrating: false,
   logisticsPersistenceBound: false,
   googleAuthEnabled: false,
+  landingInteractionsBound: false,
   authEls: null,
 };
 
@@ -48,41 +48,69 @@ const parseBoolean = (value) => String(value).toLowerCase() === "true";
 
 const isPublicPath = (pathname) => pathname === "/" || pathname.endsWith("/index.html");
 
-const getCurrentPathWithQuery = () =>
-  `${window.location.pathname}${window.location.search}${window.location.hash}`;
-
-const getSafeNextPath = () => {
-  const params = new URLSearchParams(window.location.search);
-  const next = params.get("next");
-  if (!next) {
-    return "";
-  }
-
-  try {
-    const nextUrl = new URL(next, window.location.origin);
-    if (nextUrl.origin !== window.location.origin || isPublicPath(nextUrl.pathname)) {
-      return "";
-    }
-    return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
-  } catch (error) {
-    console.warn("Ignoring invalid redirect target.", error);
-    return "";
-  }
-};
-
-const navigateToPath = (path, replace = false) => {
-  const target = new URL(path, window.location.origin);
-  if (replace) {
-    window.location.replace(target.toString());
-    return;
-  }
-  window.location.assign(target.toString());
-};
-
 const redirectToLanding = () => {
-  const landingUrl = new URL("/index.html", window.location.origin);
-  landingUrl.searchParams.set("next", getCurrentPathWithQuery());
-  window.location.replace(landingUrl.toString());
+  window.location.replace(new URL("/index.html", window.location.origin).toString());
+};
+
+const toTitleCase = (value) =>
+  String(value || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase())
+    .join(" ");
+
+const normalizeFullName = (value) => {
+  const normalized = toTitleCase(value);
+  return normalized || "";
+};
+
+const getProfileFullName = () =>
+  normalizeFullName(
+    state.profile?.full_name ||
+      state.user?.user_metadata?.full_name ||
+      state.user?.user_metadata?.name ||
+      ""
+  );
+
+const getFallbackName = () => {
+  const email = state.user?.email || state.profile?.email || "";
+  const localPart = email.split("@")[0] || "";
+  return localPart ? toTitleCase(localPart.replace(/[._-]+/g, " ")) : "";
+};
+
+const getDisplayName = () => getProfileFullName() || getFallbackName() || "PCS Planner";
+
+const getFirstName = () => getDisplayName().split(/\s+/)[0] || "Planner";
+
+const getPossessiveFirstName = () => {
+  const firstName = getFirstName();
+  return firstName.endsWith("s") ? `${firstName}'` : `${firstName}'s`;
+};
+
+const applyPersonalization = () => {
+  const replacements = {
+    "{fullName}": getDisplayName(),
+    "{firstName}": getFirstName(),
+    "{possessiveFirstName}": getPossessiveFirstName(),
+  };
+
+  Array.from(document.querySelectorAll("[data-personalize-template]")).forEach((element) => {
+    if (!element.dataset.defaultText) {
+      element.dataset.defaultText = element.textContent.trim();
+    }
+
+    if (!state.user) {
+      element.textContent = element.dataset.defaultText;
+      return;
+    }
+
+    let resolved = element.dataset.personalizeTemplate || element.dataset.defaultText;
+    Object.entries(replacements).forEach(([token, value]) => {
+      resolved = resolved.replaceAll(token, value);
+    });
+    element.textContent = resolved;
+  });
 };
 
 const readStorage = (key, fallback = null) => {
@@ -158,6 +186,19 @@ const openAuthPanel = () => {
   emailField?.focus();
 };
 
+const updateLandingNavigation = () => {
+  const protectedLinks = Array.from(document.querySelectorAll(".site-nav [data-protected-link]"));
+  protectedLinks.forEach((link) => {
+    const target = link.dataset.protectedLink;
+    if (!target) {
+      return;
+    }
+    link.classList.toggle("is-disabled", !state.user);
+    link.setAttribute("aria-disabled", String(!state.user));
+    link.setAttribute("href", state.user ? target : "#");
+  });
+};
+
 const updateLandingWorkspace = () => {
   const launcher = document.querySelector("#workspace-launcher");
   const openAuthButton = document.querySelector("#open-auth-panel-button");
@@ -167,6 +208,8 @@ const updateLandingWorkspace = () => {
   if (openAuthButton) {
     openAuthButton.hidden = Boolean(state.user);
   }
+  updateLandingNavigation();
+  applyPersonalization();
 };
 
 const triggerFieldEvents = (field) => {
@@ -564,18 +607,68 @@ const maybeReloadForHydration = (userId) => {
 };
 
 const upsertProfile = async (user) => {
-  const fullName = user.user_metadata?.full_name || user.user_metadata?.name || null;
+  const fullName = normalizeFullName(
+    user.user_metadata?.full_name || user.user_metadata?.name || ""
+  );
   const { error } = await state.supabase.from("profiles").upsert(
     {
       id: user.id,
       email: user.email || null,
-      full_name: fullName,
+      full_name: fullName || null,
     },
     { onConflict: "id" }
   );
   if (error) {
     throw error;
   }
+};
+
+const fetchProfile = async (userId) => {
+  const { data, error } = await state.supabase
+    .from("profiles")
+    .select("id, email, full_name, created_at, updated_at")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data || null;
+};
+
+const saveProfile = async (fullNameInput) => {
+  const fullName = normalizeFullName(fullNameInput);
+  const authUpdate = await state.supabase.auth.updateUser({
+    data: {
+      full_name: fullName || null,
+      name: fullName || null,
+    },
+  });
+
+  if (authUpdate.error) {
+    throw authUpdate.error;
+  }
+
+  const { error } = await state.supabase.from("profiles").upsert(
+    {
+      id: state.user.id,
+      email: state.user.email || null,
+      full_name: fullName || null,
+    },
+    { onConflict: "id" }
+  );
+
+  if (error) {
+    throw error;
+  }
+
+  state.profile = {
+    ...(state.profile || {}),
+    id: state.user.id,
+    email: state.user.email || null,
+    full_name: fullName || null,
+  };
 };
 
 const reconcileLocalAndRemote = async (user) => {
@@ -681,6 +774,39 @@ const buildAuthUI = () => {
       <summary class="auth-summary">Account</summary>
       <div class="auth-card">
         <p class="auth-status" aria-live="polite"></p>
+        <section class="account-summary" hidden>
+          <h3>Account Details</h3>
+          <dl class="account-meta">
+            <div>
+              <dt>Name</dt>
+              <dd data-account-name>Not set</dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd data-account-email></dd>
+            </div>
+            <div>
+              <dt>Access</dt>
+              <dd>Email account</dd>
+            </div>
+            <div>
+              <dt>Billing</dt>
+              <dd>Not enabled yet</dd>
+            </div>
+          </dl>
+          <form class="profile-form">
+            <label>
+              Full name
+              <input
+                type="text"
+                name="full_name"
+                autocomplete="name"
+                placeholder="Add your name"
+              />
+            </label>
+            <button type="submit">Save profile</button>
+          </form>
+        </section>
         <form class="auth-form" data-auth-form="signin">
           <label>
             Email
@@ -693,6 +819,10 @@ const buildAuthUI = () => {
           <button type="submit">Sign in</button>
         </form>
         <form class="auth-form" data-auth-form="signup">
+          <label>
+            Full name
+            <input type="text" name="full_name" autocomplete="name" />
+          </label>
           <label>
             Email
             <input type="email" name="email" autocomplete="email" required />
@@ -717,6 +847,11 @@ const buildAuthUI = () => {
   const signoutButton = wrapper.querySelector(".auth-signout-button");
   const status = wrapper.querySelector(".auth-status");
   const details = wrapper.querySelector(".auth-details");
+  const accountSummary = wrapper.querySelector(".account-summary");
+  const accountName = wrapper.querySelector("[data-account-name]");
+  const accountEmail = wrapper.querySelector("[data-account-email]");
+  const profileForm = wrapper.querySelector(".profile-form");
+  const profileNameInput = wrapper.querySelector(".profile-form input[name='full_name']");
 
   state.authEls = {
     wrapper,
@@ -726,6 +861,11 @@ const buildAuthUI = () => {
     signoutButton,
     status,
     details,
+    accountSummary,
+    accountName,
+    accountEmail,
+    profileForm,
+    profileNameInput,
   };
 
   return state.authEls;
@@ -742,9 +882,13 @@ const updateAuthUI = () => {
   authEls.signupForm.hidden = isSignedIn;
   authEls.googleButton.hidden = !state.googleAuthEnabled || isSignedIn;
   authEls.signoutButton.hidden = !isSignedIn;
+  authEls.accountSummary.hidden = !isSignedIn;
 
   if (isSignedIn) {
-    setStatus(`Signed in as ${state.user.email || "account user"}.`, "success");
+    authEls.accountName.textContent = getDisplayName();
+    authEls.accountEmail.textContent = state.user.email || state.profile?.email || "";
+    authEls.profileNameInput.value = getProfileFullName();
+    setStatus(`Signed in as ${getDisplayName()}.`, "success");
   } else {
     setStatus(
       state.googleAuthEnabled
@@ -753,6 +897,8 @@ const updateAuthUI = () => {
       "neutral"
     );
   }
+
+  applyPersonalization();
 };
 
 const enforceRouteAccess = () => {
@@ -823,11 +969,21 @@ const initializeAuthEvents = () => {
     }
 
     const formData = new FormData(authEls.signupForm);
+    const fullName = normalizeFullName(String(formData.get("full_name") || ""));
     const email = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "");
 
     setStatus("Creating account...", "neutral");
-    const { data, error } = await state.supabase.auth.signUp({ email, password });
+    const { data, error } = await state.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName || null,
+          name: fullName || null,
+        },
+      },
+    });
     if (error) {
       setStatus(error.message, "error");
       return;
@@ -839,6 +995,9 @@ const initializeAuthEvents = () => {
       const signinEmailField = authEls.signinForm.querySelector("input[name='email']");
       if (signinEmailField) {
         signinEmailField.value = email;
+      }
+      if (authEls.profileNameInput) {
+        authEls.profileNameInput.value = fullName;
       }
       setStatus("Account created. Check your email to confirm, then sign in.", "success");
     }
@@ -880,9 +1039,39 @@ const initializeAuthEvents = () => {
     setStatus("Signed out. Local mode remains available.", "neutral");
   });
 
+  authEls.profileForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!state.supabase || !state.user) {
+      return;
+    }
+
+    setStatus("Saving account details...", "neutral");
+    try {
+      await saveProfile(authEls.profileNameInput.value);
+      updateAuthUI();
+      updateLandingWorkspace();
+      setStatus("Account details updated.", "success");
+    } catch (error) {
+      console.error("Failed to save account profile.", error);
+      setStatus(error.message || "Unable to update account details.", "error");
+    }
+  });
+
   document.querySelector("#open-auth-panel-button")?.addEventListener("click", () => {
     openAuthPanel();
   });
+
+  if (!state.landingInteractionsBound) {
+    document.addEventListener("click", (event) => {
+      const disabledLink = event.target.closest(".site-nav a.is-disabled[data-protected-link]");
+      if (!disabledLink) {
+        return;
+      }
+      event.preventDefault();
+      openAuthPanel();
+    });
+    state.landingInteractionsBound = true;
+  }
 };
 
 const loadRuntimeConfig = async () => {
@@ -920,6 +1109,9 @@ const initSupabaseClient = async (config) => {
 const handleSession = async (session) => {
   state.session = session;
   state.user = session?.user || null;
+  if (!state.user) {
+    state.profile = null;
+  }
   updateAuthUI();
   enforceRouteAccess();
 
@@ -934,9 +1126,12 @@ const handleSession = async (session) => {
   state.handlingSession = true;
   try {
     await upsertProfile(state.user);
+    state.profile = await fetchProfile(state.user.id);
     await reconcileLocalAndRemote(state.user);
     await flushPendingSync();
-    setStatus(`Signed in as ${state.user.email || "account user"}.`, "success");
+    updateAuthUI();
+    updateLandingWorkspace();
+    setStatus(`Signed in as ${getDisplayName()}.`, "success");
   } catch (error) {
     console.error("Failed during session setup.", error);
     setStatus("Sign-in succeeded, but cloud sync setup failed.", "error");
@@ -948,6 +1143,8 @@ const handleSession = async (session) => {
 const initialize = async () => {
   buildAuthUI();
   setupLogisticsLocalPersistence();
+  updateLandingNavigation();
+  applyPersonalization();
 
   const authError = parseAuthErrorFromUrl();
   if (authError) {
