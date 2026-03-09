@@ -180,6 +180,11 @@ const openAuthPanel = () => {
     return;
   }
   state.authEls.details.open = true;
+  if (state.user) {
+    state.authEls.profileNameInput?.focus();
+    return;
+  }
+
   const emailField =
     state.authEls.signinForm?.querySelector("input[name='email']") ||
     state.authEls.signupForm?.querySelector("input[name='email']");
@@ -889,7 +894,12 @@ const updateAuthUI = () => {
     authEls.accountEmail.textContent = state.user.email || state.profile?.email || "";
     authEls.profileNameInput.value = getProfileFullName();
     setStatus(`Signed in as ${getDisplayName()}.`, "success");
+    authEls.signinForm.reset();
+    authEls.signupForm.reset();
   } else {
+    authEls.accountName.textContent = "Not set";
+    authEls.accountEmail.textContent = "";
+    authEls.profileNameInput.value = "";
     setStatus(
       state.googleAuthEnabled
         ? "Sign in to sync your checklist and inventory across devices."
@@ -910,14 +920,6 @@ const enforceRouteAccess = () => {
   if (!state.user && !publicRoute) {
     redirectToLanding();
     return;
-  }
-
-  if (state.user && publicRoute) {
-    const nextPath = getSafeNextPath();
-    if (nextPath) {
-      navigateToPath(nextPath, true);
-      return;
-    }
   }
 
   updateLandingWorkspace();
@@ -1030,12 +1032,16 @@ const initializeAuthEvents = () => {
       return;
     }
 
+    setStatus("Signing out...", "neutral");
     const { error } = await state.supabase.auth.signOut();
     if (error) {
       setStatus(error.message, "error");
       return;
     }
 
+    if (authEls.details) {
+      authEls.details.open = false;
+    }
     setStatus("Signed out. Local mode remains available.", "neutral");
   });
 
@@ -1048,6 +1054,16 @@ const initializeAuthEvents = () => {
     setStatus("Saving account details...", "neutral");
     try {
       await saveProfile(authEls.profileNameInput.value);
+      if (state.user?.user_metadata) {
+        state.user = {
+          ...state.user,
+          user_metadata: {
+            ...state.user.user_metadata,
+            full_name: normalizeFullName(authEls.profileNameInput.value) || null,
+            name: normalizeFullName(authEls.profileNameInput.value) || null,
+          },
+        };
+      }
       updateAuthUI();
       updateLandingWorkspace();
       setStatus("Account details updated.", "success");

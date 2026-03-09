@@ -1558,6 +1558,10 @@ main {
   z-index: 30;
 }
 
+.auth-card [hidden] {
+  display: none !important;
+}
+
 .auth-status {
   margin: 0;
   font-size: 0.84rem;
