@@ -1,6 +1,5 @@
 const SUPABASE_BROWSER_CDN =
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const EMAIL_ONLY_AUTH = true;
 
 const STORAGE_KEYS = {
   checklist: "pcs-checklist",
@@ -25,6 +24,7 @@ const state = {
   handlingSession: false,
   logisticsHydrating: false,
   logisticsPersistenceBound: false,
+  googleAuthEnabled: false,
   authEls: null,
 };
 
@@ -41,6 +41,8 @@ const parseJson = (value, fallback) => {
     return fallback;
   }
 };
+
+const parseBoolean = (value) => String(value).toLowerCase() === "true";
 
 const readStorage = (key, fallback = null) => {
   if (!hasWindow || !window.localStorage) {
@@ -675,13 +677,18 @@ const updateAuthUI = () => {
   const isSignedIn = Boolean(state.user);
   authEls.signinForm.hidden = isSignedIn;
   authEls.signupForm.hidden = isSignedIn;
-  authEls.googleButton.hidden = EMAIL_ONLY_AUTH ? true : isSignedIn;
+  authEls.googleButton.hidden = !state.googleAuthEnabled || isSignedIn;
   authEls.signoutButton.hidden = !isSignedIn;
 
   if (isSignedIn) {
     setStatus(`Signed in as ${state.user.email || "account user"}.`, "success");
   } else {
-    setStatus("Sign in to sync your checklist and inventory across devices.", "neutral");
+    setStatus(
+      state.googleAuthEnabled
+        ? "Sign in to sync your checklist and inventory across devices."
+        : "Sign in with email to sync your checklist and inventory across devices.",
+      "neutral"
+    );
   }
 };
 
@@ -735,17 +742,25 @@ const initializeAuthEvents = () => {
     const password = String(formData.get("password") || "");
 
     setStatus("Creating account...", "neutral");
-    const { error } = await state.supabase.auth.signUp({ email, password });
+    const { data, error } = await state.supabase.auth.signUp({ email, password });
     if (error) {
       setStatus(error.message, "error");
       return;
     }
 
-    setStatus("Account created. Check your email to confirm, then sign in.", "success");
+    if (data.session) {
+      setStatus("Account created and signed in.", "success");
+    } else {
+      const signinEmailField = authEls.signinForm.querySelector("input[name='email']");
+      if (signinEmailField) {
+        signinEmailField.value = email;
+      }
+      setStatus("Account created. Check your email to confirm, then sign in.", "success");
+    }
     authEls.signupForm.reset();
   });
 
-  if (!EMAIL_ONLY_AUTH) {
+  if (state.googleAuthEnabled) {
     authEls.googleButton.addEventListener("click", async () => {
       if (!state.supabase) {
         return;
@@ -781,7 +796,7 @@ const initializeAuthEvents = () => {
   });
 };
 
-const initSupabaseClient = async () => {
+const loadRuntimeConfig = async () => {
   const configResponse = await fetch("/api/public-config", {
     method: "GET",
     headers: {
@@ -799,6 +814,10 @@ const initSupabaseClient = async () => {
     throw new Error("Supabase URL or anon key is missing.");
   }
 
+  return config;
+};
+
+const initSupabaseClient = async (config) => {
   const { createClient } = await import(SUPABASE_BROWSER_CDN);
   return createClient(config.supabaseUrl, config.supabaseAnonKey, {
     auth: {
@@ -846,7 +865,9 @@ const initialize = async () => {
   }
 
   try {
-    state.supabase = await initSupabaseClient();
+    const runtimeConfig = await loadRuntimeConfig();
+    state.googleAuthEnabled = parseBoolean(runtimeConfig.googleAuthEnabled);
+    state.supabase = await initSupabaseClient(runtimeConfig);
   } catch (error) {
     console.warn("Supabase client not available.", error);
     setStatus("Cloud sign-in is unavailable right now. Local mode is still active.", "error");

@@ -3,142 +3,137 @@
 ## Architecture Summary
 PCS-Pal remains a static multi-page HTML/CSS/JavaScript site at the repo root.
 
-Additive components introduced:
-- `auth-sync.js`: browser auth + sync layer, loaded on all root HTML pages
-- `api/public-config.js`: Vercel serverless endpoint that exposes only public Supabase runtime config
-- `supabase/migrations/20260309000100_pcs_pal_auth_and_user_data.sql`: additive schema + RLS policies
-- `vercel.json`: Node runtime mapping for API functions
+Additive components:
+- `auth-sync.js`: browser auth and data sync layer
+- `api/public-config.js`: Vercel serverless endpoint exposing public runtime config
+- `supabase/migrations/20260309000100_pcs_pal_auth_and_user_data.sql`: schema and RLS setup
 
-The original route/file structure, checklist UI behavior, inventory UI behavior, and shared styling patterns are preserved.
+The original HTML routes, checklist behavior, inventory behavior, and shared styling remain intact.
+
+## Current Production State
+- Production URL: `https://pcs-pal-live.vercel.app/`
+- Current auth mode: email/password with email confirmation enabled
+- Google auth is prepared but disabled by default
 
 ## Sync and Migration Behavior
 Local keys are preserved:
 - `pcs-checklist`
 - `pcs-move-inventory`
-- `pcs-move-logistics` (new local key for logistics persistence)
+- `pcs-move-logistics`
 
 On authenticated session:
 1. Load remote user data from Supabase.
-2. If remote dataset is empty and local has data, upload local to remote.
-3. If remote has data, remote is canonical and hydrates local storage.
-4. If local non-empty differs from remote, local snapshot is backed up to `pcs-sync-backup:<user_id>` before replacement.
+2. If remote data is empty and local data exists, upload local data.
+3. If remote data exists, remote becomes canonical and hydrates local storage.
+4. If local data differs from remote, local state is backed up under `pcs-sync-backup:<user_id>` before replacement.
 
-Conflict policy is deterministic:
-- **Remote wins when remote exists**
-- **Local uploads only when remote is empty**
+Conflict policy:
+- Remote wins when remote data exists.
+- Local uploads only when remote is empty.
 
 ## Schema Summary
 Migration creates:
 - `profiles`
-  - `id uuid primary key references auth.users(id)`
-  - `email text`
-  - `full_name text null`
-  - timestamps
 - `user_checklist_state`
-  - `id uuid primary key`
-  - `user_id uuid references auth.users(id)`
-  - `checklist_key text`
-  - `checked boolean`
-  - timestamps
-  - `unique(user_id, checklist_key)`
 - `user_inventory`
-  - `id uuid primary key`
-  - `user_id uuid references auth.users(id)`
-  - `payload jsonb`
-  - timestamps
-  - `unique(user_id)`
 - `user_move_logistics`
-  - `id uuid primary key`
-  - `user_id uuid references auth.users(id)`
-  - `payload jsonb`
-  - timestamps
-  - `unique(user_id)`
 
-Also includes indexes on `user_id` and an `updated_at` trigger function.
+All tables are user-owned and keyed to `auth.users`.
 
 ## RLS Summary
-RLS is enabled on all user-owned tables.
+RLS is enabled on:
+- `profiles`
+- `user_checklist_state`
+- `user_inventory`
+- `user_move_logistics`
 
-Policies enforce per-user ownership:
-- `profiles`: access only where `id = auth.uid()`
-- data tables: access only where `user_id = auth.uid()`
-- select/insert/update/delete policies are scoped to owner only
+Policies allow access only to the authenticated owner:
+- `profiles`: `id = auth.uid()`
+- data tables: `user_id = auth.uid()`
 
-No service-role key is used in client code.
-
-## Environment Variables Checklist
+## Environment Variables
 Required:
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
 
-Do not put `SUPABASE_SERVICE_ROLE_KEY` in frontend code or Vercel public runtime.
+Optional:
+- `SUPABASE_ENABLE_GOOGLE_AUTH=false`
 
-## Supabase Setup Steps
-1. Create or open your Supabase project.
-2. In SQL editor, run `supabase/migrations/20260309000100_pcs_pal_auth_and_user_data.sql`.
-3. In **Authentication > Providers**, enable:
-   - Email
-   - Google
-4. In **Authentication > URL Configuration**, add site URLs and redirect URLs (see below).
+When `SUPABASE_ENABLE_GOOGLE_AUTH=true`, the Google sign-in button is shown in the UI.
 
-## Google OAuth Setup Steps
-In Google Cloud Console:
-1. Configure OAuth consent screen.
-2. Add authorized JavaScript origins:
-   - `http://localhost:3000` (or your local static host)
-   - `https://<your-vercel-domain>`
-3. Add authorized redirect URIs:
-   - `https://<your-supabase-project-ref>.supabase.co/auth/v1/callback`
+## Supabase Setup
+1. Open the Supabase project.
+2. Run `supabase/migrations/20260309000100_pcs_pal_auth_and_user_data.sql`.
+3. In `Authentication -> Providers`, enable `Email`.
+4. Keep email confirmation enabled for production.
+5. In `Authentication -> URL Configuration`, set:
+   - `Site URL`: `https://pcs-pal-live.vercel.app`
+   - `Additional Redirect URLs`:
+     - `https://pcs-pal-live.vercel.app/**`
+     - `http://localhost:3000/**`
+     - `http://127.0.0.1:5500/**` if Live Server is used
 
-In Supabase Auth provider settings:
-- Set Google client ID and secret.
-- Ensure redirect URLs include:
-  - local page URLs, e.g. `http://localhost:3000/index.html`
-  - production page URLs, e.g. `https://<your-vercel-domain>/index.html`
-
-## Vercel Setup Steps
-1. Import this repository in Vercel.
-2. Set root directory to repository root (`PCS-Pal`).
-3. Add project environment variables:
+## Vercel Setup
+1. Import `BriantheFrank/PCS-Pal` as a Vercel project.
+2. Use repository root as the project root (`./`).
+3. Set `Framework Preset` to `Other`.
+4. Leave build command empty.
+5. Add environment variables:
    - `SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
-4. Deploy.
-5. Confirm `https://<your-domain>/api/public-config` returns URL + anon key JSON.
-6. After env var changes, trigger redeploy.
+   - `SUPABASE_ENABLE_GOOGLE_AUTH=false`
+6. Deploy and verify:
+   - `https://pcs-pal-live.vercel.app/api/public-config`
 
-## Local Development Steps
-This repo has no required build step for root static site.
+## Local Development
+Recommended local options:
+1. `vercel dev` from repo root using `http://localhost:3000`
+2. A static dev server plus matching redirect URL allow-list
 
-Recommended local run options:
-1. Use any static server from repo root (for example VS Code Live Server).
-2. Ensure `auth-sync.js` can call `/api/public-config` in your dev environment.
-3. For fully matching Vercel API behavior, run with Vercel CLI (`vercel dev`) from repo root.
+## Enabling Google Auth Later
+1. In Google Cloud Console, create a `Web application` OAuth client.
+2. Add authorized JavaScript origins:
+   - `https://pcs-pal-live.vercel.app`
+   - `http://localhost:3000`
+3. Add the authorized redirect URI:
+   - `https://jsmeimsvwwfbejedzktg.supabase.co/auth/v1/callback`
+4. In Supabase `Authentication -> Providers -> Google`, enable Google and paste the Google client ID and secret.
+5. In Supabase `Authentication -> URL Configuration`, keep:
+   - `https://pcs-pal-live.vercel.app/**`
+   - local dev URLs you actually use
+6. In Vercel, set:
+   - `SUPABASE_ENABLE_GOOGLE_AUTH=true`
+7. Redeploy.
+
+Google auth does not require any new client-side code changes after those settings are in place.
 
 ## Manual Smoke Test Checklist
-Core site stability:
-- [ ] `index.html`, `pcs-checklist.html`, `move-organizer.html`, `move-inventory.html`, `move-logistics.html`, `bases.html` load without route/name changes
-- [ ] Existing checklist interactions still work locally
-- [ ] Existing inventory interactions still work locally
+Core stability:
+- [ ] `index.html`, `pcs-checklist.html`, `move-organizer.html`, `move-inventory.html`, `move-logistics.html`, and `bases.html` load
+- [ ] checklist still works locally
+- [ ] inventory still works locally
+- [ ] logistics still works locally
 
-Auth:
-- [ ] Email/password sign up works
-- [ ] Email/password sign in works
-- [ ] Google sign in redirects and returns successfully
-- [ ] Signed-in state appears in header auth panel
-- [ ] Sign out works
+Email auth:
+- [ ] email sign-up works
+- [ ] email confirmation link works
+- [ ] email sign-in works
+- [ ] sign-out works
 
 Sync:
-- [ ] Signed-in checklist changes persist to Supabase
-- [ ] Signed-in inventory changes persist to Supabase
-- [ ] Signed-in logistics form changes persist to Supabase
-- [ ] Same user data appears on second browser/device after sign in
-- [ ] Signed-out mode still works with local storage
-- [ ] User A cannot read/write User B data (RLS validation)
+- [ ] signed-in checklist changes persist to Supabase
+- [ ] signed-in inventory changes persist to Supabase
+- [ ] signed-in logistics changes persist to Supabase
+- [ ] same user data appears in another browser/device
+- [ ] signed-out mode still works locally
+- [ ] user A cannot read user B data
+
+Google auth when enabled:
+- [ ] Google button appears only after `SUPABASE_ENABLE_GOOGLE_AUTH=true`
+- [ ] Google redirect returns to PCS-Pal successfully
 
 ## Rollback Plan
-If rollback is needed:
-1. Redeploy previous production commit.
-2. Disable new auth UI script includes by reverting `auth-sync.js` references in HTML.
-3. Keep local storage data untouched.
-4. Leave Supabase tables in place (non-breaking additive schema) or archive tables if policy requires.
-5. Re-enable cloud features once configuration and smoke tests pass.
+1. Revert to the previous production commit in Git and redeploy.
+2. Keep local storage data untouched.
+3. Leave Supabase tables in place because the schema is additive.
+4. Set `SUPABASE_ENABLE_GOOGLE_AUTH=false` if Google rollout needs to be disabled quickly.
