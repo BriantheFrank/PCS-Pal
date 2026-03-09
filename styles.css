@@ -1568,12 +1568,78 @@ main {
   color: var(--muted);
 }
 
+.auth-create-account-link {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: 1px solid rgba(37, 88, 197, 0.18);
+  border-radius: 0.55rem;
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(37, 88, 197, 0.08);
+  text-decoration: none;
+}
+
+.auth-create-account-link:hover,
+.auth-create-account-link:focus-visible {
+  background: rgba(37, 88, 197, 0.14);
+  outline: none;
+}
+
 .auth-status[data-tone="success"] {
   color: #1f7a33;
 }
 
 .auth-status[data-tone="error"] {
   color: #b91c1c;
+}
+
+.signup-page-layout {
+  align-items: start;
+}
+
+.signup-page-card {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.signup-page-card p,
+.signup-page-card li {
+  color: var(--muted);
+}
+
+.signup-page-status {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.signup-page-status[data-tone="success"] {
+  color: #1f7a33;
+}
+
+.signup-page-status[data-tone="error"] {
+  color: #b91c1c;
+}
+
+.signup-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.signup-page-link {
+  width: fit-content;
+  min-width: 180px;
+}
+
+.signup-page-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.55rem;
 }
 
 .account-summary {

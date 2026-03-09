@@ -46,7 +46,11 @@ const parseJson = (value, fallback) => {
 
 const parseBoolean = (value) => String(value).toLowerCase() === "true";
 
-const isPublicPath = (pathname) => pathname === "/" || pathname.endsWith("/index.html");
+const isLandingPath = (pathname) => pathname === "/" || pathname.endsWith("/index.html");
+
+const isCreateAccountPath = (pathname) => pathname.endsWith("/create-account.html");
+
+const isPublicPath = (pathname) => isLandingPath(pathname) || isCreateAccountPath(pathname);
 
 const redirectToLanding = () => {
   window.location.replace(new URL("/index.html", window.location.origin).toString());
@@ -216,6 +220,27 @@ const updateLandingWorkspace = () => {
   updateLandingNavigation();
   applyPersonalization();
 };
+
+const setSignupPageStatus = (message, tone = "neutral") => {
+  const status = document.querySelector("[data-signup-page-status]");
+  if (!status) {
+    return;
+  }
+  status.textContent = message;
+  status.dataset.tone = tone;
+};
+
+const signUpWithEmail = async ({ fullName, email, password }) =>
+  state.supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName || null,
+        name: fullName || null,
+      },
+    },
+  });
 
 const triggerFieldEvents = (field) => {
   field.dispatchEvent(new Event("input", { bubbles: true }));
@@ -823,21 +848,7 @@ const buildAuthUI = () => {
           </label>
           <button type="submit">Sign in</button>
         </form>
-        <form class="auth-form" data-auth-form="signup">
-          <label>
-            Full name
-            <input type="text" name="full_name" autocomplete="name" />
-          </label>
-          <label>
-            Email
-            <input type="email" name="email" autocomplete="email" required />
-          </label>
-          <label>
-            Password
-            <input type="password" name="password" autocomplete="new-password" minlength="8" required />
-          </label>
-          <button type="submit">Create account</button>
-        </form>
+        <a class="auth-create-account-link" href="create-account.html">Create account</a>
         <button type="button" class="auth-google-button">Continue with Google</button>
         <button type="button" class="auth-signout-button" hidden>Sign out</button>
       </div>
@@ -848,6 +859,7 @@ const buildAuthUI = () => {
 
   const signinForm = wrapper.querySelector("[data-auth-form='signin']");
   const signupForm = wrapper.querySelector("[data-auth-form='signup']");
+  const createAccountLink = wrapper.querySelector(".auth-create-account-link");
   const googleButton = wrapper.querySelector(".auth-google-button");
   const signoutButton = wrapper.querySelector(".auth-signout-button");
   const status = wrapper.querySelector(".auth-status");
@@ -862,6 +874,7 @@ const buildAuthUI = () => {
     wrapper,
     signinForm,
     signupForm,
+    createAccountLink,
     googleButton,
     signoutButton,
     status,
@@ -884,7 +897,12 @@ const updateAuthUI = () => {
 
   const isSignedIn = Boolean(state.user);
   authEls.signinForm.hidden = isSignedIn;
-  authEls.signupForm.hidden = isSignedIn;
+  if (authEls.signupForm) {
+    authEls.signupForm.hidden = true;
+  }
+  if (authEls.createAccountLink) {
+    authEls.createAccountLink.hidden = isSignedIn || isCreateAccountPath(window.location.pathname);
+  }
   authEls.googleButton.hidden = !state.googleAuthEnabled || isSignedIn;
   authEls.signoutButton.hidden = !isSignedIn;
   authEls.accountSummary.hidden = !isSignedIn;
@@ -895,7 +913,7 @@ const updateAuthUI = () => {
     authEls.profileNameInput.value = getProfileFullName();
     setStatus(`Signed in as ${getDisplayName()}.`, "success");
     authEls.signinForm.reset();
-    authEls.signupForm.reset();
+    authEls.signupForm?.reset();
   } else {
     authEls.accountName.textContent = "Not set";
     authEls.accountEmail.textContent = "";
@@ -918,6 +936,11 @@ const enforceRouteAccess = () => {
 
   const publicRoute = isPublicPath(window.location.pathname);
   if (!state.user && !publicRoute) {
+    redirectToLanding();
+    return;
+  }
+
+  if (state.user && isCreateAccountPath(window.location.pathname)) {
     redirectToLanding();
     return;
   }
@@ -962,48 +985,6 @@ const initializeAuthEvents = () => {
     if (authEls.details) {
       authEls.details.open = false;
     }
-  });
-
-  authEls.signupForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!state.supabase) {
-      return;
-    }
-
-    const formData = new FormData(authEls.signupForm);
-    const fullName = normalizeFullName(String(formData.get("full_name") || ""));
-    const email = String(formData.get("email") || "").trim();
-    const password = String(formData.get("password") || "");
-
-    setStatus("Creating account...", "neutral");
-    const { data, error } = await state.supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName || null,
-          name: fullName || null,
-        },
-      },
-    });
-    if (error) {
-      setStatus(error.message, "error");
-      return;
-    }
-
-    if (data.session) {
-      setStatus("Account created and signed in.", "success");
-    } else {
-      const signinEmailField = authEls.signinForm.querySelector("input[name='email']");
-      if (signinEmailField) {
-        signinEmailField.value = email;
-      }
-      if (authEls.profileNameInput) {
-        authEls.profileNameInput.value = fullName;
-      }
-      setStatus("Account created. Check your email to confirm, then sign in.", "success");
-    }
-    authEls.signupForm.reset();
   });
 
   if (state.googleAuthEnabled) {
@@ -1088,6 +1069,56 @@ const initializeAuthEvents = () => {
     });
     state.landingInteractionsBound = true;
   }
+};
+
+const initializeSignupPageEvents = () => {
+  const signupForm = document.querySelector("[data-signup-page-form]");
+  if (!signupForm) {
+    return;
+  }
+
+  signupForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!state.supabase) {
+      setSignupPageStatus("Cloud sign-up is unavailable right now.", "error");
+      return;
+    }
+
+    const formData = new FormData(signupForm);
+    const fullName = normalizeFullName(String(formData.get("full_name") || ""));
+    const email = String(formData.get("email") || "").trim();
+    const password = String(formData.get("password") || "");
+
+    setSignupPageStatus("Creating account...", "neutral");
+    const { data, error } = await signUpWithEmail({
+      fullName,
+      email,
+      password,
+    });
+
+    if (error) {
+      setSignupPageStatus(error.message, "error");
+      return;
+    }
+
+    signupForm.reset();
+
+    if (data.session) {
+      setSignupPageStatus("Account created and signed in. Redirecting to your workspace...", "success");
+      window.location.replace(new URL("/index.html", window.location.origin).toString());
+      return;
+    }
+
+    const signinEmailField = state.authEls?.signinForm?.querySelector("input[name='email']");
+    if (signinEmailField) {
+      signinEmailField.value = email;
+    }
+
+    setSignupPageStatus(
+      "Account created. Check your email to confirm, then return to the landing page to sign in.",
+      "success"
+    );
+  });
 };
 
 const loadRuntimeConfig = async () => {
@@ -1178,11 +1209,13 @@ const initialize = async () => {
       return;
     }
     setStatus("Cloud sign-in is unavailable right now. Local mode is still active.", "error");
+    setSignupPageStatus("Cloud sign-up is unavailable right now. Please try again later.", "error");
     return;
   }
 
   patchLocalStorageForSync();
   initializeAuthEvents();
+  initializeSignupPageEvents();
 
   const {
     data: { session },
