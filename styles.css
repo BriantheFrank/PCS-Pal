@@ -197,6 +197,29 @@ main {
   color: var(--muted);
 }
 
+.base-enhancement-section {
+  margin-bottom: 0.5rem;
+}
+
+.base-enhancement-intro {
+  max-width: 48rem;
+}
+
+.base-resource-copy {
+  margin: 0;
+  color: var(--muted);
+}
+
+.base-link-stack {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.base-link-stack .card-link {
+  display: inline-flex;
+  width: fit-content;
+}
+
 .back-link {
   display: inline-flex;
   align-items: center;
