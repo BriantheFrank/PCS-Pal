@@ -4,150 +4,139 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PCS Pal</title>
-    <!--
-      Home page entry point for the PCS Pal move planner.
-      Navigation and layout styles are shared across all pages.
-    -->
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="site-header">
       <div class="container">
-        <!--
-          Shared top navigation keeps every page within one click.
-        -->
         <div class="top-bar">
-          <a class="brand" href="index.html">PCS Pal Home</a>
+          <a class="brand" href="index.html">PCS Pal</a>
           <nav class="site-nav">
-            <a href="pcs-checklist.html">PCS Checklist</a>
-            <a href="move-organizer.html">Organize Your Move</a>
-            <a href="bases.html">Destination Bases</a>
+            <a href="#what-is-inside">Inside the Workspace</a>
+            <a href="#how-it-works">How It Works</a>
           </nav>
         </div>
         <p class="eyebrow">PCS Pal - An Athenaeum Group Solution</p>
-        <h1>PCS Pal - A Helpful PCS Move Planner</h1>
+        <h1>PCS planning with synced checklists, inventory, and logistics</h1>
         <p class="subtitle">
-          PCS Pal is an easy-to-use companion that keeps
-          all of your timeline, tasks, and move essentials organized in one place.
+          PCS Pal gives military families one secure place to manage move tasks,
+          household inventory, base information, and travel logistics across devices.
         </p>
       </div>
     </header>
 
     <main class="container">
-      <!--
-        Navigation cards guide users to each major feature.
-      -->
-      <section class="card-grid">
-        <a class="nav-card" href="pcs-checklist.html">
-          <h2>PCS Checklist</h2>
-          <p>Step-by-step guide to completing a PCS move.</p>
-          <span class="card-link">Open checklist →</span>
-        </a>
-        <a class="nav-card" href="move-organizer.html">
-          <h2>Organize Your Move</h2>
-          <p>Organize and label household goods (coming soon).</p>
-          <span class="card-link">View details →</span>
-        </a>
-        <a class="nav-card" href="bases.html">
-          <h2>Destination Bases</h2>
-          <p>Learn about your next duty station (coming soon).</p>
-          <span class="card-link">Explore bases →</span>
-        </a>
+      <section class="landing-hero">
+        <div class="info-panel landing-hero-copy">
+          <p class="eyebrow">Secure Planning Workspace</p>
+          <h2>Start here, then unlock the full PCS workspace</h2>
+          <p>
+            The planning tools stay behind sign-in so your checklist progress,
+            move inventory, and travel logistics remain attached to your account.
+          </p>
+          <p>
+            Use the <strong>Account</strong> control in the top bar to create an
+            account or sign in with email.
+          </p>
+        </div>
+
+        <div class="info-panel landing-auth-panel">
+          <p class="eyebrow">Account Access</p>
+          <h2>Create your account or sign in</h2>
+          <p>
+            Email confirmation is enabled. After sign-up, confirm your email,
+            then sign in to reach the workspace.
+          </p>
+          <button type="button" class="landing-primary-action" id="open-auth-panel-button">
+            Open Account
+          </button>
+          <p class="landing-note">
+            Once signed in, PCS data can be resumed from another device.
+          </p>
+        </div>
       </section>
 
-      <section class="recommended-order">
+      <section class="info-panel landing-workspace" id="workspace-launcher" hidden>
+        <p class="eyebrow">Workspace Ready</p>
+        <h2>Your planning tools are unlocked</h2>
+        <p>
+          Continue into the workspace below. Checklist, inventory, and logistics
+          changes will stay tied to your account.
+        </p>
+        <div class="card-grid landing-workspace-actions">
+          <a class="nav-card" href="pcs-checklist.html">
+            <h3>PCS Checklist</h3>
+            <p>Track deadlines, required tasks, and in-processing items.</p>
+            <span class="card-link">Open checklist</span>
+          </a>
+          <a class="nav-card" href="move-organizer.html">
+            <h3>Move Organizer</h3>
+            <p>Manage inventory, labels, itinerary planning, and move logistics.</p>
+            <span class="card-link">Open organizer</span>
+          </a>
+          <a class="nav-card" href="bases.html">
+            <h3>Destination Bases</h3>
+            <p>Review base information while planning the first week after arrival.</p>
+            <span class="card-link">Open base library</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="card-grid" id="what-is-inside">
+        <article class="nav-card landing-preview-card">
+          <h2>Checklist Tracking</h2>
+          <p>
+            Keep service-member and family move tasks aligned in one workspace.
+          </p>
+        </article>
+        <article class="nav-card landing-preview-card">
+          <h2>Inventory and Labels</h2>
+          <p>
+            Build a room-by-room inventory, estimate weight, and organize labels.
+          </p>
+        </article>
+        <article class="nav-card landing-preview-card">
+          <h2>Logistics and Travel</h2>
+          <p>
+            Track packers, delivery windows, overnight stops, and custom move events.
+          </p>
+        </article>
+      </section>
+
+      <section class="recommended-order" id="how-it-works">
         <h2>How to Use This Tool</h2>
         <p>
-          Follow the guide in order. Start with the big picture of the move and
-          work down into the details you control day by day.
+          Once signed in, work through the move in order so the details stay connected.
         </p>
-        <div class="recommended-list">
+        <div class="recommended-list landing-steps">
           <div>
-            <h3>1. Move Inventory (Move Organizer)</h3>
+            <h3>1. Start with the checklist</h3>
             <p>
-              Purpose: Build a complete household inventory that matches how
-              movers pack and how claims are reviewed.
-            </p>
-            <ol>
-              <li>Create one entry for each room, including garages and storage.</li>
-              <li>Do a first pass for large, high-value items only.</li>
-              <li>Flag high-value or sentimental items before pack-out.</li>
-              <li>Add boxed items by room as boxes are packed.</li>
-              <li>Label boxes with the room name and box number to match the list.</li>
-              <li>Verify every room and high-value item is captured before pack-out.</li>
-            </ol>
-            <p>
-              Tip: Keep labels short and consistent (e.g., “Kitchen – Pots &amp;
-              Pans”) so movers can match boxes quickly.
+              Build the core move plan and keep the family and service-member tasks visible.
             </p>
           </div>
           <div>
-            <h3>2. Family Itinerary &amp; Calendar</h3>
+            <h3>2. Organize the move inventory</h3>
             <p>
-              Purpose: Create a shared timeline of when and where your family is
-              moving.
-            </p>
-            <ol>
-              <li>Set your departure location and date.</li>
-              <li>Add each overnight stop in order, with lodging details if you have them.</li>
-              <li>Enter your final destination and arrival date.</li>
-              <li>Review the auto-filled calendar and treat it as the source of truth.</li>
-              <li>Update itinerary entries as plans change so the calendar stays accurate.</li>
-            </ol>
-            <p>Tip: Share the calendar early so everyone plans around the same dates.</p>
-          </div>
-          <div>
-            <h3>3. Packers &amp; Move Logistics</h3>
-            <p>
-              Purpose: Track dates and access windows that determine when movers
-              can work.
-            </p>
-            <ol>
-              <li>Enter the day or date range the packers will be on site.</li>
-              <li>Check for conflicts with travel days or school events.</li>
-              <li>Use the calendar to coordinate arrival, inspections, and handoffs.</li>
-            </ol>
-            <p>
-              Tip: Keep the calendar handy during calls so everyone references the
-              same schedule.
+              Capture rooms, boxes, and high-value items before pack-out so the
+              inventory is usable for planning and claims.
             </p>
           </div>
           <div>
-            <h3>4. Destination Base Information</h3>
+            <h3>3. Lock in logistics</h3>
             <p>
-              Purpose: Centralize trusted details about your gaining installation
-              so you can plan the first week.
+              Track movers, itinerary, and key handoff dates so the travel plan
+              and delivery plan stay aligned.
             </p>
-            <ol>
-              <li>Review the base overview for location and key facilities.</li>
-              <li>Use the base map to identify gates, housing, medical, and schools.</li>
-              <li>Plan first-week priorities like lodging, check-in, and appointments.</li>
-            </ol>
-            <p>Tip: Save the most important addresses before travel day.</p>
-          </div>
-          <div>
-            <h3>5. Custom Events &amp; Notes</h3>
-            <p>
-              Purpose: Capture anything unique to your PCS move that doesn’t fit
-              elsewhere.
-            </p>
-            <ol>
-              <li>Add custom events such as appointments, vehicle drop-off, or school enrollment.</li>
-              <li>Store notes and contacts like phone numbers and reminders.</li>
-              <li>Review the calendar to confirm every custom event appears alongside the itinerary.</li>
-            </ol>
-            <p>Tip: Add contacts the moment you receive them so nothing is lost.</p>
           </div>
         </div>
       </section>
 
-      <!--
-        Quick explanation reinforces what the site does.
-      -->
       <section class="info-panel">
-        <h2>Built for Service Members, by Service Members</h2>
+        <h2>Built for service members and military families</h2>
         <p>
-          Use the checklist to track orders, scheduling, and arrival tasks.
+          The landing page stays public. The planning workspace stays behind sign-in
+          so PCS data can sync across devices without exposing it publicly.
         </p>
       </section>
     </main>
@@ -155,8 +144,7 @@
     <footer class="site-footer">
       <div class="container">
         <p class="footer-tip">
-          Tip: The PCS Checklist saves progress automatically using local
-          storage.
+          Tip: Sign in before you start planning so your data syncs across devices.
         </p>
         <p class="footer-disclaimer">
           This tool is for planning purposes only and does not replace official
@@ -164,6 +152,6 @@
         </p>
       </div>
     </footer>
-      <script type="module" src="auth-sync.js"></script>
+    <script type="module" src="auth-sync.js"></script>
   </body>
 </html>

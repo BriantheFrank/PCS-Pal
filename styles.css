@@ -273,6 +273,77 @@ main {
   font-size: 0.95rem;
 }
 
+.landing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.landing-hero-copy,
+.landing-auth-panel,
+.landing-workspace {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.landing-hero-copy h2,
+.landing-auth-panel h2,
+.landing-workspace h2 {
+  margin: 0;
+}
+
+.landing-hero-copy p,
+.landing-auth-panel p,
+.landing-workspace p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.landing-primary-action {
+  width: fit-content;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.75rem 1.1rem;
+  cursor: pointer;
+}
+
+.landing-note {
+  font-size: 0.92rem;
+}
+
+.landing-workspace-actions {
+  margin-top: 0.35rem;
+}
+
+.landing-preview-card {
+  cursor: default;
+}
+
+.landing-preview-card:hover,
+.landing-preview-card:focus-visible {
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.landing-steps {
+  padding-left: 0;
+}
+
+.landing-steps > div {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.landing-steps > div:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
 .text-link {
   color: var(--accent);
   font-weight: 600;
@@ -1592,6 +1663,10 @@ main {
     position: static;
     width: 100%;
     margin-top: 0.4rem;
+  }
+
+  .landing-hero {
+    grid-template-columns: 1fr;
   }
 
   .label-panel-body {

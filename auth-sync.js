@@ -13,6 +13,8 @@ const SYNC_MARKERS = {
   reloadFlag: "pcs-sync-needs-reload-once",
 };
 
+const DEFAULT_WORKSPACE_PATH = "/pcs-checklist.html";
+
 const state = {
   supabase: null,
   session: null,
@@ -43,6 +45,45 @@ const parseJson = (value, fallback) => {
 };
 
 const parseBoolean = (value) => String(value).toLowerCase() === "true";
+
+const isPublicPath = (pathname) => pathname === "/" || pathname.endsWith("/index.html");
+
+const getCurrentPathWithQuery = () =>
+  `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+const getSafeNextPath = () => {
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get("next");
+  if (!next) {
+    return "";
+  }
+
+  try {
+    const nextUrl = new URL(next, window.location.origin);
+    if (nextUrl.origin !== window.location.origin || isPublicPath(nextUrl.pathname)) {
+      return "";
+    }
+    return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+  } catch (error) {
+    console.warn("Ignoring invalid redirect target.", error);
+    return "";
+  }
+};
+
+const navigateToPath = (path, replace = false) => {
+  const target = new URL(path, window.location.origin);
+  if (replace) {
+    window.location.replace(target.toString());
+    return;
+  }
+  window.location.assign(target.toString());
+};
+
+const redirectToLanding = () => {
+  const landingUrl = new URL("/index.html", window.location.origin);
+  landingUrl.searchParams.set("next", getCurrentPathWithQuery());
+  window.location.replace(landingUrl.toString());
+};
 
 const readStorage = (key, fallback = null) => {
   if (!hasWindow || !window.localStorage) {
@@ -104,6 +145,28 @@ const setStatus = (message, tone = "neutral") => {
   }
   state.authEls.status.textContent = message;
   state.authEls.status.dataset.tone = tone;
+};
+
+const openAuthPanel = () => {
+  if (!state.authEls?.details) {
+    return;
+  }
+  state.authEls.details.open = true;
+  const emailField =
+    state.authEls.signinForm?.querySelector("input[name='email']") ||
+    state.authEls.signupForm?.querySelector("input[name='email']");
+  emailField?.focus();
+};
+
+const updateLandingWorkspace = () => {
+  const launcher = document.querySelector("#workspace-launcher");
+  const openAuthButton = document.querySelector("#open-auth-panel-button");
+  if (launcher) {
+    launcher.hidden = !state.user;
+  }
+  if (openAuthButton) {
+    openAuthButton.hidden = Boolean(state.user);
+  }
 };
 
 const triggerFieldEvents = (field) => {
@@ -692,6 +755,28 @@ const updateAuthUI = () => {
   }
 };
 
+const enforceRouteAccess = () => {
+  if (!hasWindow) {
+    return;
+  }
+
+  const publicRoute = isPublicPath(window.location.pathname);
+  if (!state.user && !publicRoute) {
+    redirectToLanding();
+    return;
+  }
+
+  if (state.user && publicRoute) {
+    const nextPath = getSafeNextPath();
+    if (nextPath) {
+      navigateToPath(nextPath, true);
+      return;
+    }
+  }
+
+  updateLandingWorkspace();
+};
+
 const parseAuthErrorFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
   const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
@@ -794,6 +879,10 @@ const initializeAuthEvents = () => {
 
     setStatus("Signed out. Local mode remains available.", "neutral");
   });
+
+  document.querySelector("#open-auth-panel-button")?.addEventListener("click", () => {
+    openAuthPanel();
+  });
 };
 
 const loadRuntimeConfig = async () => {
@@ -832,6 +921,7 @@ const handleSession = async (session) => {
   state.session = session;
   state.user = session?.user || null;
   updateAuthUI();
+  enforceRouteAccess();
 
   if (!state.user || !state.supabase) {
     return;
@@ -870,6 +960,10 @@ const initialize = async () => {
     state.supabase = await initSupabaseClient(runtimeConfig);
   } catch (error) {
     console.warn("Supabase client not available.", error);
+    if (!isPublicPath(window.location.pathname)) {
+      redirectToLanding();
+      return;
+    }
     setStatus("Cloud sign-in is unavailable right now. Local mode is still active.", "error");
     return;
   }
