@@ -1441,6 +1441,102 @@ main {
   font-style: italic;
 }
 
+.auth-panel {
+  margin-left: auto;
+}
+
+.auth-details {
+  position: relative;
+}
+
+.auth-summary {
+  cursor: pointer;
+  list-style: none;
+  border: 1px solid rgba(37, 88, 197, 0.28);
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.auth-summary::-webkit-details-marker {
+  display: none;
+}
+
+.auth-card {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  width: min(320px, calc(100vw - 2rem));
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(37, 88, 197, 0.25);
+  background: #ffffff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+  z-index: 30;
+}
+
+.auth-status {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.auth-status[data-tone="success"] {
+  color: #1f7a33;
+}
+
+.auth-status[data-tone="error"] {
+  color: #b91c1c;
+}
+
+.auth-form {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.auth-form input {
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  border-radius: 0.55rem;
+  padding: 0.45rem 0.55rem;
+  font: inherit;
+}
+
+.auth-form button,
+.auth-google-button,
+.auth-signout-button {
+  width: 100%;
+  border: none;
+  border-radius: 0.55rem;
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+  font-weight: 700;
+  background: var(--accent);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.auth-google-button {
+  background: #1d4ed8;
+}
+
+.auth-signout-button {
+  background: #374151;
+}
+
 @media print {
   body {
     background: #ffffff;
@@ -1476,6 +1572,26 @@ main {
   .top-bar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .auth-panel {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .auth-details {
+    width: 100%;
+  }
+
+  .auth-summary {
+    width: 100%;
+    text-align: left;
+  }
+
+  .auth-card {
+    position: static;
+    width: 100%;
+    margin-top: 0.4rem;
   }
 
   .label-panel-body {
