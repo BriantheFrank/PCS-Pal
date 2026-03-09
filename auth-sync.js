@@ -1,5 +1,6 @@
 const SUPABASE_BROWSER_CDN =
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const EMAIL_ONLY_AUTH = true;
 
 const STORAGE_KEYS = {
   checklist: "pcs-checklist",
@@ -674,7 +675,7 @@ const updateAuthUI = () => {
   const isSignedIn = Boolean(state.user);
   authEls.signinForm.hidden = isSignedIn;
   authEls.signupForm.hidden = isSignedIn;
-  authEls.googleButton.hidden = isSignedIn;
+  authEls.googleButton.hidden = EMAIL_ONLY_AUTH ? true : isSignedIn;
   authEls.signoutButton.hidden = !isSignedIn;
 
   if (isSignedIn) {
@@ -744,24 +745,26 @@ const initializeAuthEvents = () => {
     authEls.signupForm.reset();
   });
 
-  authEls.googleButton.addEventListener("click", async () => {
-    if (!state.supabase) {
-      return;
-    }
+  if (!EMAIL_ONLY_AUTH) {
+    authEls.googleButton.addEventListener("click", async () => {
+      if (!state.supabase) {
+        return;
+      }
 
-    setStatus("Redirecting to Google...", "neutral");
-    const redirectTo = `${window.location.origin}${window.location.pathname}`;
-    const { error } = await state.supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo,
-      },
+      setStatus("Redirecting to Google...", "neutral");
+      const redirectTo = `${window.location.origin}${window.location.pathname}`;
+      const { error } = await state.supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo,
+        },
+      });
+
+      if (error) {
+        setStatus(error.message, "error");
+      }
     });
-
-    if (error) {
-      setStatus(error.message, "error");
-    }
-  });
+  }
 
   authEls.signoutButton.addEventListener("click", async () => {
     if (!state.supabase) {
