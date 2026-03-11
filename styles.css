@@ -1690,6 +1690,10 @@ main {
   gap: 1.25rem;
 }
 
+.label-panel[hidden] {
+  display: none;
+}
+
 .label-panel-header {
   display: flex;
   flex-wrap: wrap;
