@@ -297,6 +297,13 @@ const closeMobileNavigation = () => {
   setMobileNavigationState(false);
 };
 
+const closeAuthPanel = () => {
+  if (!state.authEls?.details) {
+    return;
+  }
+  state.authEls.details.open = false;
+};
+
 const openAuthPanel = () => {
   closeMobileNavigation();
   if (!state.authEls?.details) {
@@ -1852,9 +1859,7 @@ const initializeAuthEvents = () => {
     }
 
     authEls.signinForm.reset();
-    if (authEls.details) {
-      authEls.details.open = false;
-    }
+    closeAuthPanel();
   });
 
   if (state.googleAuthEnabled) {
@@ -1890,9 +1895,7 @@ const initializeAuthEvents = () => {
       return;
     }
 
-    if (authEls.details) {
-      authEls.details.open = false;
-    }
+    closeAuthPanel();
     setStatus("Signed out. Local mode remains available.", "neutral");
   });
 
@@ -1902,25 +1905,33 @@ const initializeAuthEvents = () => {
       return;
     }
 
+    const nextFullName = authEls.profileNameInput.value;
     setStatus("Saving account details...", "neutral");
     try {
-      await saveProfile(authEls.profileNameInput.value);
+      await saveProfile(nextFullName);
       if (state.user?.user_metadata) {
         state.user = {
           ...state.user,
           user_metadata: {
             ...state.user.user_metadata,
-            full_name: normalizeFullName(authEls.profileNameInput.value) || null,
-            name: normalizeFullName(authEls.profileNameInput.value) || null,
+            full_name: normalizeFullName(nextFullName) || null,
+            name: normalizeFullName(nextFullName) || null,
           },
         };
       }
-      updateAuthUI();
-      updateLandingWorkspace();
+      closeAuthPanel();
       setStatus("Account details updated.", "success");
     } catch (error) {
       console.error("Failed to save account profile.", error);
       setStatus(error.message || "Unable to update account details.", "error");
+      return;
+    }
+
+    try {
+      updateAuthUI();
+      updateLandingWorkspace();
+    } catch (error) {
+      console.error("Account profile saved, but follow-up UI refresh failed.", error);
     }
   });
 
@@ -1965,43 +1976,50 @@ const initializeAuthEvents = () => {
       return;
     }
 
+    const nextMoveProfile = {
+      destination_base_id: authEls.moveProfileForm.elements.destination_base_id.value,
+      origin_region: authEls.moveProfileForm.elements.origin_region.value,
+      move_month: authEls.moveProfileForm.elements.move_month.value,
+      move_stage: authEls.moveProfileForm.elements.move_stage.value,
+      housing_intent: authEls.moveProfileForm.elements.housing_intent.value,
+      lodging_needed: authEls.moveProfileForm.elements.lodging_needed.checked,
+      vehicle_shipment_needed:
+        authEls.moveProfileForm.elements.vehicle_shipment_needed.checked,
+      pets_flag: authEls.moveProfileForm.elements.pets_flag.checked,
+      school_age_flag: authEls.moveProfileForm.elements.school_age_flag.checked,
+      spouse_employment_flag:
+        authEls.moveProfileForm.elements.spouse_employment_flag.checked,
+    };
+
     setStatus("Saving move profile...", "neutral");
     try {
-      await saveMoveProfile({
-        destination_base_id: authEls.moveProfileForm.elements.destination_base_id.value,
-        origin_region: authEls.moveProfileForm.elements.origin_region.value,
-        move_month: authEls.moveProfileForm.elements.move_month.value,
-        move_stage: authEls.moveProfileForm.elements.move_stage.value,
-        housing_intent: authEls.moveProfileForm.elements.housing_intent.value,
-        lodging_needed: authEls.moveProfileForm.elements.lodging_needed.checked,
-        vehicle_shipment_needed:
-          authEls.moveProfileForm.elements.vehicle_shipment_needed.checked,
-        pets_flag: authEls.moveProfileForm.elements.pets_flag.checked,
-        school_age_flag: authEls.moveProfileForm.elements.school_age_flag.checked,
-        spouse_employment_flag:
-          authEls.moveProfileForm.elements.spouse_employment_flag.checked,
-      });
+      await saveMoveProfile(nextMoveProfile);
+      closeAuthPanel();
+      setStatus("Move profile updated.", "success");
+    } catch (error) {
+      console.error("Failed to save move profile.", error);
+      setStatus(error.message || "Unable to update the move profile right now.", "error");
+      return;
+    }
+
+    try {
       await trackEvent({
         eventType: "move_profile_updated",
-        baseId: authEls.moveProfileForm.elements.destination_base_id.value,
+        baseId: nextMoveProfile.destination_base_id,
         metadata: {
-          move_stage: authEls.moveProfileForm.elements.move_stage.value,
-          housing_intent: authEls.moveProfileForm.elements.housing_intent.value,
-          lodging_needed: authEls.moveProfileForm.elements.lodging_needed.checked,
-          vehicle_shipment_needed:
-            authEls.moveProfileForm.elements.vehicle_shipment_needed.checked,
-          school_age_flag: authEls.moveProfileForm.elements.school_age_flag.checked,
-          spouse_employment_flag:
-            authEls.moveProfileForm.elements.spouse_employment_flag.checked,
+          move_stage: nextMoveProfile.move_stage,
+          housing_intent: nextMoveProfile.housing_intent,
+          lodging_needed: nextMoveProfile.lodging_needed,
+          vehicle_shipment_needed: nextMoveProfile.vehicle_shipment_needed,
+          school_age_flag: nextMoveProfile.school_age_flag,
+          spouse_employment_flag: nextMoveProfile.spouse_employment_flag,
           content_category: "account",
         },
       });
       updateAuthUI();
       await renderPartnerPlacements();
-      setStatus("Move profile updated.", "success");
     } catch (error) {
-      console.error("Failed to save move profile.", error);
-      setStatus(error.message || "Unable to update the move profile right now.", "error");
+      console.error("Move profile saved, but follow-up UI refresh failed.", error);
     }
   });
 
