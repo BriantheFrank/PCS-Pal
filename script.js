@@ -885,6 +885,13 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
   const downloadLabelButton = document.querySelector("#download-label-button");
   const closeLabelButton = document.querySelector("#close-label-button");
   const printLabel = document.querySelector("#print-label");
+  const labelActionStatus = document.querySelector("#label-action-status");
+  const LABEL_PREVIEW_PLACEHOLDERS = {
+    title: "Add a box name",
+    room: "Add a room",
+    weight: "Add weight",
+    notes: "Optional notes",
+  };
 
   const defaultLabelSettings = (room, item) => ({
     title: item.label,
@@ -907,16 +914,53 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     return item.labelSettings;
   };
 
+  const setLabelActionStatus = (message = "", tone = "neutral") => {
+    if (!labelActionStatus) {
+      return;
+    }
+    labelActionStatus.textContent = message;
+    labelActionStatus.dataset.tone = tone;
+  };
+
+  const normalizeLabelText = (value) => String(value ?? "").trim();
+
+  const getPreviewLabelValues = (settings) => ({
+    title: normalizeLabelText(settings.title),
+    room: normalizeLabelText(settings.room),
+    weight: normalizeLabelText(settings.weight),
+    notes: normalizeLabelText(settings.notes),
+  });
+
+  const getOutputLabelValues = (settings) => {
+    const previewValues = getPreviewLabelValues(settings);
+    return {
+      title: previewValues.title || "Unnamed box",
+      room: previewValues.room || "Not entered",
+      weight: previewValues.weight || "Not entered",
+      notes: previewValues.notes || "Not entered",
+    };
+  };
+
+  const setPreviewField = (element, value, fallback) => {
+    if (!element) {
+      return;
+    }
+    const hasValue = Boolean(value);
+    element.textContent = hasValue ? value : fallback;
+    element.classList.toggle("is-placeholder", !hasValue);
+  };
+
   const applyLabelPreview = (settings) => {
     if (!labelTitle || !labelRoom || !labelWeight || !labelNotes || !printLabel) {
       return;
     }
-    labelTitle.textContent = settings.title || "Box Label";
-    labelRoom.textContent = settings.room || "Room";
-    labelWeight.textContent = settings.weight || "Weight";
-    labelNotes.textContent = settings.notes || "";
+    const previewValues = getPreviewLabelValues(settings);
+    setPreviewField(labelTitle, previewValues.title, LABEL_PREVIEW_PLACEHOLDERS.title);
+    setPreviewField(labelRoom, previewValues.room, LABEL_PREVIEW_PLACEHOLDERS.room);
+    setPreviewField(labelWeight, previewValues.weight, LABEL_PREVIEW_PLACEHOLDERS.weight);
+    setPreviewField(labelNotes, previewValues.notes, LABEL_PREVIEW_PLACEHOLDERS.notes);
     if (labelNotesRow) {
-      labelNotesRow.hidden = !settings.notes;
+      labelNotesRow.hidden = false;
     }
     printLabel.style.setProperty("--label-title-size", `${settings.titleSize}px`);
     printLabel.style.setProperty("--label-body-size", `${settings.bodySize}px`);
@@ -961,10 +1005,11 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     return { room, item };
   };
 
-  const openLabelPanel = (roomIndex, itemIndex) => {
+  const openLabelPanel = (roomIndex, itemIndex, options = {}) => {
     if (!labelPanel) {
       return;
     }
+    const { focusInput = true } = options;
     const room = inventory.rooms[roomIndex];
     const item = room?.items[itemIndex];
     if (!room || !item) {
@@ -975,8 +1020,15 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     saveInventory(inventory);
     syncLabelInputs(labelSettings);
     applyLabelPreview(labelSettings);
+    setLabelActionStatus("");
     labelPanel.hidden = false;
     labelPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (focusInput) {
+      window.requestAnimationFrame(() => {
+        labelTitleInput?.focus();
+        labelTitleInput?.select();
+      });
+    }
   };
 
   const updateLabelSetting = (field, value) => {
@@ -988,6 +1040,7 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     labelSettings[field] = value;
     applyLabelPreview(labelSettings);
     saveInventory(inventory);
+    setLabelActionStatus("");
   };
 
   const slugify = (text) =>
@@ -995,7 +1048,7 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
-      .slice(0, 60) || "label";
+      .slice(0, 60) || "box-label";
 
   const escapeHtml = (value) =>
     String(value)
@@ -1005,54 +1058,350 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
 
-  // Label file generation is handled client-side to avoid any backend dependency.
-  const buildLabelFile = (settings) => {
-    const safeTitle = escapeHtml(settings.title);
-    const safeRoom = escapeHtml(settings.room);
-    const safeWeight = escapeHtml(settings.weight);
-    const safeNotes = escapeHtml(settings.notes);
-    const notesMarkup = settings.notes
-      ? `<div class="label-row"><span class="label-key">Notes:</span><span class="label-value label-body">${safeNotes}</span></div>`
-      : "";
+  const getActiveLabelSettings = () => {
+    const context = getActiveLabelContext();
+    if (!context) {
+      return null;
+    }
+    return ensureLabelSettings(context.room, context.item);
+  };
+
+  const getLabelFilenameBase = (settings) =>
+    slugify(
+      normalizeLabelText(settings.title) ||
+        normalizeLabelText(settings.room) ||
+        "box-label"
+    );
+
+  const buildLabelMarkup = (settings) => {
+    const values = getOutputLabelValues(settings);
+    const safeTitle = escapeHtml(values.title);
+    const safeRoom = escapeHtml(values.room);
+    const safeWeight = escapeHtml(values.weight);
+    const safeNotes = escapeHtml(values.notes);
+    const titleSize = Number(settings.titleSize) || 26;
+    const bodySize = Number(settings.bodySize) || 18;
+    return `
+      <div class="print-label">
+        <div class="label-row">
+          <span class="label-key">Box Name</span>
+          <span class="label-value label-title">${safeTitle}</span>
+        </div>
+        <div class="label-row">
+          <span class="label-key">Room</span>
+          <span class="label-value label-body">${safeRoom}</span>
+        </div>
+        <div class="label-row">
+          <span class="label-key">Estimated Weight</span>
+          <span class="label-value label-body">${safeWeight}</span>
+        </div>
+        <div class="label-row">
+          <span class="label-key">Notes</span>
+          <span class="label-value label-body">${safeNotes}</span>
+        </div>
+      </div>
+      <style>
+        :root { color-scheme: light only; }
+        body {
+          margin: 0;
+          padding: 2rem;
+          font-family: "Inter", "Roboto", "Segoe UI", system-ui, sans-serif;
+          background: #ffffff;
+        }
+        .print-label {
+          border: 2px solid #d7d1c7;
+          border-radius: 12px;
+          padding: 1.5rem;
+          display: grid;
+          gap: 0.75rem;
+          background: #ffffff;
+          color: #111827;
+          max-width: 780px;
+          box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.04);
+        }
+        .label-row {
+          display: grid;
+          gap: 0.22rem;
+          align-items: start;
+        }
+        .label-key {
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          font-size: 0.85rem;
+          color: #5d6a73;
+        }
+        .label-value {
+          font-weight: 600;
+          color: #111827;
+          word-break: break-word;
+          line-height: 1.35;
+        }
+        .label-title { font-size: ${titleSize}px; }
+        .label-body { font-size: ${bodySize}px; }
+        @media print {
+          body { padding: 0; }
+          .print-label { page-break-inside: avoid; box-shadow: none; }
+        }
+      </style>`;
+  };
+
+  const buildLabelPrintDocument = (settings) => {
     return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${safeTitle} Label</title>
-    <style>
-      body { margin: 0; padding: 2rem; font-family: "Inter", "Roboto", "Segoe UI", system-ui, sans-serif; background: #ffffff; }
-      .print-label { border: 2px solid #111827; border-radius: 12px; padding: 1.5rem; display: grid; gap: 0.75rem; }
-      .label-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: baseline; }
-      .label-key { font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.85rem; }
-      .label-value { font-weight: 600; color: #111827; }
-      .label-title { font-size: ${settings.titleSize}px; }
-      .label-body { font-size: ${settings.bodySize}px; }
-      @media print {
-        body { padding: 0; }
-        .print-label { page-break-inside: avoid; }
-      }
-    </style>
+    <title>${escapeHtml(getOutputLabelValues(settings).title)} Label</title>
   </head>
   <body>
-    <div class="print-label">
-      <div class="label-row">
-        <span class="label-key">Box:</span>
-        <span class="label-value label-title">${safeTitle}</span>
-      </div>
-      <div class="label-row">
-        <span class="label-key">Room:</span>
-        <span class="label-value label-body">${safeRoom}</span>
-      </div>
-      <div class="label-row">
-        <span class="label-key">Est. Weight:</span>
-        <span class="label-value label-body">${safeWeight}</span>
-      </div>
-      ${notesMarkup}
-    </div>
+    ${buildLabelMarkup(settings)}
   </body>
 </html>`;
   };
+
+  const splitLongCanvasToken = (ctx, token, maxWidth) => {
+    const fragments = [];
+    let remaining = token;
+    while (remaining && ctx.measureText(remaining).width > maxWidth) {
+      let sliceLength = remaining.length - 1;
+      while (
+        sliceLength > 1 &&
+        ctx.measureText(remaining.slice(0, sliceLength)).width > maxWidth
+      ) {
+        sliceLength -= 1;
+      }
+      fragments.push(remaining.slice(0, sliceLength));
+      remaining = remaining.slice(sliceLength);
+    }
+    if (remaining) {
+      fragments.push(remaining);
+    }
+    return fragments;
+  };
+
+  const buildWrappedCanvasLines = (ctx, text, maxWidth) => {
+    const normalized = String(text || "");
+    const paragraphs = normalized.split(/\n/);
+    const lines = [];
+
+    paragraphs.forEach((paragraph, paragraphIndex) => {
+      const words = paragraph.trim().split(/\s+/).filter(Boolean);
+      if (!words.length) {
+        lines.push(" ");
+      } else {
+        let currentLine = "";
+        words.forEach((word) => {
+          const candidate = currentLine ? `${currentLine} ${word}` : word;
+          if (ctx.measureText(candidate).width <= maxWidth) {
+            currentLine = candidate;
+            return;
+          }
+
+          if (currentLine) {
+            lines.push(currentLine);
+          }
+
+          if (ctx.measureText(word).width <= maxWidth) {
+            currentLine = word;
+            return;
+          }
+
+          const wordFragments = splitLongCanvasToken(ctx, word, maxWidth);
+          const lastFragment = wordFragments.pop() || "";
+          lines.push(...wordFragments);
+          currentLine = lastFragment;
+        });
+
+        if (currentLine) {
+          lines.push(currentLine);
+        }
+      }
+
+      if (paragraphIndex < paragraphs.length - 1) {
+        lines.push(" ");
+      }
+    });
+
+    return lines.length ? lines : ["—"];
+  };
+
+  const renderLabelCanvas = async (settings) => {
+    if (document.fonts?.ready) {
+      try {
+        await document.fonts.ready;
+      } catch (error) {
+        console.warn("Label export fonts were not fully ready.", error);
+      }
+    }
+
+    const values = getOutputLabelValues(settings);
+    const titleSize = Math.max(22, Number(settings.titleSize) || 26);
+    const bodySize = Math.max(16, Number(settings.bodySize) || 18);
+    const labelSize = 16;
+    const fieldGap = 24;
+    const padding = 44;
+    const width = 920;
+    const innerWidth = width - padding * 2;
+    const canvas = document.createElement("canvas");
+    const measureContext = canvas.getContext("2d");
+    if (!measureContext) {
+      throw new Error("Canvas export is not available in this browser.");
+    }
+
+    const fontFamily = '"Inter", "Roboto", "Segoe UI", system-ui, sans-serif';
+    const sections = [
+      { label: "Box Name", value: values.title, fontSize: titleSize },
+      { label: "Room", value: values.room, fontSize: bodySize },
+      { label: "Estimated Weight", value: values.weight, fontSize: bodySize },
+      { label: "Notes", value: values.notes, fontSize: bodySize },
+    ].map((section) => {
+      measureContext.font = `600 ${section.fontSize}px ${fontFamily}`;
+      return {
+        ...section,
+        lines: buildWrappedCanvasLines(measureContext, section.value, innerWidth),
+      };
+    });
+
+    const labelLineHeight = labelSize * 1.2;
+    const height =
+      padding * 2 +
+      sections.reduce((total, section) => {
+        const sectionHeight =
+          labelLineHeight +
+          10 +
+          section.lines.length * section.fontSize * 1.35 +
+          fieldGap;
+        return total + sectionHeight;
+      }, 0) -
+      fieldGap;
+
+    const scale = 2;
+    canvas.width = width * scale;
+    canvas.height = Math.max(480, Math.ceil(height)) * scale;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("Canvas export is not available in this browser.");
+    }
+
+    context.scale(scale, scale);
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, canvas.height / scale);
+    context.strokeStyle = "#d7d1c7";
+    context.lineWidth = 3;
+    context.strokeRect(16, 16, width - 32, canvas.height / scale - 32);
+
+    let y = padding;
+    sections.forEach((section, sectionIndex) => {
+      context.fillStyle = "#5d6a73";
+      context.font = `700 ${labelSize}px ${fontFamily}`;
+      context.textBaseline = "top";
+      context.fillText(section.label.toUpperCase(), padding, y);
+      y += labelLineHeight + 10;
+
+      context.fillStyle = "#22303b";
+      context.font = `600 ${section.fontSize}px ${fontFamily}`;
+      const lineHeight = section.fontSize * 1.35;
+      section.lines.forEach((line) => {
+        context.fillText(line, padding, y, innerWidth);
+        y += lineHeight;
+      });
+
+      if (sectionIndex < sections.length - 1) {
+        y += 10;
+        context.strokeStyle = "rgba(215, 209, 199, 0.85)";
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(padding, y);
+        context.lineTo(width - padding, y);
+        context.stroke();
+        y += fieldGap - 10;
+      }
+    });
+
+    return canvas;
+  };
+
+  const downloadLabelCanvas = (canvas, filename) =>
+    new Promise((resolve, reject) => {
+      const triggerDownload = (url) => {
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+      };
+
+      if (canvas.toBlob) {
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error("Unable to generate the label image."));
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          triggerDownload(url);
+          window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+          resolve();
+        }, "image/png");
+        return;
+      }
+
+      try {
+        triggerDownload(canvas.toDataURL("image/png"));
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+
+  const printLabelFromSettings = (settings) =>
+    new Promise((resolve, reject) => {
+      const printFrame = document.createElement("iframe");
+      printFrame.style.position = "fixed";
+      printFrame.style.width = "0";
+      printFrame.style.height = "0";
+      printFrame.style.opacity = "0";
+      printFrame.style.pointerEvents = "none";
+      printFrame.style.border = "0";
+
+      const cleanup = () => {
+        window.setTimeout(() => {
+          printFrame.remove();
+        }, 500);
+      };
+
+      printFrame.onload = () => {
+        try {
+          const printWindow = printFrame.contentWindow;
+          if (!printWindow) {
+            throw new Error("Print view was unavailable.");
+          }
+
+          let settled = false;
+          const finish = () => {
+            if (!settled) {
+              settled = true;
+              resolve();
+            }
+            cleanup();
+          };
+
+          printWindow.onafterprint = finish;
+          printWindow.focus();
+          window.setTimeout(() => {
+            printWindow.print();
+            window.setTimeout(finish, 1200);
+          }, 60);
+        } catch (error) {
+          cleanup();
+          reject(error);
+        }
+      };
+
+      printFrame.srcdoc = buildLabelPrintDocument(settings);
+      document.body.appendChild(printFrame);
+    });
 
   if (labelTitleInput) {
     labelTitleInput.addEventListener("input", (event) => {
@@ -1094,32 +1443,40 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
   }
 
   if (printLabelButton) {
-    printLabelButton.addEventListener("click", () => {
-      if (!activeLabelItem) {
+    printLabelButton.addEventListener("click", async () => {
+      const settings = getActiveLabelSettings();
+      if (!settings) {
         return;
       }
-      window.print();
+      setLabelActionStatus("Opening print dialog...", "neutral");
+      try {
+        await printLabelFromSettings(settings);
+        setLabelActionStatus("Print dialog opened.", "success");
+      } catch (error) {
+        console.error("Unable to print the label.", error);
+        setLabelActionStatus("Unable to open the print dialog right now.", "error");
+      }
     });
   }
 
   if (downloadLabelButton) {
-    downloadLabelButton.addEventListener("click", () => {
-      const context = getActiveLabelContext();
-      if (!context) {
+    downloadLabelButton.addEventListener("click", async () => {
+      const settings = getActiveLabelSettings();
+      if (!settings) {
         return;
       }
-      const settings = ensureLabelSettings(context.room, context.item);
-      const fileContents = buildLabelFile(settings);
-      const filename = `${slugify(settings.title || settings.room)}-label.html`;
-      const blob = new Blob([fileContents], { type: "text/html" });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = filename;
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      URL.revokeObjectURL(url);
+      setLabelActionStatus("Preparing label download...", "neutral");
+      try {
+        const canvas = await renderLabelCanvas(settings);
+        await downloadLabelCanvas(
+          canvas,
+          `box-label-${getLabelFilenameBase(settings)}.png`
+        );
+        setLabelActionStatus("Label downloaded as PNG.", "success");
+      } catch (error) {
+        console.error("Unable to download the label.", error);
+        setLabelActionStatus("Unable to download the label right now.", "error");
+      }
     });
   }
 
@@ -1127,6 +1484,7 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     closeLabelButton.addEventListener("click", () => {
       labelPanel.hidden = true;
       activeLabelItem = null;
+      setLabelActionStatus("");
     });
   }
 
@@ -1393,8 +1751,21 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
       return;
     }
     if (action === "print-label") {
-      openLabelPanel(roomIndex, itemIndex);
-      setTimeout(() => window.print(), 50);
+      openLabelPanel(roomIndex, itemIndex, { focusInput: false });
+      const settings = getActiveLabelSettings();
+      if (!settings) {
+        return;
+      }
+      setLabelActionStatus("Opening print dialog...", "neutral");
+      void printLabelFromSettings(settings)
+        .then(() => {
+          setLabelActionStatus("Print dialog opened.", "success");
+        })
+        .catch((error) => {
+          console.error("Unable to print the label.", error);
+          setLabelActionStatus("Unable to open the print dialog right now.", "error");
+        });
+      return;
     }
   });
 
@@ -1445,6 +1816,12 @@ if (calendarGrid && calendarLabel) {
     focusDate: new Date(),
   };
   const events = new Map();
+  const prefersCompactCalendar =
+    typeof window !== "undefined" && window.matchMedia("(max-width: 700px)").matches;
+
+  if (prefersCompactCalendar) {
+    calendarState.view = "week";
+  }
 
   const toDateKey = (date) =>
     [
@@ -1554,6 +1931,7 @@ if (calendarGrid && calendarLabel) {
     }
 
     updateCalendarLabel(startDate, endDate);
+    calendarGrid.dataset.view = calendarState.view;
     calendarGrid.innerHTML = "";
 
     const eventsByDate = {};
@@ -2401,6 +2779,10 @@ if (calendarGrid && calendarLabel) {
   if (addCustomEventButton) {
     addCustomEventButton.addEventListener("click", renderCustomEvent);
   }
+
+  calendarToggleButtons.forEach((toggle) => {
+    toggle.classList.toggle("is-active", toggle.dataset.view === calendarState.view);
+  });
 
   calendarToggleButtons.forEach((button) => {
     button.addEventListener("click", () => {

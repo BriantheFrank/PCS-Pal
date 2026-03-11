@@ -43,27 +43,69 @@
       <!--
         Intro text explains the purpose of the page before the grid of bases.
       -->
-      <section class="info-panel" aria-labelledby="base-guidance-title">
-        <h2 id="base-guidance-title">How to Use Destination Base Information</h2>
-        <p>
-          Open a base page to see where arriving Soldiers commonly start, which
-          first-week offices matter most, and which links are worth saving before
-          travel day.
-        </p>
-        <ol>
-          <li>Start with the arrival and reporting section so you know where to check in first.</li>
-          <li>Save the official links for lodging, housing, medical, transportation, and ID card support.</li>
-          <li>Use the Google Maps shortcuts on travel day so you are not hunting for the right building from the parking lot.</li>
-        </ol>
-        <p>
-          Tip: Save the reception location and at least one backup stop before you get on the road.
-        </p>
+      <details
+        class="info-panel mobile-disclosure"
+        data-mobile-collapse="true"
+        open
+        aria-labelledby="base-guidance-title"
+      >
+        <summary class="mobile-disclosure-summary">
+          <div>
+            <h2 id="base-guidance-title">How to Use Destination Base Information</h2>
+            <p>Start with reporting, first-week resources, and the links worth saving before travel day.</p>
+          </div>
+          <span class="mobile-disclosure-hint" aria-hidden="true"></span>
+        </summary>
+        <div class="mobile-disclosure-body">
+          <p>
+            Open a base page to see where arriving Soldiers commonly start, which
+            first-week offices matter most, and which links are worth saving before
+            travel day.
+          </p>
+          <ol>
+            <li>Start with the arrival and reporting section so you know where to check in first.</li>
+            <li>Save the official links for lodging, housing, medical, transportation, and ID card support.</li>
+            <li>Use the Google Maps shortcuts on travel day so you are not hunting for the right building from the parking lot.</li>
+          </ol>
+          <p>
+            Tip: Save the reception location and at least one backup stop before you get on the road.
+          </p>
+        </div>
+      </details>
+
+      <section class="info-panel base-browser-panel" aria-labelledby="base-browser-title">
+        <div class="base-browser-header">
+          <p class="eyebrow">Quick Find</p>
+          <h2 id="base-browser-title">Search and narrow the base list</h2>
+          <p>
+            Search by installation, state, or major unit so the next base guide is easier to reach on a phone.
+          </p>
+        </div>
+        <div class="base-browser-controls">
+          <label class="base-browser-field" for="base-search">
+            Search bases
+            <input
+              id="base-search"
+              type="search"
+              placeholder="Fort Liberty, Texas, 82nd Airborne"
+              autocomplete="off"
+              enterkeyhint="search"
+            />
+          </label>
+          <label class="base-browser-field" for="base-state-filter">
+            Filter by state or region
+            <select id="base-state-filter">
+              <option value="">All locations</option>
+            </select>
+          </label>
+        </div>
+        <p class="base-browser-results" id="base-browser-results" aria-live="polite"></p>
       </section>
 
       <!--
         Responsive tile grid keeps base cards easy to scan on any device.
       -->
-      <section class="base-grid">
+      <section class="base-grid" id="base-directory-grid">
         <a class="base-card" href="base-fort-liberty.html">
           <h2>Fort Liberty</h2>
           <p class="base-state">North Carolina</p>
@@ -272,6 +314,7 @@
         <p>More duty station tools are coming soon.</p>
       </div>
     </footer>
+      <script src="bases-browser.js"></script>
       <script type="module" src="auth-sync.js"></script>
   </body>
 </html>

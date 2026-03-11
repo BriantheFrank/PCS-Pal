@@ -43,34 +43,47 @@
     <main class="container logistics-layout">
       <a class="back-link" href="move-organizer.html">← Back to Move Organizer</a>
 
-      <section class="info-panel" aria-labelledby="logistics-guidance-title">
-        <h2 id="logistics-guidance-title">How to Use Move Logistics</h2>
-        <p>
-          Use this page as the working timeline for your move. Start with the
-          family itinerary, then fill in packers dates and any custom events.
-        </p>
-        <h3>Family Itinerary &amp; Calendar</h3>
-        <ol>
-          <li>Enter your departure location and date.</li>
-          <li>Add each overnight stop in order, with lodging details if available.</li>
-          <li>Set your final destination and arrival date.</li>
-          <li>Review the calendar and treat it as the authoritative timeline.</li>
-          <li>Update itinerary entries so the calendar stays accurate.</li>
-        </ol>
-        <h3>Packers &amp; Move Logistics</h3>
-        <ol>
-          <li>Add the day or date range the packers will be on site.</li>
-          <li>Confirm packer dates do not overlap with travel days.</li>
-          <li>Use the calendar during coordination calls to avoid conflicts.</li>
-        </ol>
-        <h3>Custom Events &amp; Notes</h3>
-        <ol>
-          <li>Add appointments, vehicle drop-off, lease termination, or school enrollment.</li>
-          <li>Store key contacts and reminders next to each event.</li>
-          <li>Confirm custom events appear on the master calendar.</li>
-        </ol>
-        <p>Tip: Keep this page open during calls so everyone works from the same dates.</p>
-      </section>
+      <details
+        class="info-panel mobile-disclosure"
+        data-mobile-collapse="true"
+        open
+        aria-labelledby="logistics-guidance-title"
+      >
+        <summary class="mobile-disclosure-summary">
+          <div>
+            <h2 id="logistics-guidance-title">How to Use Move Logistics</h2>
+            <p>Keep the setup guidance nearby, but collapse it when you are actively editing dates, stops, and events.</p>
+          </div>
+          <span class="mobile-disclosure-hint" aria-hidden="true"></span>
+        </summary>
+        <div class="mobile-disclosure-body">
+          <p>
+            Use this page as the working timeline for your move. Start with the
+            family itinerary, then fill in packers dates and any custom events.
+          </p>
+          <h3>Family Itinerary &amp; Calendar</h3>
+          <ol>
+            <li>Enter your departure location and date.</li>
+            <li>Add each overnight stop in order, with lodging details if available.</li>
+            <li>Set your final destination and arrival date.</li>
+            <li>Review the calendar and treat it as the authoritative timeline.</li>
+            <li>Update itinerary entries so the calendar stays accurate.</li>
+          </ol>
+          <h3>Packers &amp; Move Logistics</h3>
+          <ol>
+            <li>Add the day or date range the packers will be on site.</li>
+            <li>Confirm packer dates do not overlap with travel days.</li>
+            <li>Use the calendar during coordination calls to avoid conflicts.</li>
+          </ol>
+          <h3>Custom Events &amp; Notes</h3>
+          <ol>
+            <li>Add appointments, vehicle drop-off, lease termination, or school enrollment.</li>
+            <li>Store key contacts and reminders next to each event.</li>
+            <li>Confirm custom events appear on the master calendar.</li>
+          </ol>
+          <p>Tip: Keep this page open during calls so everyone works from the same dates.</p>
+        </div>
+      </details>
 
       <section class="info-panel calendar-panel" aria-labelledby="calendar-title">
         <div class="calendar-panel-header">

@@ -39,22 +39,35 @@
     </header>
 
     <main class="container inventory-grid">
-      <section class="info-panel" aria-labelledby="inventory-guidance-title">
-        <h2 id="inventory-guidance-title">How to Use Move Inventory</h2>
-        <p>
-          Build a complete household inventory that matches how movers pack and
-          how claims are processed.
-        </p>
-        <ol>
-          <li>Create one entry for every room, including garages and storage areas.</li>
-          <li>Start with large, high-value items like furniture, electronics, and appliances.</li>
-          <li>Flag expensive or sentimental items so they are clearly identified.</li>
-          <li>Add boxed items under the correct room as packing happens.</li>
-          <li>Label every box with the room name and box number to match your list.</li>
-          <li>Before pack-out, confirm all rooms and high-value items are captured.</li>
-        </ol>
-        <p>Tip: Keep labels short and consistent so movers can match boxes quickly.</p>
-      </section>
+      <details
+        class="info-panel mobile-disclosure"
+        data-mobile-collapse="true"
+        open
+        aria-labelledby="inventory-guidance-title"
+      >
+        <summary class="mobile-disclosure-summary">
+          <div>
+            <h2 id="inventory-guidance-title">How to Use Move Inventory</h2>
+            <p>Keep the packing guidance nearby, but collapse it when you just need to add rooms or items.</p>
+          </div>
+          <span class="mobile-disclosure-hint" aria-hidden="true"></span>
+        </summary>
+        <div class="mobile-disclosure-body">
+          <p>
+            Build a complete household inventory that matches how movers pack and
+            how claims are processed.
+          </p>
+          <ol>
+            <li>Create one entry for every room, including garages and storage areas.</li>
+            <li>Start with large, high-value items like furniture, electronics, and appliances.</li>
+            <li>Flag expensive or sentimental items so they are clearly identified.</li>
+            <li>Add boxed items under the correct room as packing happens.</li>
+            <li>Label every box with the room name and box number to match your list.</li>
+            <li>Before pack-out, confirm all rooms and high-value items are captured.</li>
+          </ol>
+          <p>Tip: Keep labels short and consistent so movers can match boxes quickly.</p>
+        </div>
+      </details>
 
       <section class="inventory-controls">
         <div class="inventory-search">
@@ -105,8 +118,8 @@
       <section class="label-panel" id="label-panel" hidden>
         <div class="label-panel-header">
           <div>
-            <p class="label-eyebrow">Box label preview</p>
-            <h2>Printable Label</h2>
+            <p class="label-eyebrow">Box label</p>
+            <h2>Edit, preview, print, or download</h2>
           </div>
           <div class="label-panel-actions">
             <button type="button" class="label-action" id="print-label-button">
@@ -120,25 +133,46 @@
             </button>
           </div>
         </div>
+        <p class="label-action-status" id="label-action-status" aria-live="polite"></p>
         <div class="label-panel-body">
           <div class="label-editor">
             <div class="label-editor-section">
-              <h3>Label text</h3>
+              <h3>Label fields</h3>
               <label>
-                Label title
-                <input id="label-title-input" type="text" />
+                Box name
+                <input
+                  id="label-title-input"
+                  type="text"
+                  placeholder="Kitchen dishes"
+                  autocomplete="off"
+                />
               </label>
               <label>
-                Room name
-                <input id="label-room-input" type="text" />
+                Room
+                <input
+                  id="label-room-input"
+                  type="text"
+                  placeholder="Kitchen"
+                  autocomplete="off"
+                />
               </label>
               <label>
                 Estimated weight
-                <input id="label-weight-input" type="text" />
+                <input
+                  id="label-weight-input"
+                  type="text"
+                  inputmode="decimal"
+                  placeholder="45 lbs"
+                  autocomplete="off"
+                />
               </label>
               <label>
                 Notes (optional)
-                <textarea id="label-notes-input" rows="3"></textarea>
+                <textarea
+                  id="label-notes-input"
+                  rows="3"
+                  placeholder="Fragile, open first, keep upright"
+                ></textarea>
               </label>
             </div>
             <div class="label-editor-section">
@@ -171,20 +205,20 @@
             <p class="label-preview-title">Live preview</p>
             <div class="print-label" id="print-label">
               <div class="label-row">
-                <span class="label-key">Box:</span>
-                <span class="label-value" id="label-title">Box Label</span>
+                <span class="label-key">Box Name</span>
+                <span class="label-value" id="label-title">Add a box name</span>
               </div>
               <div class="label-row">
-                <span class="label-key">Room:</span>
-                <span class="label-value" id="label-room">Room</span>
+                <span class="label-key">Room</span>
+                <span class="label-value" id="label-room">Add a room</span>
               </div>
               <div class="label-row">
-                <span class="label-key">Est. Weight:</span>
-                <span class="label-value" id="label-weight">Weight</span>
+                <span class="label-key">Estimated Weight</span>
+                <span class="label-value" id="label-weight">Add weight</span>
               </div>
-              <div class="label-row" id="label-notes-row" hidden>
-                <span class="label-key">Notes:</span>
-                <span class="label-value" id="label-notes"></span>
+              <div class="label-row" id="label-notes-row">
+                <span class="label-key">Notes</span>
+                <span class="label-value" id="label-notes">Optional notes</span>
               </div>
             </div>
           </div>

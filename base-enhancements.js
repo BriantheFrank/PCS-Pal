@@ -5,32 +5,45 @@ const getBaseKeyFromPath = () => {
   return match ? match[1] : "";
 };
 
-const createExternalLink = (label, href) => {
+const createExternalLink = (label, href, trackingContext = {}) => {
   const link = document.createElement("a");
   link.className = "card-link";
   link.href = href;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.textContent = label;
+  link.dataset.trackResource = "true";
+  link.dataset.baseId = trackingContext.baseId || "";
+  link.dataset.resourceCategory = trackingContext.category || "";
+  link.dataset.resourceKind = trackingContext.resourceKind || "official";
+  link.dataset.resourceLabel = trackingContext.resourceLabel || label;
   return link;
 };
 
-const createLinkStack = (links) => {
+const createLinkStack = (links, trackingContext) => {
   const stack = document.createElement("div");
   stack.className = "base-link-stack";
 
   links
     .filter((link) => Boolean(link?.href))
     .forEach((link) => {
-      stack.appendChild(createExternalLink(link.label, link.href));
+      stack.appendChild(
+        createExternalLink(link.label, link.href, {
+          ...trackingContext,
+          resourceLabel: link.label,
+        })
+      );
     });
 
   return stack.childElementCount > 0 ? stack : null;
 };
 
-const createResourceCard = ({ title, description, links }) => {
+const createResourceCard = ({ title, description, links, category, baseId }) => {
   const card = document.createElement("article");
   card.className = "base-card";
+  if (category) {
+    card.dataset.serviceCategory = category;
+  }
 
   const heading = document.createElement("h3");
   heading.textContent = title;
@@ -43,7 +56,11 @@ const createResourceCard = ({ title, description, links }) => {
     card.appendChild(paragraph);
   }
 
-  const stack = createLinkStack(links);
+  const stack = createLinkStack(links, {
+    baseId,
+    category,
+    resourceKind: "official",
+  });
   if (stack) {
     card.appendChild(stack);
   }
@@ -76,10 +93,21 @@ const createSection = (title, intro, cards) => {
   return section;
 };
 
-const buildArrivalCards = (base) => [
+const createSponsoredPlacementSlot = (baseId) => {
+  const section = document.createElement("section");
+  section.className = "base-detail base-enhancement-section base-sponsored-section";
+  section.dataset.sponsoredPlacements = "true";
+  section.dataset.baseId = baseId;
+  section.hidden = true;
+  return section;
+};
+
+const buildArrivalCards = (baseKey, base) => [
   {
     title: "Where to report on arrival",
     description: base.receptionDescription,
+    category: "arrival_support",
+    baseId: baseKey,
     links: [
       { label: "Official reception guidance", href: base.receptionOfficialLink },
       { label: "Open in Google Maps", href: base.receptionGoogleMapsLink },
@@ -88,6 +116,8 @@ const buildArrivalCards = (base) => [
   {
     title: "Official installation guidance",
     description: base.reportingInfoNote,
+    category: "travel",
+    baseId: baseKey,
     links: [
       { label: "Installation overview", href: base.baseHomepageLink },
       { label: "Newcomer / overview page", href: base.newcomerLink },
@@ -95,7 +125,7 @@ const buildArrivalCards = (base) => [
   },
 ];
 
-const buildHelpfulStopCards = (base) => {
+const buildHelpfulStopCards = (baseKey, base) => {
   const cards = [];
 
   if (base.visitorCenterTitle || base.visitorCenterLink || base.visitorCenterGoogleMapsLink) {
@@ -103,6 +133,8 @@ const buildHelpfulStopCards = (base) => {
       title: base.visitorCenterTitle || "Visitor center / gate access",
       description:
         "Keep the gate or visitor-control location handy in case you need directions, temporary pass support, or the clearest first stop onto post.",
+      category: "arrival_support",
+      baseId: baseKey,
       links: [
         { label: "Official visitor guidance", href: base.visitorCenterLink },
         { label: "Open in Google Maps", href: base.visitorCenterGoogleMapsLink },
@@ -115,6 +147,8 @@ const buildHelpfulStopCards = (base) => {
       title: base.lodgingTitle || "Temporary lodging",
       description:
         "If housing is not ready on arrival, keep the post temporary-lodging option and driving directions saved before travel day.",
+      category: "temporary_lodging",
+      baseId: baseKey,
       links: [
         { label: "Official lodging page", href: base.lodgingLink },
         { label: "Open in Google Maps", href: base.lodgingGoogleMapsLink },
@@ -127,6 +161,8 @@ const buildHelpfulStopCards = (base) => {
       title: "Housing",
       description:
         "Use the housing office link for waitlists, family housing guidance, and first-week lease or neighborhood questions.",
+      category: "housing",
+      baseId: baseKey,
       links: [{ label: "Official housing page", href: base.housingLink }],
     });
   }
@@ -136,6 +172,8 @@ const buildHelpfulStopCards = (base) => {
       title: "Medical and clinics",
       description:
         "Confirm the installation hospital or clinic and any TRICARE enrollment steps before the first week fills up.",
+      category: "medical",
+      baseId: baseKey,
       links: [{ label: "Official medical guidance", href: base.medicalLink }],
     });
   }
@@ -145,6 +183,8 @@ const buildHelpfulStopCards = (base) => {
       title: "Transportation / household goods",
       description:
         "Keep the household goods office page close for shipment delivery, storage-in-transit, and travel-day questions.",
+      category: "transportation",
+      baseId: baseKey,
       links: [{ label: "Official transportation page", href: base.transportationLink }],
     });
   }
@@ -154,6 +194,8 @@ const buildHelpfulStopCards = (base) => {
       title: "DEERS / ID cards",
       description:
         "If you need RAPIDS or ID-card support early, use the official locator before you arrive on post.",
+      category: "id_cards",
+      baseId: baseKey,
       links: [{ label: "Official ID card locator", href: base.deersIdCardLink }],
     });
   }
@@ -185,11 +227,14 @@ const enhanceBasePage = () => {
   const arrivalSection = createSection(
     "Arrival & Reporting",
     `${base.installationName} arrival details are most useful when they answer one question quickly: where do I start on day one?`,
-    buildArrivalCards(base)
+    buildArrivalCards(baseKey, base)
   );
   arrivalSection.dataset.baseEnhanced = "true";
 
-  const helpfulStops = buildHelpfulStopCards(base);
+  const sponsoredSection = createSponsoredPlacementSlot(baseKey);
+  sponsoredSection.dataset.baseEnhanced = "true";
+
+  const helpfulStops = buildHelpfulStopCards(baseKey, base);
   const helpfulStopsSection = createSection(
     "Helpful First-Week Stops",
     "These links cover the on-post offices and services that are most likely to matter as soon as you arrive.",
@@ -198,7 +243,8 @@ const enhanceBasePage = () => {
   helpfulStopsSection.dataset.baseEnhanced = "true";
 
   main.insertBefore(helpfulStopsSection, anchor);
-  main.insertBefore(arrivalSection, helpfulStopsSection);
+  main.insertBefore(sponsoredSection, helpfulStopsSection);
+  main.insertBefore(arrivalSection, sponsoredSection);
 };
 
 if (document.readyState === "loading") {
