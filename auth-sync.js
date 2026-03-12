@@ -1967,6 +1967,8 @@ const initializeAuthEvents = () => {
         error.message || "Unable to update privacy settings right now.",
         "error"
       );
+    } finally {
+      closeAuthPanel();
     }
   });
 
@@ -1992,13 +1994,19 @@ const initializeAuthEvents = () => {
     };
 
     setStatus("Saving move profile...", "neutral");
+    let didSaveMoveProfile = false;
     try {
       await saveMoveProfile(nextMoveProfile);
-      closeAuthPanel();
+      didSaveMoveProfile = true;
       setStatus("Move profile updated.", "success");
     } catch (error) {
       console.error("Failed to save move profile.", error);
       setStatus(error.message || "Unable to update the move profile right now.", "error");
+    } finally {
+      closeAuthPanel();
+    }
+
+    if (!didSaveMoveProfile) {
       return;
     }
 
