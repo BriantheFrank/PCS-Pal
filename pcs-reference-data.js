@@ -122,8 +122,9 @@ export const buildOptionsMarkup = (options, placeholderLabel = "Select one") =>
   ].join("");
 
 export const getBaseIdFromPath = (pathname = "") => {
-  const match = String(pathname || "").match(/base-(.+)\.html$/);
-  return match ? match[1] : "";
+  const match = String(pathname || "").match(/(?:base-(.+)\.html$|\/bases\/([^/?#]+)$)/);
+  const baseId = match?.[1] || match?.[2] || "";
+  return baseId;
 };
 
 export const getBaseName = (baseId) => BASE_OPTIONS.find((base) => base.id === baseId)?.name || "";

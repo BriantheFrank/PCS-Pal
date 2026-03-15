@@ -45,6 +45,9 @@
             Add your name, email address, and password to get started. Email
             confirmation stays enabled so your planning details stay tied to you.
           </p>
+          <p class="signup-page-legal-note">
+            PCS Pal is a planning and organizational service, not official government, legal, tax, or financial advice.
+          </p>
           <p class="signup-page-status" data-signup-page-status aria-live="polite"></p>
           <form class="auth-form signup-page-form" data-signup-page-form>
             <label>
@@ -65,6 +68,31 @@
                 required
               />
             </label>
+            <div class="signup-legal-block">
+              <label class="account-checkbox signup-consent-checkbox">
+                <input
+                  type="checkbox"
+                  name="required_legal_acknowledgment"
+                  required
+                />
+                <span>
+                  I agree to the
+                  <a data-legal-link="terms_of_use" href="terms-of-use.html">Terms of Use</a>
+                  and acknowledge the
+                  <a data-legal-link="privacy_policy" href="privacy-policy.html">Privacy Policy</a>.
+                </span>
+              </label>
+              <p class="signup-legal-version-note">
+                Current legal versions:
+                <span data-legal-version="terms_of_use">2026-03-12</span>
+                and
+                <span data-legal-version="privacy_policy">2026-03-12</span>.
+              </p>
+              <label class="account-checkbox signup-consent-checkbox">
+                <input type="checkbox" name="marketing_consent" />
+                <span>I want occasional PCS Pal updates and partner offers. Optional.</span>
+              </label>
+            </div>
             <button type="submit">Create account</button>
           </form>
           <div class="signup-page-actions">
@@ -83,6 +111,7 @@
             <li>Keep checklist progress synced across browsers and devices</li>
             <li>Hold onto your move inventory in one account-linked workspace</li>
             <li>Track logistics details without scattering them across notes and tabs</li>
+            <li>Review the public <a data-legal-link="terms_of_use" href="terms-of-use.html">Terms of Use</a> and <a data-legal-link="privacy_policy" href="privacy-policy.html">Privacy Policy</a> before account creation</li>
           </ul>
         </div>
       </section>

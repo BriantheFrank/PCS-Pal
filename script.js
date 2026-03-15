@@ -147,6 +147,8 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
   let inventory = loadInventory();
   let currentQuery = "";
   let activeLabelItem = null;
+  let activeLabelSettings = null;
+  let lastLabelTrigger = null;
   // Track which item's action menu is open so toggles stay scoped per item.
   let activeMenuItemId = null;
   let activeRoomMenuIndex = null;
@@ -281,11 +283,12 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     }
     const context = getActiveLabelContext();
     if (!context) {
+      closeLabelPanel({ restoreFocus: false });
       return;
     }
-    const settings = ensureLabelSettings(context.room, context.item);
-    syncLabelInputs(settings);
-    applyLabelPreview(settings);
+    activeLabelSettings = buildLabelSettingsSnapshot(context.room, context.item);
+    syncLabelInputs(activeLabelSettings);
+    applyLabelPreview(activeLabelSettings);
   };
 
   const closeItemMenus = () => {
@@ -902,15 +905,35 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     bodySize: 18,
   });
 
-  const ensureLabelSettings = (room, item) => {
-    if (!item.labelSettings) {
-      item.labelSettings = defaultLabelSettings(room, item);
+  const sanitizeLabelSize = (value, fallback, min, max) => {
+    const numericValue = Number(value);
+    if (!Number.isFinite(numericValue)) {
+      return fallback;
     }
+    return Math.min(max, Math.max(min, Math.round(numericValue)));
+  };
+
+  const buildLabelSettingsSnapshot = (room, item) => {
     const defaults = defaultLabelSettings(room, item);
-    item.labelSettings = {
-      ...defaults,
-      ...item.labelSettings,
+    const savedSettings = item.labelSettings || {};
+    return {
+      title:
+        typeof savedSettings.title === "string" ? savedSettings.title : defaults.title,
+      room:
+        typeof savedSettings.room === "string" ? savedSettings.room : defaults.room,
+      weight:
+        typeof savedSettings.weight === "string"
+          ? savedSettings.weight
+          : defaults.weight,
+      notes:
+        typeof savedSettings.notes === "string" ? savedSettings.notes : defaults.notes,
+      titleSize: sanitizeLabelSize(savedSettings.titleSize, defaults.titleSize, 18, 36),
+      bodySize: sanitizeLabelSize(savedSettings.bodySize, defaults.bodySize, 14, 28),
     };
+  };
+
+  const ensureLabelSettings = (room, item) => {
+    item.labelSettings = buildLabelSettingsSnapshot(room, item);
     return item.labelSettings;
   };
 
@@ -1005,23 +1028,74 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     return { room, item };
   };
 
+  const setLabelPanelOpen = (isOpen) => {
+    if (!labelPanel) {
+      return;
+    }
+    labelPanel.hidden = !isOpen;
+    labelPanel.setAttribute("aria-hidden", isOpen ? "false" : "true");
+  };
+
+  const persistActiveLabelSettings = () => {
+    if (!activeLabelSettings) {
+      return null;
+    }
+    const context = getActiveLabelContext();
+    if (!context) {
+      activeLabelSettings = null;
+      return null;
+    }
+    context.item.labelSettings = {
+      ...activeLabelSettings,
+      titleSize: sanitizeLabelSize(activeLabelSettings.titleSize, 26, 18, 36),
+      bodySize: sanitizeLabelSize(activeLabelSettings.bodySize, 18, 14, 28),
+    };
+    saveInventory(inventory);
+    return context.item.labelSettings;
+  };
+
+  const getActiveLabelSettings = () => {
+    const context = getActiveLabelContext();
+    if (!context) {
+      activeLabelSettings = null;
+      return null;
+    }
+    if (!activeLabelSettings) {
+      activeLabelSettings = buildLabelSettingsSnapshot(context.room, context.item);
+    }
+    return activeLabelSettings;
+  };
+
+  const closeLabelPanel = ({ restoreFocus = true } = {}) => {
+    setLabelPanelOpen(false);
+    activeLabelItem = null;
+    activeLabelSettings = null;
+    setLabelActionStatus("");
+    if (restoreFocus && lastLabelTrigger && document.contains(lastLabelTrigger)) {
+      lastLabelTrigger.focus();
+    }
+    lastLabelTrigger = null;
+  };
+
   const openLabelPanel = (roomIndex, itemIndex, options = {}) => {
     if (!labelPanel) {
       return;
     }
-    const { focusInput = true } = options;
+    const { focusInput = true, triggerButton = null } = options;
     const room = inventory.rooms[roomIndex];
     const item = room?.items[itemIndex];
     if (!room || !item) {
       return;
     }
     activeLabelItem = { roomIndex, itemIndex };
-    const labelSettings = ensureLabelSettings(room, item);
-    saveInventory(inventory);
-    syncLabelInputs(labelSettings);
-    applyLabelPreview(labelSettings);
+    activeLabelSettings = buildLabelSettingsSnapshot(room, item);
+    persistActiveLabelSettings();
+    syncLabelInputs(activeLabelSettings);
+    applyLabelPreview(activeLabelSettings);
     setLabelActionStatus("");
-    labelPanel.hidden = false;
+    lastLabelTrigger =
+      triggerButton instanceof HTMLElement ? triggerButton : document.activeElement;
+    setLabelPanelOpen(true);
     labelPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     if (focusInput) {
       window.requestAnimationFrame(() => {
@@ -1032,14 +1106,13 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
   };
 
   const updateLabelSetting = (field, value) => {
-    const context = getActiveLabelContext();
-    if (!context) {
+    const labelSettings = getActiveLabelSettings();
+    if (!labelSettings) {
       return;
     }
-    const labelSettings = ensureLabelSettings(context.room, context.item);
     labelSettings[field] = value;
     applyLabelPreview(labelSettings);
-    saveInventory(inventory);
+    persistActiveLabelSettings();
     setLabelActionStatus("");
   };
 
@@ -1057,14 +1130,6 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
-
-  const getActiveLabelSettings = () => {
-    const context = getActiveLabelContext();
-    if (!context) {
-      return null;
-    }
-    return ensureLabelSettings(context.room, context.item);
-  };
 
   const getLabelFilenameBase = (settings) =>
     slugify(
@@ -1226,15 +1291,7 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     return lines.length ? lines : ["—"];
   };
 
-  const renderLabelCanvas = async (settings) => {
-    if (document.fonts?.ready) {
-      try {
-        await document.fonts.ready;
-      } catch (error) {
-        console.warn("Label export fonts were not fully ready.", error);
-      }
-    }
-
+  const renderLabelCanvas = (settings) => {
     const values = getOutputLabelValues(settings);
     const titleSize = Math.max(22, Number(settings.titleSize) || 26);
     const bodySize = Math.max(16, Number(settings.bodySize) || 18);
@@ -1322,85 +1379,75 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     return canvas;
   };
 
-  const downloadLabelCanvas = (canvas, filename) =>
-    new Promise((resolve, reject) => {
-      const triggerDownload = (url) => {
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = filename;
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
-      };
-
-      if (canvas.toBlob) {
-        canvas.toBlob((blob) => {
-          if (!blob) {
-            reject(new Error("Unable to generate the label image."));
-            return;
-          }
-          const url = URL.createObjectURL(blob);
-          triggerDownload(url);
-          window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-          resolve();
-        }, "image/png");
-        return;
-      }
-
-      try {
-        triggerDownload(canvas.toDataURL("image/png"));
-        resolve();
-      } catch (error) {
-        reject(error);
-      }
-    });
+  const downloadLabelCanvas = (canvas, filename) => {
+    const anchor = document.createElement("a");
+    anchor.href = canvas.toDataURL("image/png");
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  };
 
   const printLabelFromSettings = (settings) =>
     new Promise((resolve, reject) => {
-      const printFrame = document.createElement("iframe");
-      printFrame.style.position = "fixed";
-      printFrame.style.width = "0";
-      printFrame.style.height = "0";
-      printFrame.style.opacity = "0";
-      printFrame.style.pointerEvents = "none";
-      printFrame.style.border = "0";
+      const printWindow = window.open("", "_blank", "width=960,height=720");
+      if (!printWindow) {
+        reject(new Error("The browser blocked the print window."));
+        return;
+      }
 
-      const cleanup = () => {
+      let settled = false;
+      const finish = () => {
+        if (!settled) {
+          settled = true;
+          resolve();
+        }
         window.setTimeout(() => {
-          printFrame.remove();
-        }, 500);
+          try {
+            printWindow.close();
+          } catch (error) {
+            console.warn("Unable to close the print window automatically.", error);
+          }
+        }, 250);
       };
 
-      printFrame.onload = () => {
+      try {
+        printWindow.document.open();
+        printWindow.document.write(buildLabelPrintDocument(settings));
+        printWindow.document.close();
+      } catch (error) {
         try {
-          const printWindow = printFrame.contentWindow;
-          if (!printWindow) {
-            throw new Error("Print view was unavailable.");
-          }
+          printWindow.close();
+        } catch (closeError) {
+          console.warn("Unable to close the failed print window.", closeError);
+        }
+        reject(error);
+        return;
+      }
 
-          let settled = false;
-          const finish = () => {
-            if (!settled) {
-              settled = true;
-              resolve();
-            }
-            cleanup();
-          };
-
+      const triggerPrint = () => {
+        try {
           printWindow.onafterprint = finish;
           printWindow.focus();
-          window.setTimeout(() => {
-            printWindow.print();
-            window.setTimeout(finish, 1200);
-          }, 60);
+          printWindow.print();
+          window.setTimeout(finish, 1500);
         } catch (error) {
-          cleanup();
+          try {
+            printWindow.close();
+          } catch (closeError) {
+            console.warn("Unable to close the failed print window.", closeError);
+          }
           reject(error);
         }
       };
 
-      printFrame.srcdoc = buildLabelPrintDocument(settings);
-      document.body.appendChild(printFrame);
+      if (printWindow.document.readyState === "complete") {
+        window.setTimeout(triggerPrint, 60);
+      } else {
+        printWindow.onload = () => {
+          window.setTimeout(triggerPrint, 60);
+        };
+      }
     });
 
   if (labelTitleInput) {
@@ -1443,7 +1490,8 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
   }
 
   if (printLabelButton) {
-    printLabelButton.addEventListener("click", async () => {
+    printLabelButton.addEventListener("click", async (event) => {
+      event.preventDefault();
       const settings = getActiveLabelSettings();
       if (!settings) {
         return;
@@ -1460,18 +1508,16 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
   }
 
   if (downloadLabelButton) {
-    downloadLabelButton.addEventListener("click", async () => {
+    downloadLabelButton.addEventListener("click", (event) => {
+      event.preventDefault();
       const settings = getActiveLabelSettings();
       if (!settings) {
         return;
       }
       setLabelActionStatus("Preparing label download...", "neutral");
       try {
-        const canvas = await renderLabelCanvas(settings);
-        await downloadLabelCanvas(
-          canvas,
-          `box-label-${getLabelFilenameBase(settings)}.png`
-        );
+        const canvas = renderLabelCanvas(settings);
+        downloadLabelCanvas(canvas, `box-label-${getLabelFilenameBase(settings)}.png`);
         setLabelActionStatus("Label downloaded as PNG.", "success");
       } catch (error) {
         console.error("Unable to download the label.", error);
@@ -1481,12 +1527,17 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
   }
 
   if (closeLabelButton && labelPanel) {
-    closeLabelButton.addEventListener("click", () => {
-      labelPanel.hidden = true;
-      activeLabelItem = null;
-      setLabelActionStatus("");
+    closeLabelButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      closeLabelPanel();
     });
   }
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && labelPanel && !labelPanel.hidden) {
+      closeLabelPanel();
+    }
+  });
 
   // Close item action menus when clicking elsewhere on the page.
   document.addEventListener("click", (event) => {
@@ -1594,10 +1645,7 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
         activeLabelItem && activeLabelItem.roomIndex === roomIndex;
       inventory.rooms.splice(roomIndex, 1);
       if (wasActiveRoom) {
-        if (labelPanel) {
-          labelPanel.hidden = true;
-        }
-        activeLabelItem = null;
+        closeLabelPanel({ restoreFocus: false });
       } else if (activeLabelItem && activeLabelItem.roomIndex > roomIndex) {
         activeLabelItem = {
           roomIndex: activeLabelItem.roomIndex - 1,
@@ -1734,10 +1782,7 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
         activeLabelItem.itemIndex === itemIndex;
       room.items.splice(itemIndex, 1);
       if (wasActive) {
-        if (labelPanel) {
-          labelPanel.hidden = true;
-        }
-        activeLabelItem = null;
+        closeLabelPanel({ restoreFocus: false });
       } else {
         adjustActiveLabelIndexOnRemoval(roomIndex, itemIndex);
       }
@@ -1747,11 +1792,14 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
       return;
     }
     if (action === "view-label") {
-      openLabelPanel(roomIndex, itemIndex);
+      openLabelPanel(roomIndex, itemIndex, { triggerButton: actionButton });
       return;
     }
     if (action === "print-label") {
-      openLabelPanel(roomIndex, itemIndex, { focusInput: false });
+      openLabelPanel(roomIndex, itemIndex, {
+        focusInput: false,
+        triggerButton: actionButton,
+      });
       const settings = getActiveLabelSettings();
       if (!settings) {
         return;
@@ -2279,6 +2327,11 @@ if (calendarGrid && calendarLabel) {
       return Promise.reject(new Error("Map container missing."));
     }
     if (mapState.readyPromise) {
+      return mapState.readyPromise;
+    }
+    if (window.google?.maps) {
+      initMap();
+      mapState.readyPromise = Promise.resolve();
       return mapState.readyPromise;
     }
     if (!mapApiKey) {

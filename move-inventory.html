@@ -115,11 +115,18 @@
         -->
       </section>
 
-      <section class="label-panel" id="label-panel" hidden>
+      <section
+        class="label-panel"
+        id="label-panel"
+        hidden
+        aria-hidden="true"
+        aria-labelledby="label-panel-title"
+        tabindex="-1"
+      >
         <div class="label-panel-header">
           <div>
             <p class="label-eyebrow">Box label</p>
-            <h2>Edit, preview, print, or download</h2>
+            <h2 id="label-panel-title">Edit, preview, print, or download</h2>
           </div>
           <div class="label-panel-actions">
             <button type="button" class="label-action" id="print-label-button">

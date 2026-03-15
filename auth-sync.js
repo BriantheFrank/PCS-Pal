@@ -1,4 +1,4 @@
-import {
+﻿import {
   BASE_OPTIONS,
   HOUSEHOLD_SIZE_OPTIONS,
   HOUSING_INTENT_OPTIONS,
@@ -15,14 +15,55 @@ import {
   normalizeMonthInput,
   sanitizeOutboundUrl,
 } from "./pcs-reference-data.js";
+import {
+  CHECKLIST_STORAGE_KEY,
+  fetchRemoteChecklist as fetchSharedRemoteChecklist,
+  hasChecklistData as hasSharedChecklistData,
+  pushChecklist as pushSharedChecklist,
+} from "./checklist-data.js";
+import {
+  INVENTORY_STORAGE_KEY,
+  fetchRemoteInventory as fetchSharedRemoteInventory,
+  hasInventoryData as hasSharedInventoryData,
+  pushInventory as pushSharedInventory,
+} from "./inventory-data.js";
+import {
+  LOGISTICS_STORAGE_KEY,
+  fetchRemoteLogistics as fetchSharedRemoteLogistics,
+  hasLogisticsData as hasSharedLogisticsData,
+  pushLogistics as pushSharedLogistics,
+} from "./logistics-data.js";
+import {
+  fetchCurrentUserLegalStatus as fetchSharedCurrentUserLegalStatus,
+  fetchMoveProfile as fetchSharedMoveProfile,
+  fetchProfile as fetchSharedProfile,
+  getDisplayName as getSharedDisplayName,
+  getFallbackName as getSharedFallbackName,
+  getHouseholdProfile as getSharedHouseholdProfile,
+  getMoveProfile as getSharedMoveProfile,
+  getProfileFullName as getSharedProfileFullName,
+  getProviderLabel as getSharedProviderLabel,
+  normalizeFullName as normalizeSharedFullName,
+  recordCurrentLegalAcceptance as recordSharedCurrentLegalAcceptance,
+  saveMoveProfile as saveSharedMoveProfile,
+  savePrivacySettings as saveSharedPrivacySettings,
+  saveProfile as saveSharedProfile,
+  upsertProfile as upsertSharedProfile,
+} from "./account-data.js";
+import {
+  LEGAL_DOC_FALLBACKS,
+  LEGAL_DOC_TYPES,
+  LEGAL_PUBLIC_PATHS,
+  createFallbackLegalDocs,
+} from "./legal-documents.js";
 
 const SUPABASE_BROWSER_CDN =
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 const STORAGE_KEYS = {
-  checklist: "pcs-checklist",
-  inventory: "pcs-move-inventory",
-  logistics: "pcs-move-logistics",
+  checklist: CHECKLIST_STORAGE_KEY,
+  inventory: INVENTORY_STORAGE_KEY,
+  logistics: LOGISTICS_STORAGE_KEY,
 };
 
 const SYNC_MARKERS = {
@@ -37,6 +78,9 @@ const state = {
   user: null,
   profile: null,
   moveProfile: null,
+  legalDocs: createFallbackLegalDocs(),
+  legalDocsAuthoritative: false,
+  legalStatus: [],
   pendingKeys: new Set(),
   syncTimer: null,
   storagePatched: false,
@@ -67,6 +111,7 @@ const HOUSEHOLD_SIZE_OPTIONS_MARKUP = buildOptionsMarkup(
 
 const hasWindow = typeof window !== "undefined";
 const MOBILE_LAYOUT_QUERY = "(max-width: 860px)";
+const PUBLIC_INFO_PATHS = new Set(["/about", "/contact", "/terms", "/privacy"]);
 
 const parseJson = (value, fallback) => {
   if (!value) {
@@ -84,9 +129,21 @@ const parseBoolean = (value) => String(value).toLowerCase() === "true";
 
 const isLandingPath = (pathname) => pathname === "/" || pathname.endsWith("/index.html");
 
-const isCreateAccountPath = (pathname) => pathname.endsWith("/create-account.html");
+const isCreateAccountPath = (pathname) =>
+  pathname === "/create-account" || pathname.endsWith("/create-account.html");
 
-const isPublicPath = (pathname) => isLandingPath(pathname) || isCreateAccountPath(pathname);
+const isLegalDocumentPath = (pathname) =>
+  pathname === "/terms" ||
+  pathname === "/privacy" ||
+  LEGAL_PUBLIC_PATHS.some((legalPath) => pathname.endsWith(legalPath));
+
+const isPublicInfoPath = (pathname) => PUBLIC_INFO_PATHS.has(pathname);
+
+const isPublicPath = (pathname) =>
+  isLandingPath(pathname) ||
+  isCreateAccountPath(pathname) ||
+  isLegalDocumentPath(pathname) ||
+  isPublicInfoPath(pathname);
 
 const redirectToLanding = () => {
   window.location.replace(new URL("/index.html", window.location.origin).toString());
@@ -101,25 +158,102 @@ const toTitleCase = (value) =>
     .join(" ");
 
 const normalizeFullName = (value) => {
-  const normalized = toTitleCase(value);
+  const normalized = normalizeSharedFullName(value);
   return normalized || "";
 };
 
-const getProfileFullName = () =>
-  normalizeFullName(
-    state.profile?.full_name ||
-      state.user?.user_metadata?.full_name ||
-      state.user?.user_metadata?.name ||
-      ""
-  );
+const formatDisplayDate = (value) => {
+  if (!value) {
+    return "Not set";
+  }
 
-const getFallbackName = () => {
-  const email = state.user?.email || state.profile?.email || "";
-  const localPart = email.split("@")[0] || "";
-  return localPart ? toTitleCase(localPart.replace(/[._-]+/g, " ")) : "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsed);
 };
 
-const getDisplayName = () => getProfileFullName() || getFallbackName() || "PCS Planner";
+const getLegalDoc = (docType) => state.legalDocs[docType] || LEGAL_DOC_FALLBACKS[docType] || null;
+
+const setLegalDocs = (documents = []) => {
+  const nextLegalDocs = createFallbackLegalDocs();
+
+  documents.forEach((document) => {
+    if (!document?.doc_type) {
+      return;
+    }
+
+    nextLegalDocs[document.doc_type] = {
+      docType: document.doc_type,
+      title: document.title || LEGAL_DOC_FALLBACKS[document.doc_type]?.title || "Legal Document",
+      version: document.version || LEGAL_DOC_FALLBACKS[document.doc_type]?.version || "",
+      effectiveDate:
+        document.effective_date || LEGAL_DOC_FALLBACKS[document.doc_type]?.effectiveDate || "",
+      url: document.url || LEGAL_DOC_FALLBACKS[document.doc_type]?.url || "index.html",
+      reviewStatus:
+        document.review_status === "attorney_reviewed"
+          ? "Attorney reviewed"
+          : LEGAL_DOC_FALLBACKS[document.doc_type]?.reviewStatus || "Draft pending attorney review",
+      reviewStatusCode:
+        document.review_status ||
+        LEGAL_DOC_FALLBACKS[document.doc_type]?.reviewStatusCode ||
+        "draft_pending_attorney_review",
+      contentHash: document.content_hash || "",
+    };
+  });
+
+  state.legalDocs = nextLegalDocs;
+};
+
+const syncLegalAnchors = (root = document) => {
+  Array.from(root.querySelectorAll("[data-legal-link]")).forEach((anchor) => {
+    const docType = anchor.dataset.legalLink;
+    const legalDoc = getLegalDoc(docType);
+    if (!legalDoc) {
+      return;
+    }
+
+    anchor.setAttribute("href", legalDoc.url);
+    if (!anchor.textContent.trim()) {
+      anchor.textContent = legalDoc.title;
+    }
+  });
+
+  Array.from(root.querySelectorAll("[data-legal-version]")).forEach((element) => {
+    const docType = element.dataset.legalVersion;
+    const legalDoc = getLegalDoc(docType);
+    if (!legalDoc) {
+      return;
+    }
+    element.textContent = legalDoc.version;
+  });
+
+  Array.from(root.querySelectorAll("[data-legal-effective-date]")).forEach((element) => {
+    const docType = element.dataset.legalEffectiveDate;
+    const legalDoc = getLegalDoc(docType);
+    if (!legalDoc) {
+      return;
+    }
+    element.textContent = formatDisplayDate(legalDoc.effectiveDate);
+  });
+};
+
+const getCurrentLegalVersionSnapshot = () => ({
+  termsVersion: getLegalDoc(LEGAL_DOC_TYPES.terms)?.version || "",
+  privacyVersion: getLegalDoc(LEGAL_DOC_TYPES.privacy)?.version || "",
+});
+
+const getProfileFullName = () => getSharedProfileFullName({ profile: state.profile, user: state.user });
+
+const getFallbackName = () => getSharedFallbackName({ email: state.user?.email || state.profile?.email || "" });
+
+const getDisplayName = () => getSharedDisplayName({ profile: state.profile, user: state.user });
 
 const getFirstName = () => getDisplayName().split(/\s+/)[0] || "Planner";
 
@@ -172,12 +306,12 @@ const getDefaultMoveProfile = () => ({
 
 const getHouseholdProfile = () => ({
   ...getDefaultHouseholdProfile(),
-  ...(state.profile?.household_profile_coarse || {}),
+  ...getSharedHouseholdProfile(state.profile),
 });
 
 const getMoveProfile = () => ({
   ...getDefaultMoveProfile(),
-  ...(state.moveProfile || {}),
+  ...getSharedMoveProfile(state.moveProfile),
 });
 
 const coerceBoolean = (value) => Boolean(value);
@@ -223,32 +357,11 @@ const writeStorage = (key, value) => {
   window.localStorage.setItem(key, JSON.stringify(value));
 };
 
-const hasChecklistData = (payload) =>
-  Boolean(payload) && typeof payload === "object" && Object.keys(payload).length > 0;
+const hasChecklistData = (payload) => hasSharedChecklistData(payload);
 
-const hasInventoryData = (payload) =>
-  Boolean(payload) &&
-  typeof payload === "object" &&
-  Array.isArray(payload.rooms) &&
-  payload.rooms.length > 0;
+const hasInventoryData = (payload) => hasSharedInventoryData(payload);
 
-const hasLogisticsData = (payload) => {
-  if (!payload || typeof payload !== "object") {
-    return false;
-  }
-  const hasSections =
-    payload.sections && typeof payload.sections === "object"
-      ? Object.values(payload.sections).some(
-          (section) =>
-            section &&
-            typeof section === "object" &&
-            Object.values(section).some((value) => String(value || "").trim() !== "")
-        )
-      : false;
-  const hasStops = Array.isArray(payload.itineraryStops) && payload.itineraryStops.length > 0;
-  const hasCustom = Array.isArray(payload.customEvents) && payload.customEvents.length > 0;
-  return hasSections || hasStops || hasCustom;
-};
+const hasLogisticsData = (payload) => hasSharedLogisticsData(payload);
 
 const hasDataForKey = (storageKey, payload) => {
   switch (storageKey) {
@@ -430,6 +543,26 @@ const initializeSiteChrome = () => {
   initializeAdaptiveDisclosures();
 };
 
+const ensureFooterLegalLinks = () => {
+  Array.from(document.querySelectorAll(".site-footer .container")).forEach((container) => {
+    let footerLinks = container.querySelector("[data-footer-legal-links]");
+    if (!footerLinks) {
+      footerLinks = document.createElement("div");
+      footerLinks.className = "footer-legal-links";
+      footerLinks.dataset.footerLegalLinks = "true";
+      footerLinks.innerHTML = `
+        <a data-legal-link="terms_of_use" href="terms-of-use.html">Terms of Use</a>
+        <span aria-hidden="true">|</span>
+        <a data-legal-link="privacy_policy" href="privacy-policy.html">Privacy Policy</a>
+        <span class="footer-legal-review">Draft legal pages pending attorney review</span>
+      `;
+      container.appendChild(footerLinks);
+    }
+
+    syncLegalAnchors(footerLinks);
+  });
+};
+
 const updateLandingNavigation = () => {
   const protectedLinks = Array.from(document.querySelectorAll(".site-nav [data-protected-link]"));
   protectedLinks.forEach((link) => {
@@ -465,7 +598,66 @@ const setSignupPageStatus = (message, tone = "neutral") => {
   status.dataset.tone = tone;
 };
 
-const signUpWithEmail = async ({ fullName, email, password }) =>
+const loadActiveLegalDocs = async () => {
+  if (!state.supabase) {
+    setLegalDocs();
+    state.legalDocsAuthoritative = false;
+    return;
+  }
+
+  const { data, error } = await state.supabase
+    .from("legal_documents")
+    .select("doc_type, title, version, effective_date, url, review_status, content_hash")
+    .eq("is_active", true);
+
+  if (error) {
+    console.warn("Unable to load legal documents from Supabase. Falling back to bundled values.", error);
+    setLegalDocs();
+    state.legalDocsAuthoritative = false;
+    return;
+  }
+
+  const nextDocs = data || [];
+  setLegalDocs(nextDocs);
+
+  const loadedDocTypes = new Set(nextDocs.map((document) => document?.doc_type).filter(Boolean));
+  state.legalDocsAuthoritative =
+    loadedDocTypes.has(LEGAL_DOC_TYPES.terms) && loadedDocTypes.has(LEGAL_DOC_TYPES.privacy);
+
+  if (!state.legalDocsAuthoritative) {
+    console.warn(
+      "Legal documents are missing an active Terms of Use or Privacy Policy row. Blocking new signups until the legal registry is complete."
+    );
+  }
+};
+
+const fetchLegalContext = async () => {
+  try {
+    const response = await fetch("/api/legal-context", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error("Legal context request failed.");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.warn("Unable to load legal request context. Continuing without server-derived IP hash.", error);
+    return {
+      observedAt: new Date().toISOString(),
+      ipHash: null,
+      ipHashMethod: "unavailable",
+      userAgent: hasWindow ? window.navigator.userAgent : "",
+    };
+  }
+};
+
+const signUpWithEmail = async ({ fullName, email, password, marketingConsent, legalAcceptance }) =>
   state.supabase.auth.signUp({
     email,
     password,
@@ -473,6 +665,9 @@ const signUpWithEmail = async ({ fullName, email, password }) =>
       data: {
         full_name: fullName || null,
         name: fullName || null,
+        marketing_consent: Boolean(marketingConsent),
+        signup_source: "create_account_page",
+        legal_acceptance: legalAcceptance,
       },
     },
   });
@@ -724,22 +919,8 @@ const serializeChecklistRows = (checklistState) =>
     checked: Boolean(checked),
   }));
 
-const fetchRemoteChecklist = async (userId) => {
-  const { data, error } = await state.supabase
-    .from("user_checklist_state")
-    .select("checklist_key, checked")
-    .eq("user_id", userId);
-
-  if (error) {
-    throw error;
-  }
-
-  const payload = {};
-  (data || []).forEach((row) => {
-    payload[row.checklist_key] = Boolean(row.checked);
-  });
-  return payload;
-};
+const fetchRemoteChecklist = async (userId) =>
+  fetchSharedRemoteChecklist({ supabase: state.supabase, userId });
 
 const fetchRemotePayloadRow = async (tableName, userId) => {
   const { data, error } = await state.supabase
@@ -755,23 +936,12 @@ const fetchRemotePayloadRow = async (tableName, userId) => {
   return data?.payload || null;
 };
 
-const pushChecklist = async (userId) => {
-  const checklistState = readStorage(STORAGE_KEYS.checklist, {});
-  const rows = serializeChecklistRows(checklistState);
-
-  if (rows.length === 0) {
-    await state.supabase.from("user_checklist_state").delete().eq("user_id", userId);
-    return;
-  }
-
-  const payload = rows.map((row) => ({ ...row, user_id: userId }));
-  const { error } = await state.supabase
-    .from("user_checklist_state")
-    .upsert(payload, { onConflict: "user_id,checklist_key" });
-  if (error) {
-    throw error;
-  }
-};
+const pushChecklist = async (userId) =>
+  pushSharedChecklist({
+    supabase: state.supabase,
+    userId,
+    checklistState: readStorage(STORAGE_KEYS.checklist, {}),
+  });
 
 const pushPayload = async (tableName, storageKey, userId) => {
   const payload = readStorage(storageKey, null);
@@ -797,11 +967,19 @@ const pushStorageKeyToRemote = async (storageKey, userId) => {
     return;
   }
   if (storageKey === STORAGE_KEYS.inventory) {
-    await pushPayload("user_inventory", STORAGE_KEYS.inventory, userId);
+    await pushSharedInventory({
+      supabase: state.supabase,
+      userId,
+      inventoryState: readStorage(STORAGE_KEYS.inventory, { rooms: [] }),
+    });
     return;
   }
   if (storageKey === STORAGE_KEYS.logistics) {
-    await pushPayload("user_move_logistics", STORAGE_KEYS.logistics, userId);
+    await pushSharedLogistics({
+      supabase: state.supabase,
+      userId,
+      logisticsState: readStorage(STORAGE_KEYS.logistics, null),
+    });
   }
 };
 
@@ -871,69 +1049,20 @@ const maybeReloadForHydration = (userId) => {
   window.location.reload();
 };
 
-const upsertProfile = async (user) => {
-  const fullName = normalizeFullName(
-    user.user_metadata?.full_name || user.user_metadata?.name || ""
-  );
-  const { error } = await state.supabase.from("profiles").upsert(
-    {
-      id: user.id,
-      email: user.email || null,
-      full_name: fullName || null,
-    },
-    { onConflict: "id" }
-  );
-  if (error) {
-    throw error;
-  }
-};
+const upsertProfile = async (user) => upsertSharedProfile({ supabase: state.supabase, user });
 
-const fetchProfile = async (userId) => {
-  const { data, error } = await state.supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data || null;
-};
+const fetchProfile = async (userId) => fetchSharedProfile({ supabase: state.supabase, userId });
 
 const saveProfile = async (fullNameInput) => {
-  const fullName = normalizeFullName(fullNameInput);
-  const authUpdate = await state.supabase.auth.updateUser({
-    data: {
-      full_name: fullName || null,
-      name: fullName || null,
-    },
+  const nextState = await saveSharedProfile({
+    supabase: state.supabase,
+    user: state.user,
+    profile: state.profile,
+    fullNameInput,
   });
 
-  if (authUpdate.error) {
-    throw authUpdate.error;
-  }
-
-  const { error } = await state.supabase.from("profiles").upsert(
-    {
-      id: state.user.id,
-      email: state.user.email || null,
-      full_name: fullName || null,
-    },
-    { onConflict: "id" }
-  );
-
-  if (error) {
-    throw error;
-  }
-
-  state.profile = {
-    ...(state.profile || {}),
-    id: state.user.id,
-    email: state.user.email || null,
-    full_name: fullName || null,
-  };
+  state.user = nextState.user;
+  state.profile = nextState.profile;
 };
 
 const savePrivacySettings = async ({
@@ -942,79 +1071,26 @@ const savePrivacySettings = async ({
   dataSaleOptOut,
   householdSizeBucket,
 }) => {
-  const nextHouseholdProfile = {
-    ...getHouseholdProfile(),
-    household_size_bucket: householdSizeBucket || "",
-  };
-
-  const { error } = await state.supabase.from("profiles").upsert(
-    {
-      id: state.user.id,
-      email: state.user.email || null,
-      full_name: getProfileFullName() || null,
-      analytics_consent: analyticsConsent,
-      marketing_consent: marketingConsent,
-      data_sale_opt_out: dataSaleOptOut,
-      household_profile_coarse: nextHouseholdProfile,
-    },
-    { onConflict: "id" }
-  );
-
-  if (error) {
-    throw error;
-  }
-
-  state.profile = {
-    ...(state.profile || {}),
-    id: state.user.id,
-    email: state.user.email || null,
-    analytics_consent: analyticsConsent,
-    marketing_consent: marketingConsent,
-    data_sale_opt_out: dataSaleOptOut,
-    household_profile_coarse: nextHouseholdProfile,
-  };
+  state.profile = await saveSharedPrivacySettings({
+    supabase: state.supabase,
+    user: state.user,
+    profile: state.profile,
+    analyticsConsent,
+    marketingConsent,
+    dataSaleOptOut,
+    householdSizeBucket,
+  });
 };
 
-const fetchMoveProfile = async (userId) => {
-  const { data, error } = await state.supabase
-    .from("moves")
-    .select("*")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data || null;
-};
+const fetchMoveProfile = async (userId) =>
+  fetchSharedMoveProfile({ supabase: state.supabase, userId });
 
 const saveMoveProfile = async (moveProfileInput) => {
-  const payload = {
-    user_id: state.user.id,
-    destination_base_id: moveProfileInput.destination_base_id || null,
-    origin_region: moveProfileInput.origin_region || null,
-    move_month: normalizeMonthInput(moveProfileInput.move_month),
-    move_stage: moveProfileInput.move_stage || "planning",
-    housing_intent: moveProfileInput.housing_intent || null,
-    lodging_needed: coerceBoolean(moveProfileInput.lodging_needed),
-    vehicle_shipment_needed: coerceBoolean(moveProfileInput.vehicle_shipment_needed),
-    pets_flag: coerceBoolean(moveProfileInput.pets_flag),
-    school_age_flag: coerceBoolean(moveProfileInput.school_age_flag),
-    spouse_employment_flag: coerceBoolean(moveProfileInput.spouse_employment_flag),
-  };
-
-  const { data, error } = await state.supabase
-    .from("moves")
-    .upsert(payload, { onConflict: "user_id" })
-    .select("*")
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  state.moveProfile = data || null;
+  state.moveProfile = await saveSharedMoveProfile({
+    supabase: state.supabase,
+    userId: state.user.id,
+    moveProfileInput,
+  });
 };
 
 const reconcileLocalAndRemote = async (user) => {
@@ -1022,8 +1098,8 @@ const reconcileLocalAndRemote = async (user) => {
 
   const [remoteChecklist, remoteInventory, remoteLogistics] = await Promise.all([
     fetchRemoteChecklist(userId),
-    fetchRemotePayloadRow("user_inventory", userId),
-    fetchRemotePayloadRow("user_move_logistics", userId),
+    fetchSharedRemoteInventory({ supabase: state.supabase, userId }),
+    fetchSharedRemoteLogistics({ supabase: state.supabase, userId }),
   ]);
 
   const local = collectLocalSnapshot();
@@ -1103,10 +1179,7 @@ const reconcileLocalAndRemote = async (user) => {
   }
 };
 
-const getProviderLabel = () => {
-  const provider = state.user?.app_metadata?.provider || "email";
-  return provider === "google" ? "Google account" : "Email account";
-};
+const getProviderLabel = () => getSharedProviderLabel(state.user);
 
 const canTrackAnalytics = () =>
   Boolean(state.supabase && state.user && state.profile?.analytics_consent);
@@ -1537,6 +1610,173 @@ const renderPartnerPlacements = async () => {
   }
 };
 
+const createAccountLegalSection = () => {
+  const section = document.createElement("section");
+  section.className = "account-settings-block legal-settings-block";
+  section.innerHTML = `
+    <h3>Terms and Privacy</h3>
+    <p class="account-copy">
+      Review the current Terms of Use and Privacy Policy versions connected to this account.
+    </p>
+    <div class="legal-account-links">
+      <a class="legal-link-pill" data-legal-link="terms_of_use" href="terms-of-use.html">Terms of Use</a>
+      <a class="legal-link-pill" data-legal-link="privacy_policy" href="privacy-policy.html">Privacy Policy</a>
+    </div>
+    <p class="legal-settings-status" data-legal-settings-status aria-live="polite"></p>
+    <div class="legal-acceptance-list" data-legal-acceptance-list hidden></div>
+    <label class="account-checkbox legal-reacceptance-control" data-legal-reacceptance-control hidden>
+      <input type="checkbox" data-legal-reaccept-checkbox />
+      <span>
+        I agree to the current <a data-legal-link="terms_of_use" href="terms-of-use.html">Terms of Use</a>
+        and acknowledge the current <a data-legal-link="privacy_policy" href="privacy-policy.html">Privacy Policy</a>.
+      </span>
+    </label>
+    <button type="button" class="legal-acknowledge-button" data-legal-reaccept-button hidden>
+      Save current legal acknowledgment
+    </button>
+  `;
+
+  syncLegalAnchors(section);
+  return section;
+};
+
+const setLegalSettingsStatus = (message, tone = "neutral") => {
+  if (!state.authEls?.legalSettingsStatus) {
+    return;
+  }
+
+  state.authEls.legalSettingsStatus.textContent = message;
+  state.authEls.legalSettingsStatus.dataset.tone = tone;
+};
+
+const renderLegalAcceptanceList = (rows) => {
+  const container = state.authEls?.legalAcceptanceList;
+  if (!container) {
+    return;
+  }
+
+  container.replaceChildren();
+
+  rows.forEach((row) => {
+    const item = document.createElement("article");
+    item.className = "legal-acceptance-item";
+
+    const heading = document.createElement("h4");
+    heading.textContent = row.title || getLegalDoc(row.doc_type)?.title || "Legal Document";
+    item.appendChild(heading);
+
+    const detailList = document.createElement("dl");
+    detailList.className = "account-meta legal-acceptance-meta";
+
+    const appendDetail = (label, value) => {
+      const wrapper = document.createElement("div");
+      const term = document.createElement("dt");
+      term.textContent = label;
+      const description = document.createElement("dd");
+      description.textContent = value;
+      wrapper.appendChild(term);
+      wrapper.appendChild(description);
+      detailList.appendChild(wrapper);
+    };
+
+    appendDetail("Current version", row.current_version || "Not set");
+    appendDetail(
+      "Accepted version",
+      row.accepted_version || "No acceptance recorded for this account yet"
+    );
+    appendDetail(
+      "Accepted on",
+      row.accepted_at ? formatDisplayDate(row.accepted_at) : "Not recorded"
+    );
+
+    item.appendChild(detailList);
+    container.appendChild(item);
+  });
+
+  container.hidden = rows.length === 0;
+};
+
+const updateLegalSettingsUI = () => {
+  const authEls = state.authEls;
+  if (!authEls?.legalSettingsSection) {
+    return;
+  }
+
+  syncLegalAnchors(authEls.legalSettingsSection);
+
+  if (!state.user) {
+    renderLegalAcceptanceList([]);
+    authEls.legalReacceptanceControl.hidden = true;
+    authEls.legalReacceptanceButton.hidden = true;
+    authEls.legalReacceptanceCheckbox.checked = false;
+    setLegalSettingsStatus("Sign in to view legal document links and acceptance history.", "neutral");
+    return;
+  }
+
+  if (!state.legalStatus.length) {
+    renderLegalAcceptanceList([]);
+    authEls.legalReacceptanceControl.hidden = true;
+    authEls.legalReacceptanceButton.hidden = true;
+    authEls.legalReacceptanceCheckbox.checked = false;
+    setLegalSettingsStatus(
+      "Current legal versions are available above. Acceptance history will appear after the legal migration is applied and data is available.",
+      "neutral"
+    );
+    return;
+  }
+
+  const needsAttention = state.legalStatus.some((row) => row.needs_reacceptance);
+  renderLegalAcceptanceList(state.legalStatus);
+  authEls.legalReacceptanceControl.hidden = !needsAttention;
+  authEls.legalReacceptanceButton.hidden = !needsAttention;
+  authEls.legalReacceptanceCheckbox.checked = false;
+  setLegalSettingsStatus(
+    needsAttention
+      ? "This account does not yet have a recorded acknowledgment for the current legal versions."
+      : "This account has a recorded acknowledgment for the current Terms of Use and Privacy Policy.",
+    needsAttention ? "error" : "success"
+  );
+};
+
+const fetchCurrentUserLegalStatus = async () => {
+  if (!state.supabase || !state.user) {
+    state.legalStatus = [];
+    return [];
+  }
+
+  try {
+    state.legalStatus = await fetchSharedCurrentUserLegalStatus({ supabase: state.supabase });
+    return state.legalStatus;
+  } catch (error) {
+    console.warn("Unable to load the current legal acceptance status.", error);
+    state.legalStatus = [];
+    return [];
+  }
+};
+
+const recordCurrentLegalAcceptance = async () => {
+  if (!state.supabase || !state.user) {
+    throw new Error("Sign in before saving legal acknowledgment.");
+  }
+
+  const legalContext = await fetchLegalContext();
+  const versionSnapshot = getCurrentLegalVersionSnapshot();
+  const sessionId =
+    hasWindow && typeof window.crypto?.randomUUID === "function"
+      ? window.crypto.randomUUID()
+      : `legal-${Date.now()}`;
+
+  return recordSharedCurrentLegalAcceptance({
+    supabase: state.supabase,
+    versionSnapshot,
+    legalContext,
+    userAgent: hasWindow ? window.navigator.userAgent : "",
+    sessionId,
+    acceptanceMethod: "account_reacceptance",
+    sourceFlow: "account_settings",
+  });
+};
+
 const buildAuthUI = () => {
   if (state.authEls) {
     return state.authEls;
@@ -1685,7 +1925,7 @@ const buildAuthUI = () => {
           </label>
           <button type="submit">Sign in</button>
         </form>
-        <a class="auth-create-account-link" href="create-account.html">Create account</a>
+        <a class="auth-create-account-link" href="/create-account">Create account</a>
         <button type="button" class="auth-google-button">Continue with Google</button>
         <button type="button" class="auth-signout-button" hidden>Sign out</button>
       </div>
@@ -1694,6 +1934,11 @@ const buildAuthUI = () => {
 
   topBar.appendChild(wrapper);
 
+  const accountSummary = wrapper.querySelector(".account-summary");
+  const legalSettingsSection = createAccountLegalSection();
+  accountSummary?.appendChild(legalSettingsSection);
+  syncLegalAnchors(wrapper);
+
   const signinForm = wrapper.querySelector("[data-auth-form='signin']");
   const signupForm = wrapper.querySelector("[data-auth-form='signup']");
   const createAccountLink = wrapper.querySelector(".auth-create-account-link");
@@ -1701,7 +1946,6 @@ const buildAuthUI = () => {
   const signoutButton = wrapper.querySelector(".auth-signout-button");
   const status = wrapper.querySelector(".auth-status");
   const details = wrapper.querySelector(".auth-details");
-  const accountSummary = wrapper.querySelector(".account-summary");
   const accountName = wrapper.querySelector("[data-account-name]");
   const accountEmail = wrapper.querySelector("[data-account-email]");
   const accountAccess = wrapper.querySelector("[data-account-access]");
@@ -1711,6 +1955,11 @@ const buildAuthUI = () => {
   );
   const preferenceForm = wrapper.querySelector("[data-profile-form='preferences']");
   const moveProfileForm = wrapper.querySelector("[data-profile-form='move']");
+  const legalSettingsStatus = wrapper.querySelector("[data-legal-settings-status]");
+  const legalAcceptanceList = wrapper.querySelector("[data-legal-acceptance-list]");
+  const legalReacceptanceControl = wrapper.querySelector("[data-legal-reacceptance-control]");
+  const legalReacceptanceCheckbox = wrapper.querySelector("[data-legal-reaccept-checkbox]");
+  const legalReacceptanceButton = wrapper.querySelector("[data-legal-reaccept-button]");
 
   state.authEls = {
     wrapper,
@@ -1729,6 +1978,12 @@ const buildAuthUI = () => {
     profileNameInput,
     preferenceForm,
     moveProfileForm,
+    legalSettingsSection,
+    legalSettingsStatus,
+    legalAcceptanceList,
+    legalReacceptanceControl,
+    legalReacceptanceCheckbox,
+    legalReacceptanceButton,
   };
 
   return state.authEls;
@@ -1794,6 +2049,7 @@ const updateAuthUI = () => {
     authEls.profileNameInput.value = "";
     authEls.preferenceForm.reset();
     authEls.moveProfileForm.reset();
+    authEls.legalReacceptanceCheckbox.checked = false;
     authEls.preferenceForm.elements.data_sale_opt_out.checked = true;
     setStatus(
       state.googleAuthEnabled
@@ -1803,6 +2059,8 @@ const updateAuthUI = () => {
     );
   }
 
+  syncLegalAnchors(authEls.wrapper);
+  updateLegalSettingsUI();
   applyPersonalization();
 };
 
@@ -1897,6 +2155,38 @@ const initializeAuthEvents = () => {
 
     closeAuthPanel();
     setStatus("Signed out. Local mode remains available.", "neutral");
+  });
+
+  authEls.legalReacceptanceCheckbox.addEventListener("input", () => {
+    authEls.legalReacceptanceCheckbox.setCustomValidity("");
+  });
+
+  authEls.legalReacceptanceButton.addEventListener("click", async () => {
+    if (!state.supabase || !state.user) {
+      return;
+    }
+
+    if (!authEls.legalReacceptanceCheckbox.checked) {
+      authEls.legalReacceptanceCheckbox.setCustomValidity(
+        "Please agree to the current Terms of Use and acknowledge the current Privacy Policy before saving."
+      );
+      authEls.legalReacceptanceCheckbox.reportValidity();
+      return;
+    }
+
+    setLegalSettingsStatus("Saving legal acknowledgment...", "neutral");
+    try {
+      await recordCurrentLegalAcceptance();
+      await fetchCurrentUserLegalStatus();
+      updateLegalSettingsUI();
+      setStatus("Current legal acknowledgment saved.", "success");
+    } catch (error) {
+      console.error("Failed to save the current legal acknowledgment.", error);
+      setLegalSettingsStatus(
+        error.message || "Unable to save the current legal acknowledgment right now.",
+        "error"
+      );
+    }
   });
 
   authEls.profileForm.addEventListener("submit", async (event) => {
@@ -2054,6 +2344,15 @@ const initializeSignupPageEvents = () => {
     return;
   }
 
+  syncLegalAnchors(signupForm);
+
+  const legalAcknowledgmentInput = signupForm.elements.required_legal_acknowledgment;
+  if (legalAcknowledgmentInput) {
+    legalAcknowledgmentInput.addEventListener("input", () => {
+      legalAcknowledgmentInput.setCustomValidity("");
+    });
+  }
+
   signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!state.supabase) {
@@ -2065,12 +2364,56 @@ const initializeSignupPageEvents = () => {
     const fullName = normalizeFullName(String(formData.get("full_name") || ""));
     const email = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "");
+    const marketingConsent = formData.get("marketing_consent") === "on";
+    const legalAcknowledged = formData.get("required_legal_acknowledgment") === "on";
+    const versionSnapshot = getCurrentLegalVersionSnapshot();
+
+    if (!legalAcknowledged && legalAcknowledgmentInput) {
+      legalAcknowledgmentInput.setCustomValidity(
+        "Please agree to the Terms of Use and acknowledge the Privacy Policy to create an account."
+      );
+      legalAcknowledgmentInput.reportValidity();
+      return;
+    }
+
+    if (!state.legalDocsAuthoritative) {
+      setSignupPageStatus(
+        "Account creation is temporarily unavailable because the current legal documents are not fully configured. Please try again later.",
+        "error"
+      );
+      return;
+    }
+
+    if (!versionSnapshot.termsVersion || !versionSnapshot.privacyVersion) {
+      setSignupPageStatus(
+        "Current legal document versions are unavailable right now. Please try again in a moment.",
+        "error"
+      );
+      return;
+    }
+
+    const legalContext = await fetchLegalContext();
+    const legalAcceptance = {
+      terms_version: versionSnapshot.termsVersion,
+      privacy_version: versionSnapshot.privacyVersion,
+      accepted_at: legalContext.observedAt || new Date().toISOString(),
+      acceptance_method: "signup_checkbox",
+      ip_hash: legalContext.ipHash,
+      ip_hash_method: legalContext.ipHashMethod,
+      user_agent: legalContext.userAgent || (hasWindow ? window.navigator.userAgent : ""),
+      session_id:
+        hasWindow && typeof window.crypto?.randomUUID === "function"
+          ? window.crypto.randomUUID()
+          : `signup-${Date.now()}`,
+    };
 
     setSignupPageStatus("Creating account...", "neutral");
     const { data, error } = await signUpWithEmail({
       fullName,
       email,
       password,
+      marketingConsent,
+      legalAcceptance,
     });
 
     if (error) {
@@ -2136,6 +2479,7 @@ const handleSession = async (session) => {
   if (!state.user) {
     state.profile = null;
     state.moveProfile = null;
+    state.legalStatus = [];
     state.pageViewKey = "";
     clearPartnerPlacementSlot();
   }
@@ -2154,6 +2498,7 @@ const handleSession = async (session) => {
   try {
     await upsertProfile(state.user);
     state.profile = await fetchProfile(state.user.id);
+    await fetchCurrentUserLegalStatus();
     await reconcileLocalAndRemote(state.user);
     await flushPendingSync();
     updateAuthUI();
@@ -2185,9 +2530,12 @@ const handleSession = async (session) => {
 const initialize = async () => {
   buildAuthUI();
   initializeSiteChrome();
+  ensureFooterLegalLinks();
+  syncLegalAnchors(document);
   setupLogisticsLocalPersistence();
   updateLandingNavigation();
   applyPersonalization();
+  updateLegalSettingsUI();
   initializeAnalyticsTracking();
 
   const authError = parseAuthErrorFromUrl();
@@ -2199,6 +2547,9 @@ const initialize = async () => {
     const runtimeConfig = await loadRuntimeConfig();
     state.googleAuthEnabled = parseBoolean(runtimeConfig.googleAuthEnabled);
     state.supabase = await initSupabaseClient(runtimeConfig);
+    await loadActiveLegalDocs();
+    syncLegalAnchors(document);
+    updateLegalSettingsUI();
   } catch (error) {
     console.warn("Supabase client not available.", error);
     if (!isPublicPath(window.location.pathname)) {
@@ -2237,3 +2588,5 @@ if (hasWindow) {
     });
   }
 }
+
+

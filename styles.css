@@ -903,6 +903,20 @@ main {
   outline-offset: 3px;
 }
 
+.native-checklist-shell {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.native-checklist-status {
+  font-size: 0.9rem;
+}
+
+.footer-tip code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.92em;
+}
+
 .site-footer {
   background: rgba(255, 253, 249, 0.72);
   padding: 1.5rem 0 2.5rem;
@@ -920,6 +934,31 @@ main {
   padding-top: 0.75rem;
   border-top: 1px solid var(--border);
   font-size: 0.85rem;
+}
+
+.footer-legal-links {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.footer-legal-links a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-legal-links a:hover,
+.footer-legal-links a:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+.footer-legal-review {
+  color: var(--muted);
 }
 
 /* Move inventory layout helpers. */
@@ -1691,7 +1730,7 @@ main {
 }
 
 .label-panel[hidden] {
-  display: none;
+  display: none !important;
 }
 
 .label-panel-header {
@@ -1965,6 +2004,19 @@ main {
   outline: none;
 }
 
+.auth-create-account-link-secondary {
+  background: rgba(229, 237, 245, 0.42);
+}
+
+.auth-shell-links {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.auth-shell-button {
+  width: 100%;
+}
+
 .auth-status[data-tone="success"] {
   color: #1f7a33;
 }
@@ -2001,9 +2053,22 @@ main {
   color: #b91c1c;
 }
 
+.signup-page-legal-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--accent-ink);
+}
+
 .signup-page-actions {
   display: flex;
   flex-wrap: wrap;
+}
+
+.landing-auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .signup-page-link {
@@ -2016,6 +2081,29 @@ main {
   padding-left: 1.2rem;
   display: grid;
   gap: 0.55rem;
+}
+
+.signup-page-list a,
+.signup-page-legal-note a,
+.signup-legal-block a,
+.legal-page-section a {
+  color: var(--accent);
+}
+
+.signup-legal-block {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.2rem 0;
+}
+
+.signup-consent-checkbox {
+  font-size: 0.84rem;
+}
+
+.signup-legal-version-note {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
 }
 
 .account-summary {
@@ -2032,6 +2120,18 @@ main {
   border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
 
+.account-page-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.account-page-column,
+.account-page-side {
+  align-self: start;
+}
+
 .account-summary h3 {
   margin: 0;
   font-size: 0.95rem;
@@ -2041,6 +2141,20 @@ main {
   margin: 0;
   color: var(--muted);
   font-size: 0.88rem;
+}
+
+.legal-settings-status {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.legal-settings-status[data-tone="success"] {
+  color: #1f7a33;
+}
+
+.legal-settings-status[data-tone="error"] {
+  color: #b91c1c;
 }
 
 .account-meta {
@@ -2161,10 +2275,146 @@ main {
   background: transparent;
 }
 
+.legal-account-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.legal-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.legal-link-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid rgba(52, 91, 127, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.96);
+  color: var(--accent);
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.legal-link-pill:hover,
+.legal-link-pill:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.legal-acceptance-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.legal-acceptance-item {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(52, 91, 127, 0.12);
+  border-radius: 0.8rem;
+  background: rgba(255, 253, 249, 0.92);
+}
+
+.legal-acceptance-item h4 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.legal-reacceptance-control {
+  margin-top: 0.1rem;
+}
+
+.legal-acknowledge-button {
+  width: 100%;
+  border: 1px solid rgba(40, 73, 103, 0.38);
+  border-radius: 0.55rem;
+  min-height: var(--tap-target);
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+  font-weight: 700;
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: var(--shadow-action);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.legal-acknowledge-button:hover,
+.legal-acknowledge-button:focus-visible {
+  box-shadow: var(--focus-ring), var(--shadow-action-strong);
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #2f5374, #233f59);
+  outline: none;
+}
+
+.legal-acknowledge-button:disabled {
+  opacity: 0.64;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.legal-page-layout {
+  display: grid;
+  gap: 1rem;
+  padding-bottom: 3rem;
+}
+
+.legal-page-panel,
+.legal-page-section {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.legal-page-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+}
+
+.legal-page-meta p,
+.legal-page-intro,
+.legal-placeholder-note {
+  margin: 0;
+}
+
+.legal-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(180, 83, 9, 0.12);
+  color: #92400e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.legal-page-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.legal-placeholder-note {
+  color: #92400e;
+  font-weight: 600;
+}
+
 .auth-form button,
 .profile-form button,
 .auth-google-button,
-.auth-signout-button {
+.auth-signout-button,
+.auth-shell-button {
   width: 100%;
   border: 1px solid rgba(40, 73, 103, 0.38);
   border-radius: 0.55rem;
@@ -2184,7 +2434,8 @@ main {
   border-color: rgba(29, 78, 216, 0.42);
 }
 
-.auth-signout-button {
+.auth-signout-button,
+.auth-shell-button {
   background: linear-gradient(180deg, #374151, #1f2937);
   border-color: rgba(31, 41, 55, 0.46);
 }
@@ -2196,7 +2447,9 @@ main {
 .auth-google-button:hover,
 .auth-google-button:focus-visible,
 .auth-signout-button:hover,
-.auth-signout-button:focus-visible {
+.auth-signout-button:focus-visible,
+.auth-shell-button:hover,
+.auth-shell-button:focus-visible {
   box-shadow: var(--focus-ring), var(--shadow-action-strong);
   transform: translateY(-1px);
   outline: none;
@@ -2215,7 +2468,9 @@ main {
 }
 
 .auth-signout-button:hover,
-.auth-signout-button:focus-visible {
+.auth-signout-button:focus-visible,
+.auth-shell-button:hover,
+.auth-shell-button:focus-visible {
   background: linear-gradient(180deg, #2b3440, #111827);
 }
 
@@ -2225,6 +2480,7 @@ main {
 .profile-form button:disabled,
 .auth-google-button:disabled,
 .auth-signout-button:disabled,
+.auth-shell-button:disabled,
 .label-action:disabled {
   opacity: 0.64;
   cursor: not-allowed;
@@ -2501,6 +2757,10 @@ main {
   .landing-hero {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  .account-page-layout {
+    grid-template-columns: 1fr;
   }
 
   .landing-auth-panel {
