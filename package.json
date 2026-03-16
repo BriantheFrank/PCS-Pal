@@ -1,10 +1,12 @@
-﻿{
+{
   "name": "pcs-pal",
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/verify-critical-files.mjs",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "verify:critical": "node scripts/verify-critical-files.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",

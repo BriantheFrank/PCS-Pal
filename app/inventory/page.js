@@ -1,4 +1,4 @@
-﻿import { INVENTORY_STORAGE_KEY } from "@/inventory-data";
+import { INVENTORY_STORAGE_KEY } from "@/inventory-data";
 import { InventoryHeading, NativeInventoryPage } from "@/components/inventory/native-inventory-page";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";

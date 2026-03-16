@@ -1,4 +1,4 @@
-﻿import {
+import {
   CHECKLIST_SYNC_MARKERS,
   INVENTORY_STORAGE_KEY,
   collectChecklistCompatibilitySnapshot,

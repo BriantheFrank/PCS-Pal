@@ -1,4 +1,4 @@
-﻿# Next Migration Foundation
+# Next Migration Foundation
 
 ## What is implemented now
 - Next.js App Router owns the primary PCS-Pal experience at the repo root.

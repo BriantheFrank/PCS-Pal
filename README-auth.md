@@ -1,4 +1,4 @@
-﻿# PCS-Pal Auth + Cloud Sync
+# PCS-Pal Auth + Cloud Sync
 
 ## Architecture Summary
 PCS-Pal now has a Next.js App Router application at the repo root. Legacy HTML files remain in the repo only as compatibility aliases or source-content inputs where that is still the fastest safe migration path.
