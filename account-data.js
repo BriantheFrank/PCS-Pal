@@ -9,6 +9,27 @@ const toTitleCase = (value) =>
     .join(" ");
 
 const coerceBoolean = (value) => value === true || value === "true" || value === "on";
+const LEGAL_STATUS_RPC_NAME = "get_current_user_legal_status";
+const LEGAL_ACCEPTANCE_RPC_NAME = "record_current_legal_acceptance";
+
+const isMissingRpcError = (error, functionName) => {
+  const message = String(error?.message || "");
+  const details = String(error?.details || "");
+  return (
+    error?.code === "PGRST202" ||
+    message.includes(`public.${functionName}`) ||
+    details.includes(`public.${functionName}`)
+  );
+};
+
+const isMissingLegalTableError = (error) => {
+  const message = String(error?.message || "");
+  return (
+    error?.code === "42P01" ||
+    message.includes("legal_documents") ||
+    message.includes("legal_acceptances")
+  );
+};
 
 export const normalizeFullName = (value) => {
   const normalized = toTitleCase(value);
@@ -205,11 +226,100 @@ export const saveMoveProfile = async ({ supabase, userId, moveProfileInput }) =>
 export const fetchCurrentUserLegalStatus = async ({ supabase }) => {
   const { data, error } = await supabase.rpc("get_current_user_legal_status");
 
-  if (error) {
+  if (!error) {
+    return data || [];
+  }
+
+  if (!isMissingRpcError(error, LEGAL_STATUS_RPC_NAME)) {
     throw error;
   }
 
-  return data || [];
+  const { data: currentDocuments, error: currentDocumentsError } = await supabase
+    .from("legal_documents")
+    .select("id, doc_type, title, version, url, effective_date, review_status")
+    .eq("is_active", true);
+
+  if (currentDocumentsError) {
+    if (isMissingLegalTableError(currentDocumentsError)) {
+      return [];
+    }
+    throw currentDocumentsError;
+  }
+
+  const activeDocuments = currentDocuments || [];
+  if (activeDocuments.length === 0) {
+    return [];
+  }
+
+  const { data: acceptances, error: acceptancesError } = await supabase
+    .from("legal_acceptances")
+    .select("document_id, document_version, accepted_at, acceptance_method")
+    .order("accepted_at", { ascending: false });
+
+  if (acceptancesError) {
+    if (isMissingLegalTableError(acceptancesError)) {
+      return activeDocuments.map((document) => ({
+        doc_type: document.doc_type,
+        title: document.title,
+        current_version: document.version,
+        current_url: document.url,
+        effective_date: document.effective_date,
+        review_status: document.review_status,
+        accepted_version: null,
+        accepted_at: null,
+        acceptance_method: null,
+        needs_reacceptance: true,
+      }));
+    }
+    throw acceptancesError;
+  }
+
+  const acceptedDocumentIds = Array.from(
+    new Set((acceptances || []).map((acceptance) => acceptance.document_id).filter(Boolean))
+  );
+
+  let acceptedDocTypeById = new Map();
+  if (acceptedDocumentIds.length > 0) {
+    const { data: acceptedDocuments, error: acceptedDocumentsError } = await supabase
+      .from("legal_documents")
+      .select("id, doc_type")
+      .in("id", acceptedDocumentIds);
+
+    if (acceptedDocumentsError) {
+      if (!isMissingLegalTableError(acceptedDocumentsError)) {
+        throw acceptedDocumentsError;
+      }
+    } else {
+      acceptedDocTypeById = new Map(
+        (acceptedDocuments || []).map((document) => [document.id, document.doc_type])
+      );
+    }
+  }
+
+  const latestAcceptanceByDocType = new Map();
+  (acceptances || []).forEach((acceptance) => {
+    const docType = acceptedDocTypeById.get(acceptance.document_id);
+    if (!docType || latestAcceptanceByDocType.has(docType)) {
+      return;
+    }
+    latestAcceptanceByDocType.set(docType, acceptance);
+  });
+
+  return activeDocuments.map((document) => {
+    const acceptance = latestAcceptanceByDocType.get(document.doc_type) || null;
+    return {
+      doc_type: document.doc_type,
+      title: document.title,
+      current_version: document.version,
+      current_url: document.url,
+      effective_date: document.effective_date,
+      review_status: document.review_status,
+      accepted_version: acceptance?.document_version || null,
+      accepted_at: acceptance?.accepted_at || null,
+      acceptance_method: acceptance?.acceptance_method || null,
+      needs_reacceptance: acceptance?.document_version !== document.version,
+    };
+  });
 };
 
 export const recordCurrentLegalAcceptance = async ({
@@ -233,6 +343,11 @@ export const recordCurrentLegalAcceptance = async ({
   });
 
   if (error) {
+    if (isMissingRpcError(error, LEGAL_ACCEPTANCE_RPC_NAME)) {
+      throw new Error(
+        "Legal acknowledgment saving is temporarily unavailable because the current Supabase legal acceptance function is not deployed yet."
+      );
+    }
     throw error;
   }
 
