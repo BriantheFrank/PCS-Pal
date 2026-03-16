@@ -1,4 +1,4 @@
-﻿# Next Migration Foundation
+# Next Migration Foundation
 
 ## What is implemented now
 - Next.js App Router is scaffolded at the repo root.
@@ -188,7 +188,7 @@ Now native:
   - existing `pcs-move-logistics` localStorage key preserved
   - existing `user_move_logistics` remote sync shape preserved
   - existing itinerary stop and custom-event persistence semantics preserved
-  - existing Google Maps route runtime preserved through the legacy logistics script, now mounted from the native route
+  - itinerary, custom-event, and directions handoff now rendered natively in React
   - existing `/move-logistics.html` path preserved through rewrite compatibility
 - native bases route ownership with:
   - existing `/bases.html` entry path preserved through rewrite compatibility
@@ -235,15 +235,14 @@ Existing:
 
 New optional SEO/runtime setting:
 - `NEXT_PUBLIC_SITE_URL`
-- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
 
 If `NEXT_PUBLIC_SITE_URL` is not set, the current fallback is `https://pcs-pal-live.vercel.app`.
-If `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is set, the native `/logistics` page passes it into the
-preserved client-side route-planning runtime.
+The native `/logistics` page now provides a Google Maps directions handoff without embedding the old client-side route-planning runtime.
 
 ## What remains for later phases
 - replace the checklist content shim with fully componentized checklist content when that becomes worth the migration risk
 - migrate the remaining guide and base-detail content families into structured Next.js templates
 - remove the legacy bridge after route parity is complete
 - decide whether `/account` should move to a server-guarded auth boundary after the tool migration
+
 

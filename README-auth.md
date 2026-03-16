@@ -1,4 +1,4 @@
-﻿# PCS-Pal Auth + Cloud Sync
+# PCS-Pal Auth + Cloud Sync
 
 ## Architecture Summary
 PCS-Pal now has a Next.js App Router shell at the repo root, with a legacy static bridge for
@@ -99,7 +99,7 @@ Now native in Next.js:
   - `user_move_logistics` remote sync shape
   - itinerary/custom-event persistence semantics
   - `/move-logistics.html` compatibility through rewrite
-  - Google Maps route runtime compatibility through the preserved client-side logistics script
+  - native itinerary, custom-event, and directions-handoff workflow
 - native protected bases route with preserved:
   - `/bases.html` compatibility through rewrite
   - native search/state filtering and card rendering for the base library index
@@ -230,11 +230,9 @@ Required:
 Optional:
 - `SUPABASE_ENABLE_GOOGLE_AUTH=false`
 - `LEGAL_IP_HASH_SALT`
-- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=`
 
 When `SUPABASE_ENABLE_GOOGLE_AUTH=true`, the Google sign-in button is shown in the UI.
-When `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is set, the migrated `/logistics` page passes it into the
-existing Google Maps itinerary runtime used by the logistics planner.
+The migrated `/logistics` page now uses a native itinerary workspace plus an external Google Maps directions handoff, so no client-side Maps API key is required.
 
 ## Supabase Setup
 1. Open the Supabase project.
@@ -330,3 +328,4 @@ Google auth when enabled:
 2. Keep local storage data untouched.
 3. Leave Supabase tables in place because the schema is additive.
 4. Set `SUPABASE_ENABLE_GOOGLE_AUTH=false` if Google rollout needs to be disabled quickly.
+

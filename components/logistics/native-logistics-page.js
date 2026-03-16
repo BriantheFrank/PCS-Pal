@@ -3,21 +3,113 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { useNativeAuth } from "@/components/auth/native-auth-provider";
 import {
   loadLogisticsState,
+  normalizeLogisticsState,
   pushLogistics,
   reconcileLogisticsWithRemote,
   saveLogisticsState,
 } from "@/logistics-data";
-import { useNativeAuth } from "@/components/auth/native-auth-provider";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser-client";
 
 const SYNC_DELAY_MS = 600;
 
-const LOADING_MESSAGE = "Loading your move logistics.";
-const REDIRECT_MESSAGE = "Redirecting to sign in so you can open your logistics workspace.";
+const LOADING_MESSAGE = "Loading your move logistics workspace.";
+const REDIRECT_MESSAGE = "Redirecting to sign in so you can open logistics.";
 const LOCAL_ONLY_MESSAGE =
   "Cloud logistics sync is unavailable right now. Progress will stay on this device.";
+const ERROR_MESSAGE = "Logistics access is unavailable right now. Please try again in a moment.";
+
+const initialStatus = {
+  message: "",
+  tone: "neutral",
+};
+
+const CONTACT_FIELDS = [
+  { key: "contact-name", label: "Name", type: "text" },
+  { key: "contact-company", label: "Company (if applicable)", type: "text" },
+  { key: "contact-phone", label: "Phone number", type: "tel" },
+  { key: "contact-email", label: "Email address", type: "email" },
+];
+
+const STANDARD_EVENT_FIELDS = [
+  { key: "location", label: "Location", type: "text" },
+  { key: "date", label: "Date", type: "date" },
+  { key: "time", label: "Time", type: "time" },
+  { key: "notes", label: "Notes (optional)", type: "textarea", rows: 2 },
+];
+
+const PACKERS_EVENT_FIELDS = [
+  { key: "location", label: "Location", type: "text" },
+  { key: "packers-start-date", label: "Start date", type: "date" },
+  { key: "packers-end-date", label: "End date", type: "date" },
+  { key: "notes", label: "Notes (optional)", type: "textarea", rows: 2 },
+];
+
+const EVENT_SECTIONS = [
+  {
+    id: "move-consult",
+    title: "Move Consult",
+    intro:
+      "Record the consultation that kicks off your move planning and sets expectations for the timeline.",
+    groups: [
+      { title: "Contact Information", fields: CONTACT_FIELDS },
+      { title: "Event Details", fields: STANDARD_EVENT_FIELDS },
+    ],
+    calendarHint: "Add a date and time to place this event on the master timeline.",
+  },
+  {
+    id: "packers",
+    title: "Packers",
+    intro:
+      "Use this section to track the team packing your household items and confirm their arrival window.",
+    groups: [
+      { title: "Contact Information", fields: CONTACT_FIELDS },
+      { title: "Event Details", fields: PACKERS_EVENT_FIELDS },
+    ],
+    calendarHint:
+      "Choose a start date and optional end date to place this event on the master timeline.",
+  },
+  {
+    id: "load-truck",
+    title: "Load Truck",
+    intro:
+      "Capture the date and arrival time for the truck or crew loading your household items.",
+    groups: [
+      { title: "Contact Information", fields: CONTACT_FIELDS },
+      { title: "Event Details", fields: STANDARD_EVENT_FIELDS },
+    ],
+    calendarHint: "Add a date and time to place this event on the master timeline.",
+  },
+  {
+    id: "household-goods-delivery",
+    title: "Household Goods Delivery at Destination",
+    intro:
+      "Track delivery at your destination and keep the receiving contact details in one place.",
+    groups: [
+      { title: "Contact Information", fields: CONTACT_FIELDS },
+      { title: "Event Details", fields: STANDARD_EVENT_FIELDS },
+    ],
+    calendarHint: "Add a date and time to place this event on the master timeline.",
+  },
+];
+
+const cloneLogisticsState = (logisticsState) => {
+  if (typeof structuredClone === "function") {
+    return structuredClone(logisticsState);
+  }
+
+  return JSON.parse(JSON.stringify(logisticsState || {}));
+};
+
+const stampLogisticsState = (logisticsState) =>
+  normalizeLogisticsState({
+    ...cloneLogisticsState(logisticsState),
+    updatedAt: new Date().toISOString(),
+  });
+
+const normalizeText = (value) => String(value ?? "").trim();
 
 const getPossessiveFirstName = (displayName) => {
   const firstName = String(displayName || "")
@@ -31,199 +123,254 @@ const getPossessiveFirstName = (displayName) => {
   return firstName.endsWith("s") ? `${firstName}'` : `${firstName}'s`;
 };
 
-const triggerFieldEvents = (field) => {
-  field.dispatchEvent(new Event("input", { bubbles: true }));
-  field.dispatchEvent(new Event("change", { bubbles: true }));
+const formatDateLabel = (value) => {
+  const dateValue = normalizeText(value);
+  if (!dateValue) {
+    return "";
+  }
+
+  const date = new Date(`${dateValue}T00:00:00`);
+  if (Number.isNaN(date.getTime())) {
+    return dateValue;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
 };
 
-const collectSectionValues = (root, section) => {
-  const values = {};
-  const fields = Array.from(
-    section.querySelectorAll("input[data-role], textarea[data-role], select[data-role]")
-  );
+const formatTimeLabel = (value) => {
+  const timeValue = normalizeText(value);
+  if (!timeValue) {
+    return "All day";
+  }
 
-  fields.forEach((field) => {
-    if (field.closest(".itinerary-stop") || field.closest(".custom-event")) {
+  const date = new Date(`2000-01-01T${timeValue}`);
+  if (Number.isNaN(date.getTime())) {
+    return timeValue;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+};
+
+const formatDateTimeLabel = (dateValue, timeValue) => {
+  const formattedDate = formatDateLabel(dateValue);
+  if (!formattedDate) {
+    return "Not scheduled yet";
+  }
+
+  const normalizedTime = normalizeText(timeValue);
+  if (!normalizedTime) {
+    return `${formattedDate} · All day`;
+  }
+
+  return `${formattedDate} · ${formatTimeLabel(normalizedTime)}`;
+};
+
+const formatRangeLabel = (startDateValue, endDateValue) => {
+  const startDate = formatDateLabel(startDateValue);
+  const endDate = formatDateLabel(endDateValue);
+
+  if (startDate && endDate && startDate !== endDate) {
+    return `${startDate} - ${endDate}`;
+  }
+
+  return startDate || endDate || "Not scheduled yet";
+};
+
+const getSortValue = (dateValue, timeValue = "") => {
+  const normalizedDate = normalizeText(dateValue);
+  if (!normalizedDate) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const normalizedTime = normalizeText(timeValue) || "00:00";
+  const timestamp = new Date(`${normalizedDate}T${normalizedTime}`).getTime();
+  return Number.isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp;
+};
+
+const buildPackersSummary = (sectionState) => {
+  const startDate = normalizeText(sectionState["packers-start-date"]);
+  const endDate = normalizeText(sectionState["packers-end-date"]);
+
+  if (startDate && endDate && startDate !== endDate) {
+    return `Packers scheduled from ${formatDateLabel(startDate)} through ${formatDateLabel(endDate)}.`;
+  }
+
+  if (startDate) {
+    return `Packers scheduled on ${formatDateLabel(startDate)}.`;
+  }
+
+  return "Choose a start date to place this event on the master timeline.";
+};
+
+const buildTimelineEntries = (logisticsState) => {
+  const entries = [];
+
+  EVENT_SECTIONS.forEach((section) => {
+    const sectionState = logisticsState.sections?.[section.id] || {};
+
+    if (section.id === "packers") {
+      const startDate = normalizeText(sectionState["packers-start-date"]);
+      if (startDate) {
+        entries.push({
+          key: `section-${section.id}`,
+          title: section.title,
+          when: formatRangeLabel(startDate, sectionState["packers-end-date"]),
+          meta: normalizeText(sectionState.location) || "Location not set",
+          notes: normalizeText(sectionState.notes),
+          sortValue: getSortValue(startDate),
+        });
+      }
       return;
     }
 
-    const role = field.dataset.role;
-    if (!role) {
+    const dateValue = normalizeText(sectionState.date);
+    if (!dateValue) {
       return;
     }
-    values[role] = field.value;
+
+    entries.push({
+      key: `section-${section.id}`,
+      title: section.title,
+      when: formatDateTimeLabel(sectionState.date, sectionState.time),
+      meta: normalizeText(sectionState.location) || "Location not set",
+      notes: normalizeText(sectionState.notes),
+      sortValue: getSortValue(sectionState.date, sectionState.time),
+    });
   });
 
-  return values;
+  const itinerarySection = logisticsState.sections?.["family-itinerary"] || {};
+  if (normalizeText(itinerarySection["itinerary-start-date"])) {
+    entries.push({
+      key: "itinerary-start",
+      title: "Family departure",
+      when: formatRangeLabel(itinerarySection["itinerary-start-date"]),
+      meta: normalizeText(itinerarySection["itinerary-start-location"]) || "Departure location not set",
+      notes: "Trip begins",
+      sortValue: getSortValue(itinerarySection["itinerary-start-date"]),
+    });
+  }
+
+  (logisticsState.itineraryStops || []).forEach((stop, index) => {
+    const stopDate = normalizeText(stop["stop-date"]);
+    if (!stopDate) {
+      return;
+    }
+
+    entries.push({
+      key: stop.id || `stop-${index}`,
+      title: `Overnight stop ${index + 1}`,
+      when: formatRangeLabel(stopDate),
+      meta: normalizeText(stop["stop-city"]) || "Stop location not set",
+      notes: normalizeText(stop["stop-lodging"]),
+      sortValue: getSortValue(stopDate),
+    });
+  });
+
+  if (normalizeText(itinerarySection["itinerary-end-date"])) {
+    entries.push({
+      key: "itinerary-end",
+      title: "Family arrival",
+      when: formatRangeLabel(itinerarySection["itinerary-end-date"]),
+      meta: normalizeText(itinerarySection["itinerary-end-location"]) || "Arrival location not set",
+      notes: "Trip ends",
+      sortValue: getSortValue(itinerarySection["itinerary-end-date"]),
+    });
+  }
+
+  (logisticsState.customEvents || []).forEach((event, index) => {
+    const startDate = normalizeText(event["custom-start-date"]);
+    if (!startDate) {
+      return;
+    }
+
+    entries.push({
+      key: event.id || `custom-${index}`,
+      title: normalizeText(event["custom-title"]) || "Custom event",
+      when: formatRangeLabel(startDate, event["custom-end-date"]),
+      meta: normalizeText(event["custom-address"]) || "Location not set",
+      notes: normalizeText(event["custom-notes"]),
+      sortValue: getSortValue(startDate),
+    });
+  });
+
+  return entries.sort((left, right) => left.sortValue - right.sortValue);
 };
 
-const collectGroupedValues = (elements) =>
-  elements.map((element) => {
-    const values = {};
-    const fields = Array.from(
-      element.querySelectorAll("input[data-role], textarea[data-role], select[data-role]")
+const buildGoogleMapsDirectionsHref = (itinerarySection, itineraryStops) => {
+  const origin = normalizeText(itinerarySection["itinerary-start-location"]);
+  const destination = normalizeText(itinerarySection["itinerary-end-location"]);
+
+  if (!origin || !destination) {
+    return "";
+  }
+
+  const params = new URLSearchParams({
+    api: "1",
+    origin,
+    destination,
+    travelmode: "driving",
+  });
+
+  const waypoints = (itineraryStops || [])
+    .map((stop) => normalizeText(stop["stop-city"]))
+    .filter(Boolean)
+    .join("|");
+
+  if (waypoints) {
+    params.set("waypoints", waypoints);
+  }
+
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+};
+
+const makeItemId = (prefix) =>
+  `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+function LogisticsField({ field, value, onChange }) {
+  if (field.type === "textarea") {
+    return (
+      <label className="logistics-field">
+        {field.label}
+        <textarea rows={field.rows || 2} value={value} onChange={(event) => onChange(event.target.value)}></textarea>
+      </label>
     );
-
-    fields.forEach((field) => {
-      const role = field.dataset.role;
-      if (!role) {
-        return;
-      }
-      values[role] = field.value;
-    });
-
-    return values;
-  });
-
-const captureLogisticsState = (root) => {
-  const sections = {};
-  const sectionNodes = Array.from(root.querySelectorAll(".logistics-section[data-event-id]"));
-  sectionNodes.forEach((section) => {
-    const eventId = section.dataset.eventId;
-    if (!eventId) {
-      return;
-    }
-    sections[eventId] = collectSectionValues(root, section);
-  });
-
-  return {
-    sections,
-    itineraryStops: collectGroupedValues(
-      Array.from(root.querySelectorAll("#itinerary-stops .itinerary-stop"))
-    ),
-    customEvents: collectGroupedValues(
-      Array.from(root.querySelectorAll("#custom-events .custom-event"))
-    ),
-    updatedAt: new Date().toISOString(),
-  };
-};
-
-const applyValuesToSection = (section, values) => {
-  Object.entries(values || {}).forEach(([role, value]) => {
-    const field = section.querySelector(`[data-role='${role}']`);
-    if (!field) {
-      return;
-    }
-
-    field.value = value || "";
-    triggerFieldEvents(field);
-  });
-};
-
-const syncGroupCount = (root, containerSelector, itemSelector, targetCount, addSelector, removeSelector) => {
-  const container = root.querySelector(containerSelector);
-  if (!container) {
-    return;
   }
 
-  const addButton = root.querySelector(addSelector);
-  if (!addButton) {
-    return;
-  }
-
-  let existing = Array.from(container.querySelectorAll(itemSelector));
-  while (existing.length < targetCount) {
-    addButton.click();
-    existing = Array.from(container.querySelectorAll(itemSelector));
-  }
-
-  while (existing.length > targetCount) {
-    const last = existing[existing.length - 1];
-    const removeButton = last.querySelector(removeSelector);
-    if (!removeButton) {
-      break;
-    }
-    removeButton.click();
-    existing = Array.from(container.querySelectorAll(itemSelector));
-  }
-};
-
-const applyGroupedValues = (root, containerSelector, itemSelector, groups) => {
-  const items = Array.from(root.querySelectorAll(`${containerSelector} ${itemSelector}`));
-
-  groups.forEach((values, index) => {
-    const item = items[index];
-    if (!item) {
-      return;
-    }
-
-    Object.entries(values || {}).forEach(([role, value]) => {
-      const field = item.querySelector(`[data-role='${role}']`);
-      if (!field) {
-        return;
-      }
-
-      field.value = value || "";
-      triggerFieldEvents(field);
-    });
-  });
-};
-
-const hydrateLogisticsState = (root, logisticsState, hydratingRef) => {
-  hydratingRef.current = true;
-
-  const sections = Array.from(root.querySelectorAll(".logistics-section[data-event-id]"));
-  sections.forEach((section) => {
-    const eventId = section.dataset.eventId;
-    if (!eventId) {
-      return;
-    }
-
-    applyValuesToSection(section, logisticsState?.sections?.[eventId] || {});
-  });
-
-  const itineraryStops = Array.isArray(logisticsState?.itineraryStops)
-    ? logisticsState.itineraryStops
-    : [];
-  const customEvents = Array.isArray(logisticsState?.customEvents)
-    ? logisticsState.customEvents
-    : [];
-
-  syncGroupCount(
-    root,
-    "#itinerary-stops",
-    ".itinerary-stop",
-    itineraryStops.length,
-    "#add-itinerary-stop",
-    "[data-action='remove-stop']"
+  return (
+    <label className="logistics-field">
+      {field.label}
+      <input type={field.type} value={value} onChange={(event) => onChange(event.target.value)} />
+    </label>
   );
-  syncGroupCount(
-    root,
-    "#custom-events",
-    ".custom-event",
-    customEvents.length,
-    "#add-custom-event",
-    "[data-action='remove-custom']"
-  );
+}
 
-  applyGroupedValues(root, "#itinerary-stops", ".itinerary-stop", itineraryStops);
-  applyGroupedValues(root, "#custom-events", ".custom-event", customEvents);
-  hydratingRef.current = false;
-};
+export function LogisticsHeading() {
+  const { displayName } = useNativeAuth();
+  const possessiveName = getPossessiveFirstName(displayName);
+  const heading = possessiveName ? `${possessiveName} Move Logistics` : "Move Logistics";
 
-const loadLegacyLogisticsScript = () =>
-  new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = `/script.js?native-logistics=${Date.now()}`;
-    script.async = true;
-    script.dataset.nativeLogisticsRuntime = "true";
-    script.onload = () => resolve(script);
-    script.onerror = () => reject(new Error("Unable to load the legacy logistics runtime."));
-    document.body.appendChild(script);
-  });
+  return <h1>{heading}</h1>;
+}
 
-export function NativeLogisticsPage({ legacyLogisticsHtml, googleMapsApiKey = "" }) {
+export function NativeLogisticsPage() {
   const router = useRouter();
-  const { status, user, displayName, errorMessage } = useNativeAuth();
-  const contentRef = useRef(null);
+  const { status, user, errorMessage } = useNativeAuth();
+  const [logisticsState, setLogisticsState] = useState(() => normalizeLogisticsState({}));
+  const [workspaceReady, setWorkspaceReady] = useState(false);
+  const [syncStatus, setSyncStatus] = useState(initialStatus);
+  const logisticsRef = useRef(logisticsState);
   const syncTimerRef = useRef(null);
-  const hydratingRef = useRef(false);
-  const logisticsStateRef = useRef(loadLogisticsState(null));
-  const scriptRef = useRef(null);
-  const [syncStatus, setSyncStatus] = useState({
-    message: "",
-    tone: "neutral",
-  });
+
+  useEffect(() => {
+    logisticsRef.current = logisticsState;
+  }, [logisticsState]);
 
   useEffect(() => {
     if (status === "ready" && !user) {
@@ -232,83 +379,25 @@ export function NativeLogisticsPage({ legacyLogisticsHtml, googleMapsApiKey = ""
   }, [router, status, user]);
 
   useEffect(() => {
-    if (status !== "ready" || !user || !contentRef.current || typeof window === "undefined") {
+    if (status !== "ready" || !user || typeof window === "undefined") {
+      if (status !== "ready") {
+        setWorkspaceReady(false);
+      }
       return undefined;
     }
 
     let active = true;
-    let removePersistenceListeners = () => {};
-    const root = contentRef.current;
     const storage = window.localStorage;
-    let supabaseClient = null;
-
-    const flushRemoteSync = async () => {
-      if (!user) {
-        return;
-      }
-
-      try {
-        supabaseClient = supabaseClient || (await getBrowserSupabaseClient());
-        await pushLogistics({
-          supabase: supabaseClient,
-          userId: user.id,
-          logisticsState: logisticsStateRef.current,
-        });
-
-        if (!active) {
-          return;
-        }
-
-        setSyncStatus((current) =>
-          current.tone === "error"
-            ? {
-                message: "",
-                tone: "neutral",
-              }
-            : current
-        );
-      } catch (error) {
-        if (!active) {
-          return;
-        }
-
-        setSyncStatus({
-          message: error?.message || LOCAL_ONLY_MESSAGE,
-          tone: "error",
-        });
-      }
-    };
-
-    const scheduleRemoteSync = () => {
-      if (syncTimerRef.current) {
-        window.clearTimeout(syncTimerRef.current);
-      }
-
-      syncTimerRef.current = window.setTimeout(() => {
-        void flushRemoteSync();
-      }, SYNC_DELAY_MS);
-    };
-
-    const persistState = (syncRemote) => {
-      if (hydratingRef.current) {
-        return;
-      }
-
-      const nextState = captureLogisticsState(root);
-      logisticsStateRef.current = nextState;
-      saveLogisticsState(storage, nextState);
-      if (syncRemote) {
-        scheduleRemoteSync();
-      }
-    };
+    const localState = loadLogisticsState(storage);
+    logisticsRef.current = localState;
+    setLogisticsState(localState);
+    setWorkspaceReady(false);
 
     const initialize = async () => {
-      let logisticsState = loadLogisticsState(storage);
-
       try {
-        supabaseClient = await getBrowserSupabaseClient();
+        const supabase = await getBrowserSupabaseClient();
         const reconciliation = await reconcileLogisticsWithRemote({
-          supabase: supabaseClient,
+          supabase,
           storage,
           userId: user.id,
         });
@@ -317,7 +406,9 @@ export function NativeLogisticsPage({ legacyLogisticsHtml, googleMapsApiKey = ""
           return;
         }
 
-        logisticsState = reconciliation.logisticsState;
+        logisticsRef.current = reconciliation.logisticsState;
+        setLogisticsState(reconciliation.logisticsState);
+        setSyncStatus(initialStatus);
       } catch (error) {
         if (!active) {
           return;
@@ -327,84 +418,178 @@ export function NativeLogisticsPage({ legacyLogisticsHtml, googleMapsApiKey = ""
           message: error?.message || LOCAL_ONLY_MESSAGE,
           tone: "error",
         });
-      }
-
-      logisticsStateRef.current = logisticsState;
-      if (googleMapsApiKey) {
-        window.GOOGLE_MAPS_API_KEY = googleMapsApiKey;
-      }
-
-      try {
-        scriptRef.current = await loadLegacyLogisticsScript();
-      } catch (error) {
-        if (!active) {
-          return;
+      } finally {
+        if (active) {
+          setWorkspaceReady(true);
         }
-
-        setSyncStatus({
-          message: error?.message || "Unable to load the logistics workspace right now.",
-          tone: "error",
-        });
-        return;
       }
-
-      if (!active) {
-        return;
-      }
-
-      hydrateLogisticsState(root, logisticsState, hydratingRef);
-      persistState(false);
-
-      const handleInput = (event) => {
-        if (root.contains(event.target)) {
-          persistState(true);
-        }
-      };
-      const handleChange = (event) => {
-        if (root.contains(event.target)) {
-          persistState(true);
-        }
-      };
-      const handleClick = (event) => {
-        if (
-          event.target.closest("#add-itinerary-stop") ||
-          event.target.closest("#add-custom-event") ||
-          event.target.closest("[data-action='remove-stop']") ||
-          event.target.closest("[data-action='remove-custom']") ||
-          event.target.closest("[data-action='move-stop-up']") ||
-          event.target.closest("[data-action='move-stop-down']") ||
-          event.target.closest("[data-action='clear-event']")
-        ) {
-          window.setTimeout(() => persistState(true), 0);
-        }
-      };
-
-      root.addEventListener("input", handleInput);
-      root.addEventListener("change", handleChange);
-      root.addEventListener("click", handleClick);
-      removePersistenceListeners = () => {
-        root.removeEventListener("input", handleInput);
-        root.removeEventListener("change", handleChange);
-        root.removeEventListener("click", handleClick);
-      };
     };
 
     void initialize();
 
     return () => {
       active = false;
-      removePersistenceListeners();
       if (syncTimerRef.current) {
         window.clearTimeout(syncTimerRef.current);
       }
-      if (scriptRef.current?.parentNode) {
-        scriptRef.current.parentNode.removeChild(scriptRef.current);
-      }
-      scriptRef.current = null;
     };
-  }, [googleMapsApiKey, status, user]);
+  }, [status, user]);
 
-  if (status === "loading") {
+  const scheduleRemoteSync = () => {
+    if (!user || typeof window === "undefined") {
+      return;
+    }
+
+    if (syncTimerRef.current) {
+      window.clearTimeout(syncTimerRef.current);
+    }
+
+    setSyncStatus({
+      message: "Saving changes and syncing logistics to your account...",
+      tone: "neutral",
+    });
+
+    syncTimerRef.current = window.setTimeout(async () => {
+      try {
+        const supabase = await getBrowserSupabaseClient();
+        await pushLogistics({
+          supabase,
+          userId: user.id,
+          logisticsState: logisticsRef.current,
+        });
+        setSyncStatus({
+          message: "Logistics synced.",
+          tone: "success",
+        });
+      } catch (error) {
+        setSyncStatus({
+          message: error?.message || LOCAL_ONLY_MESSAGE,
+          tone: "error",
+        });
+      }
+    }, SYNC_DELAY_MS);
+  };
+
+  const commitLogistics = (nextState) => {
+    const normalizedState = stampLogisticsState(nextState);
+    logisticsRef.current = normalizedState;
+    setLogisticsState(normalizedState);
+
+    if (typeof window !== "undefined") {
+      saveLogisticsState(window.localStorage, normalizedState);
+    }
+
+    scheduleRemoteSync();
+  };
+
+  const updateSectionField = (sectionId, fieldKey, value) => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.sections = nextState.sections || {};
+    nextState.sections[sectionId] = {
+      ...(nextState.sections[sectionId] || {}),
+      [fieldKey]: value,
+    };
+    commitLogistics(nextState);
+  };
+
+  const clearSectionCalendar = (sectionId) => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.sections = nextState.sections || {};
+    const nextSection = {
+      ...(nextState.sections[sectionId] || {}),
+    };
+
+    if (sectionId === "packers") {
+      nextSection["packers-start-date"] = "";
+      nextSection["packers-end-date"] = "";
+    } else {
+      nextSection.date = "";
+      nextSection.time = "";
+    }
+
+    nextState.sections[sectionId] = nextSection;
+    commitLogistics(nextState);
+  };
+
+  const addItineraryStop = () => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.itineraryStops = Array.isArray(nextState.itineraryStops) ? nextState.itineraryStops : [];
+    nextState.itineraryStops.push({
+      id: makeItemId("stop"),
+      "stop-city": "",
+      "stop-date": "",
+      "stop-lodging": "",
+      "stop-address": "",
+      "stop-phone": "",
+    });
+    commitLogistics(nextState);
+  };
+
+  const updateItineraryStop = (stopIndex, fieldKey, value) => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.itineraryStops = Array.isArray(nextState.itineraryStops) ? nextState.itineraryStops : [];
+    nextState.itineraryStops[stopIndex] = {
+      ...(nextState.itineraryStops[stopIndex] || {}),
+      [fieldKey]: value,
+    };
+    commitLogistics(nextState);
+  };
+
+  const moveItineraryStop = (stopIndex, direction) => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.itineraryStops = Array.isArray(nextState.itineraryStops) ? nextState.itineraryStops : [];
+    const targetIndex = stopIndex + direction;
+
+    if (targetIndex < 0 || targetIndex >= nextState.itineraryStops.length) {
+      return;
+    }
+
+    const nextStops = [...nextState.itineraryStops];
+    const [stop] = nextStops.splice(stopIndex, 1);
+    nextStops.splice(targetIndex, 0, stop);
+    nextState.itineraryStops = nextStops;
+    commitLogistics(nextState);
+  };
+
+  const removeItineraryStop = (stopIndex) => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.itineraryStops = (nextState.itineraryStops || []).filter((_, index) => index !== stopIndex);
+    commitLogistics(nextState);
+  };
+
+  const addCustomEvent = () => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.customEvents = Array.isArray(nextState.customEvents) ? nextState.customEvents : [];
+    nextState.customEvents.push({
+      id: makeItemId("custom"),
+      "custom-title": "",
+      "custom-start-date": "",
+      "custom-end-date": "",
+      "custom-address": "",
+      "custom-phone": "",
+      "custom-contact": "",
+      "custom-notes": "",
+    });
+    commitLogistics(nextState);
+  };
+
+  const updateCustomEvent = (eventIndex, fieldKey, value) => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.customEvents = Array.isArray(nextState.customEvents) ? nextState.customEvents : [];
+    nextState.customEvents[eventIndex] = {
+      ...(nextState.customEvents[eventIndex] || {}),
+      [fieldKey]: value,
+    };
+    commitLogistics(nextState);
+  };
+
+  const removeCustomEvent = (eventIndex) => {
+    const nextState = cloneLogisticsState(logisticsRef.current);
+    nextState.customEvents = (nextState.customEvents || []).filter((_, index) => index !== eventIndex);
+    commitLogistics(nextState);
+  };
+
+  if (status === "loading" || (status === "ready" && user && !workspaceReady)) {
     return (
       <main className="container">
         <div className="info-panel signup-page-card">
@@ -425,7 +610,7 @@ export function NativeLogisticsPage({ legacyLogisticsHtml, googleMapsApiKey = ""
           <p className="eyebrow">Move Logistics</p>
           <h2>Logistics access is unavailable</h2>
           <p className="signup-page-status" data-tone="error" aria-live="polite">
-            {errorMessage || LOCAL_ONLY_MESSAGE}
+            {errorMessage || ERROR_MESSAGE}
           </p>
         </div>
       </main>
@@ -446,24 +631,325 @@ export function NativeLogisticsPage({ legacyLogisticsHtml, googleMapsApiKey = ""
     );
   }
 
+  const itinerarySection = logisticsState.sections?.["family-itinerary"] || {};
+  const packersSection = logisticsState.sections?.packers || {};
+  const timelineEntries = buildTimelineEntries(logisticsState);
+  const directionsHref = buildGoogleMapsDirectionsHref(itinerarySection, logisticsState.itineraryStops);
+
   return (
-    <main className="container">
-      <div className="native-logistics-shell">
-        {syncStatus.message ? (
-          <p className="auth-status native-logistics-status" data-tone={syncStatus.tone} aria-live="polite">
-            {syncStatus.message}
+    <main className="container logistics-layout">
+      <section className="info-panel organizer-native-note">
+        <p className="eyebrow">Move Logistics</p>
+        <h2>Centralize dates, contacts, and travel plans</h2>
+        <p>
+          This native logistics workspace replaces the old DOM-driven planner. Track mover touchpoints,
+          household delivery dates, family travel, and custom events without relying on the legacy page shell.
+        </p>
+        <p className="signup-page-status" data-tone={syncStatus.tone} aria-live="polite">
+          {syncStatus.message || "Changes save locally and sync through the existing logistics storage model."}
+        </p>
+        <p>
+          <a className="card-link" href="/organizer">
+            Back to organizer -&gt;
+          </a>
+        </p>
+      </section>
+
+      <details className="info-panel mobile-disclosure">
+        <summary>
+          <h2>How to use this page</h2>
+        </summary>
+        <div>
+          <ul>
+            <li>Start with the family itinerary so the move dates anchor the rest of the timeline.</li>
+            <li>Add packers, truck loading, and HHG delivery when your transportation office confirms them.</li>
+            <li>Use custom events for school tours, housing appointments, storage, or anything else not tied to the shipment itself.</li>
+          </ul>
+        </div>
+      </details>
+
+      <section className="info-panel calendar-panel">
+        <p className="eyebrow">Master Timeline</p>
+        <h2>Upcoming move events</h2>
+        <p>Any dated event in this workspace appears here so the move schedule stays readable.</p>
+        {timelineEntries.length === 0 ? (
+          <p className="map-status">Add dates in any section to populate the timeline.</p>
+        ) : (
+          <div className="custom-events">
+            {timelineEntries.map((entry) => (
+              <article className="itinerary-stop custom-event" key={entry.key}>
+                <div className="itinerary-stop-header">
+                  <h4>{entry.title}</h4>
+                  <strong>{entry.when}</strong>
+                </div>
+                <p>{entry.meta}</p>
+                {entry.notes ? <p className="inventory-notes">{entry.notes}</p> : null}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="info-panel map-panel">
+        <div className="map-panel-header">
+          <div>
+            <p className="eyebrow">Route Handoff</p>
+            <h2>Travel route</h2>
+          </div>
+          {directionsHref ? (
+            <a className="label-action" href={directionsHref} target="_blank" rel="noreferrer">
+              Open in Google Maps
+            </a>
+          ) : null}
+        </div>
+        <div className="map-panel-body">
+          <p className="map-status">
+            {directionsHref
+              ? "Open the current itinerary in Google Maps for turn-by-turn routing."
+              : "Add a start and end location in Family Itinerary to generate a directions handoff."}
           </p>
-        ) : null}
-        <div ref={contentRef} dangerouslySetInnerHTML={{ __html: legacyLogisticsHtml }} />
-      </div>
+        </div>
+      </section>
+
+      <section className="logistics-accordion" aria-label="Move logistics events">
+        {EVENT_SECTIONS.map((section) => {
+          const sectionState = logisticsState.sections?.[section.id] || {};
+          return (
+            <details className="checklist-section logistics-section" data-event-id={section.id} key={section.id} open>
+              <summary>
+                <h2>{section.title}</h2>
+              </summary>
+              <div className="checklist-section-body logistics-section-body">
+                <p className="checklist-intro">{section.intro}</p>
+                <div className="logistics-form">
+                  {section.groups.map((group) => (
+                    <div className="logistics-group" key={`${section.id}-${group.title}`}>
+                      <h3>{group.title}</h3>
+                      <div className="logistics-field-grid">
+                        {group.fields.map((field) => (
+                          <LogisticsField
+                            field={field}
+                            key={`${section.id}-${field.key}`}
+                            value={sectionState[field.key] || ""}
+                            onChange={(value) => updateSectionField(section.id, field.key, value)}
+                          />
+                        ))}
+                      </div>
+                      {section.id === "packers" && group.title === "Event Details" ? (
+                        <p className="logistics-summary">{buildPackersSummary(packersSection)}</p>
+                      ) : null}
+                    </div>
+                  ))}
+                  <div className="logistics-group">
+                    <h3>Calendar Integration</h3>
+                    <p className="logistics-hint">{section.calendarHint}</p>
+                    <button
+                      type="button"
+                      className="label-action secondary"
+                      onClick={() => clearSectionCalendar(section.id)}
+                    >
+                      Clear event from timeline
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </details>
+          );
+        })}
+
+        <details className="checklist-section logistics-section" data-event-id="family-itinerary" open>
+          <summary>
+            <h2>Family Itinerary During the Move</h2>
+          </summary>
+          <div className="checklist-section-body logistics-section-body">
+            <p className="checklist-intro">
+              Capture the overall travel plan and log each overnight stop so the whole family knows where to be and when.
+            </p>
+            <div className="logistics-form">
+              <div className="logistics-group">
+                <h3>Start Location</h3>
+                <div className="logistics-field-grid">
+                  <LogisticsField
+                    field={{ key: "itinerary-start-location", label: "Location name", type: "text" }}
+                    value={itinerarySection["itinerary-start-location"] || ""}
+                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-start-location", value)}
+                  />
+                  <LogisticsField
+                    field={{ key: "itinerary-start-date", label: "Departure date", type: "date" }}
+                    value={itinerarySection["itinerary-start-date"] || ""}
+                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-start-date", value)}
+                  />
+                </div>
+              </div>
+
+              <div className="logistics-group">
+                <h3>End Location</h3>
+                <div className="logistics-field-grid">
+                  <LogisticsField
+                    field={{ key: "itinerary-end-location", label: "Location name", type: "text" }}
+                    value={itinerarySection["itinerary-end-location"] || ""}
+                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-end-location", value)}
+                  />
+                  <LogisticsField
+                    field={{ key: "itinerary-end-date", label: "Arrival date", type: "date" }}
+                    value={itinerarySection["itinerary-end-date"] || ""}
+                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-end-date", value)}
+                  />
+                </div>
+              </div>
+
+              <div className="logistics-group itinerary-group">
+                <h3>Itinerary Stops</h3>
+                <p className="logistics-hint">
+                  Add one stop per overnight stay. Each stop is added to the master timeline automatically.
+                </p>
+                <div className="itinerary-stops" id="itinerary-stops">
+                  {(logisticsState.itineraryStops || []).map((stop, index) => (
+                    <div className="itinerary-stop" key={stop.id || `stop-${index}`}>
+                      <div className="itinerary-stop-header">
+                        <h4>Overnight Stop {index + 1}</h4>
+                        <div className="itinerary-stop-actions">
+                          <button
+                            type="button"
+                            className="link-button"
+                            onClick={() => moveItineraryStop(index, -1)}
+                            disabled={index === 0}
+                          >
+                            Move up
+                          </button>
+                          <button
+                            type="button"
+                            className="link-button"
+                            onClick={() => moveItineraryStop(index, 1)}
+                            disabled={index === logisticsState.itineraryStops.length - 1}
+                          >
+                            Move down
+                          </button>
+                          <button type="button" className="link-button" onClick={() => removeItineraryStop(index)}>
+                            Remove stop
+                          </button>
+                        </div>
+                      </div>
+                      <div className="logistics-field-grid">
+                        <LogisticsField
+                          field={{ key: "stop-city", label: "City / Location", type: "text" }}
+                          value={stop["stop-city"] || ""}
+                          onChange={(value) => updateItineraryStop(index, "stop-city", value)}
+                        />
+                        <LogisticsField
+                          field={{ key: "stop-date", label: "Arrival date", type: "date" }}
+                          value={stop["stop-date"] || ""}
+                          onChange={(value) => updateItineraryStop(index, "stop-date", value)}
+                        />
+                      </div>
+                      <details className="logistics-details">
+                        <summary>Lodging details (optional)</summary>
+                        <div className="logistics-field-grid">
+                          <LogisticsField
+                            field={{ key: "stop-lodging", label: "Lodging name", type: "text" }}
+                            value={stop["stop-lodging"] || ""}
+                            onChange={(value) => updateItineraryStop(index, "stop-lodging", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "stop-address", label: "Street address", type: "text" }}
+                            value={stop["stop-address"] || ""}
+                            onChange={(value) => updateItineraryStop(index, "stop-address", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "stop-phone", label: "Phone number", type: "tel" }}
+                            value={stop["stop-phone"] || ""}
+                            onChange={(value) => updateItineraryStop(index, "stop-phone", value)}
+                          />
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" className="label-action" onClick={addItineraryStop}>
+                  Add overnight stop
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details className="checklist-section logistics-section" data-event-id="custom-events" open>
+          <summary>
+            <h2>Custom Events</h2>
+          </summary>
+          <div className="checklist-section-body logistics-section-body">
+            <p className="checklist-intro">
+              Add personal move-related events that are not tied to the itinerary, such as school tours,
+              housing appointments, or temporary storage.
+            </p>
+            <div className="logistics-form">
+              <div className="logistics-group">
+                <h3>Custom Event List</h3>
+                <p className="logistics-hint">
+                  Each custom event appears on the master timeline as an all-day entry. Add an end date to show a date range.
+                </p>
+                <div className="custom-events" id="custom-events">
+                  {(logisticsState.customEvents || []).map((event, index) => (
+                    <div className="itinerary-stop custom-event" key={event.id || `custom-${index}`}>
+                      <div className="itinerary-stop-header">
+                        <h4>Custom Event {index + 1}</h4>
+                        <button type="button" className="link-button" onClick={() => removeCustomEvent(index)}>
+                          Remove event
+                        </button>
+                      </div>
+                      <div className="logistics-field-grid">
+                        <LogisticsField
+                          field={{ key: "custom-title", label: "Event title", type: "text" }}
+                          value={event["custom-title"] || ""}
+                          onChange={(value) => updateCustomEvent(index, "custom-title", value)}
+                        />
+                        <LogisticsField
+                          field={{ key: "custom-start-date", label: "Start date", type: "date" }}
+                          value={event["custom-start-date"] || ""}
+                          onChange={(value) => updateCustomEvent(index, "custom-start-date", value)}
+                        />
+                        <LogisticsField
+                          field={{ key: "custom-end-date", label: "End date (optional)", type: "date" }}
+                          value={event["custom-end-date"] || ""}
+                          onChange={(value) => updateCustomEvent(index, "custom-end-date", value)}
+                        />
+                      </div>
+                      <details className="logistics-details">
+                        <summary>Optional details</summary>
+                        <div className="logistics-field-grid">
+                          <LogisticsField
+                            field={{ key: "custom-address", label: "Address", type: "text" }}
+                            value={event["custom-address"] || ""}
+                            onChange={(value) => updateCustomEvent(index, "custom-address", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "custom-phone", label: "Phone number", type: "tel" }}
+                            value={event["custom-phone"] || ""}
+                            onChange={(value) => updateCustomEvent(index, "custom-phone", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "custom-contact", label: "Contact name", type: "text" }}
+                            value={event["custom-contact"] || ""}
+                            onChange={(value) => updateCustomEvent(index, "custom-contact", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "custom-notes", label: "Notes", type: "textarea", rows: 2 }}
+                            value={event["custom-notes"] || ""}
+                            onChange={(value) => updateCustomEvent(index, "custom-notes", value)}
+                          />
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" className="label-action" onClick={addCustomEvent}>
+                  Add custom event
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
+      </section>
     </main>
   );
-}
-
-export function LogisticsHeading() {
-  const { displayName } = useNativeAuth();
-  const possessiveName = getPossessiveFirstName(displayName);
-  const heading = possessiveName ? `${possessiveName} Move Logistics` : "Move Logistics";
-
-  return <h1>{heading}</h1>;
 }

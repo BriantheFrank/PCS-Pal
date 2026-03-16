@@ -2,13 +2,12 @@ import { LOGISTICS_STORAGE_KEY } from "@/logistics-data";
 import { LogisticsHeading, NativeLogisticsPage } from "@/components/logistics/native-logistics-page";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
-import { getLegacyLogisticsHtml } from "@/lib/legacy-logistics-content";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Move Logistics";
 const description =
-  "Keep PCS logistics in one protected workspace with itinerary planning, calendar tracking, custom events, and the existing PCS Pal logistics sync semantics.";
+  "Coordinate travel dates, moving contacts, itinerary stops, and custom events in one protected logistics workspace.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -18,9 +17,6 @@ export const metadata = buildPageMetadata({
 });
 
 export default function LogisticsPage() {
-  const legacyLogisticsHtml = getLegacyLogisticsHtml();
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
-
   return (
     <>
       <JsonLd
@@ -40,10 +36,7 @@ export default function LogisticsPage() {
         </p>
       </SiteHeader>
 
-      <NativeLogisticsPage
-        legacyLogisticsHtml={legacyLogisticsHtml}
-        googleMapsApiKey={googleMapsApiKey}
-      />
+      <NativeLogisticsPage />
 
       <SiteFooter>
         <p className="footer-tip">
