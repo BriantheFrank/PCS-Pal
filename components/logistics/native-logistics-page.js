@@ -166,10 +166,10 @@ const formatDateTimeLabel = (dateValue, timeValue) => {
 
   const normalizedTime = normalizeText(timeValue);
   if (!normalizedTime) {
-    return `${formattedDate} · All day`;
+    return `${formattedDate} - All day`;
   }
 
-  return `${formattedDate} · ${formatTimeLabel(normalizedTime)}`;
+  return `${formattedDate} - ${formatTimeLabel(normalizedTime)}`;
 };
 
 const formatRangeLabel = (startDateValue, endDateValue) => {
