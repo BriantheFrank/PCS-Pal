@@ -225,8 +225,8 @@ export function AccountSettingsPage() {
         <p className="eyebrow">Account</p>
         <h2>Account settings and move profile</h2>
         <p>
-          These settings are tied to your signed-in PCS Pal account and support cross-device continuity
-          across the existing bridged tools.
+          These settings are tied to your signed-in PCS Pal account and support cross-device
+          continuity across the migrated native planning tools.
         </p>
         {errorMessage ? (
           <p className="signup-page-status" data-tone="error" aria-live="polite">
@@ -545,9 +545,8 @@ export function AccountSettingsPage() {
         <h2>These settings now live on the Next side of the migration</h2>
         <p>
           Sign-in, logout, account settings, privacy controls, move profile, and legal acknowledgment
-          now render natively on migrated pages. The checklist, organizer, and inventory are native
-          entry points, and logistics now joins them on the native side while base pages still move
-          through the legacy bridge for now.
+          now render natively on migrated pages. The checklist, organizer, inventory, logistics, and
+          destination bases all run through the native Next.js side of the migration.
         </p>
         <ul className="signup-page-list">
           <li>

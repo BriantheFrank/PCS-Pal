@@ -41,8 +41,8 @@ export default function AccountPage() {
 
       <SiteFooter>
         <p className="footer-tip">
-          Tip: Save account settings here first, then continue into the bridged checklist and organizer
-          tools with the same session.
+          Tip: Save account settings here first, then continue into the native checklist, organizer,
+          inventory, or logistics tools with the same session.
         </p>
       </SiteFooter>
     </>

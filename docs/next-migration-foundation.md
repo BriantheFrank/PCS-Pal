@@ -64,8 +64,8 @@
   - `/base-joint-base-lewis-mcchord.html`
   - `/terms-of-use.html`
   - `/privacy-policy.html`
-- Existing untouched static pages and browser modules are copied into `public/` at build time so
-  they continue to work while later migration phases proceed.
+- Only the remaining legacy guide pages and shared browser bridge assets are copied into `public/`
+  at build time. Native route aliases now resolve through rewrites instead of shipped duplicate HTML.
 
 ## Legacy route bridge
 Source of truth:
@@ -74,11 +74,11 @@ Source of truth:
 Build-time sync:
 - `scripts/sync-legacy-assets.mjs`
 
-The sync script copies the current legacy routes and shared assets into `public/` before `next dev`
-and `next build`.
+The sync script copies the remaining legacy guide routes and shared bridge assets into `public/`
+before `next dev` and `next build`.
 
 Current copied legacy assets include:
-- all current root `.html` routes
+- remaining guide `.html` routes only
 - `styles.css`
 - `auth-sync.js`
 - `account-data.js`
@@ -105,7 +105,7 @@ To avoid making private legacy routes more indexable during migration:
   - `/bases/:path*`
   - protected legacy tool pages
   - protected guide pages
-  - protected base pages
+- legacy guide pages and compatibility alias paths
   - `/app/:path*`
 - `app/robots.txt/route.js` also disallows those paths.
 

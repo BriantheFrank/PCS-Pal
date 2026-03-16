@@ -102,8 +102,8 @@ export function NativeOrganizerPage() {
         <p>
           Use this page as the protected hub for the native inventory and logistics workspaces.
           Inventory labels, itinerary planning, custom events, and logistics sync now stay under
-          the migrated native shell while the rest of the legacy bridge continues covering the
-          remaining tool phases.
+          the migrated native shell while the remaining guide content still runs through the legacy
+          bridge.
         </p>
       </section>
     </main>

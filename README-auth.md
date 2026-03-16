@@ -11,14 +11,13 @@ Additive components:
 - `api/public-config.js`: Vercel serverless endpoint exposing public runtime config
 - `api/legal-context.js`: Vercel serverless endpoint exposing minimal request metadata for legal evidence capture
 - `legal-documents.js`: shared current legal document metadata for public pages and signup UX
-- `scripts/sync-legacy-assets.mjs`: build-time sync of untouched legacy assets into `public/`
+- `scripts/sync-legacy-assets.mjs`: build-time sync of the remaining legacy guide pages and shared bridge assets into `public/`
 - `lib/legacy-route-manifest.mjs`: source of truth for legacy route rewrites and noindex headers
 - `supabase/migrations/20260309000100_pcs_pal_auth_and_user_data.sql`: schema and RLS setup
 
 Native Next.js routes now cover the landing/trust pages plus the checklist, organizer, inventory,
-logistics, the base index, and a first shared set of native base detail routes. The remaining HTML
-routes and shared styling remain intact
-through the legacy bridge until their migration phases are complete.
+logistics, the base index, and all native base detail routes. The remaining legacy runtime surface
+is now limited to guide pages and shared bridge assets that still support those guides.
 
 ## Native vs Legacy Auth Status
 Now native in Next.js:

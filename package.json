@@ -2,8 +2,9 @@
   "name": "pcs-pal",
   "private": true,
   "scripts": {
-    "dev": "node ./scripts/sync-legacy-assets.mjs && next dev",
-    "build": "node ./scripts/sync-legacy-assets.mjs && next build",
+    "dev": "npm run sync-legacy-assets && next dev",
+    "sync-legacy-assets": "node ./scripts/sync-legacy-assets.mjs",
+    "build": "npm run sync-legacy-assets && next build",
     "start": "next start"
   },
   "dependencies": {

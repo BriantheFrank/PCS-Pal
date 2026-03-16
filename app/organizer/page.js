@@ -6,7 +6,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Move Organizer";
 const description =
-  "Open the protected PCS Pal organizer hub to jump into the native inventory and logistics workspaces while the remaining tool migrations continue through the existing bridge.";
+  "Open the protected PCS Pal organizer hub to jump into the native checklist, inventory, logistics, and bases workspaces.";
 
 export const metadata = buildPageMetadata({
   title,
