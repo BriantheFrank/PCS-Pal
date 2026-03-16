@@ -105,3 +105,7 @@ export function NativeOrganizerPage() {
           the migrated native shell while the rest of the legacy bridge continues covering the
           remaining tool phases.
         </p>
+      </section>
+    </main>
+  );
+}

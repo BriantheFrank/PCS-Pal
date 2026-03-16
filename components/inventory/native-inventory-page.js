@@ -1657,25 +1657,37 @@ export function NativeInventoryPage() {
             <div className="print-label" id="print-label">
               <div className="label-row">
                 <span className="label-key">Box Name</span>
-                <span className={`label-value ${previewValues.title ? "" : "is-placeholder"}`.trim()} id="label-title">
+                <span
+                  className={`label-value ${previewValues.title ? "" : "is-placeholder"}`.trim()}
+                  id="label-title"
+                >
                   {previewValues.title || "Add a box name"}
                 </span>
               </div>
               <div className="label-row">
                 <span className="label-key">Room</span>
-                <span className={`label-value ${previewValues.room ? "" : "is-placeholder"}`.trim()} id="label-room">
+                <span
+                  className={`label-value ${previewValues.room ? "" : "is-placeholder"}`.trim()}
+                  id="label-room"
+                >
                   {previewValues.room || "Add a room"}
                 </span>
               </div>
               <div className="label-row">
                 <span className="label-key">Estimated Weight</span>
-                <span className={`label-value ${previewValues.weight ? "" : "is-placeholder"}`.trim()} id="label-weight">
+                <span
+                  className={`label-value ${previewValues.weight ? "" : "is-placeholder"}`.trim()}
+                  id="label-weight"
+                >
                   {previewValues.weight || "Add weight"}
                 </span>
               </div>
               <div className="label-row" id="label-notes-row">
                 <span className="label-key">Notes</span>
-                <span className={`label-value ${previewValues.notes ? "" : "is-placeholder"}`.trim()} id="label-notes">
+                <span
+                  className={`label-value ${previewValues.notes ? "" : "is-placeholder"}`.trim()}
+                  id="label-notes"
+                >
                   {previewValues.notes || "Optional notes"}
                 </span>
               </div>

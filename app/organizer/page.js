@@ -36,4 +36,9 @@ export default function OrganizerPage() {
       </SiteHeader>
 
       <NativeOrganizerPage />
-
+      <SiteFooter>
+        <p className="footer-tip">Tip: Start with Move Inventory to track boxes by room.</p>
+      </SiteFooter>
+    </>
+  );
+}
