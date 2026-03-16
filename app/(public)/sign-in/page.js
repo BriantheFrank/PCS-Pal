@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 
 import { SignInForm } from "@/components/auth/sign-in-form";
@@ -16,6 +17,19 @@ export const metadata = buildPageMetadata({
   pathname: "/sign-in",
   noindex: true,
 });
+
+function SignInFormFallback() {
+  return (
+    <div className="info-panel signup-page-card">
+      <p className="eyebrow">Sign In</p>
+      <h2>Return to your PCS Pal workspace</h2>
+      <p>Loading secure sign-in...</p>
+      <p className="signup-page-status" aria-live="polite">
+        Preparing your sign-in form.
+      </p>
+    </div>
+  );
+}
 
 export default function SignInPage() {
   return (
@@ -39,7 +53,9 @@ export default function SignInPage() {
 
       <main className="container">
         <section className="landing-hero signup-page-layout">
-          <SignInForm />
+          <Suspense fallback={<SignInFormFallback />}>
+            <SignInForm />
+          </Suspense>
 
           <div className="info-panel signup-page-card signup-page-side">
             <p className="eyebrow">Need an account first?</p>
