@@ -2,7 +2,7 @@ import { CHECKLIST_STORAGE_KEY } from "@/checklist-data";
 import { ChecklistHeading, NativeChecklistPage } from "@/components/checklist/native-checklist-page";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
-import { getLegacyChecklistMainHtml } from "@/lib/checklist/legacy-checklist-content";
+import { getChecklistPageData } from "@/lib/checklist/page-data";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
@@ -18,7 +18,7 @@ export const metadata = buildPageMetadata({
 });
 
 export default function ChecklistPage() {
-  const legacyChecklistHtml = getLegacyChecklistMainHtml();
+  const pageData = getChecklistPageData();
 
   return (
     <>
@@ -43,7 +43,7 @@ export default function ChecklistPage() {
         </p>
       </SiteHeader>
 
-      <NativeChecklistPage legacyChecklistHtml={legacyChecklistHtml} />
+      <NativeChecklistPage pageData={pageData} />
 
       <SiteFooter>
         <p className="footer-tip">

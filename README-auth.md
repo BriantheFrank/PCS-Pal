@@ -1,8 +1,7 @@
-# PCS-Pal Auth + Cloud Sync
+﻿# PCS-Pal Auth + Cloud Sync
 
 ## Architecture Summary
-PCS-Pal now has a Next.js App Router shell at the repo root, with a legacy static bridge for
-unmigrated pages.
+PCS-Pal now has a Next.js App Router application at the repo root. Legacy HTML files remain in the repo only as compatibility aliases or source-content inputs where that is still the fastest safe migration path.
 
 Additive components:
 - `app/`: Next.js App Router public shell, route handlers, robots, and sitemap
@@ -11,13 +10,15 @@ Additive components:
 - `api/public-config.js`: Vercel serverless endpoint exposing public runtime config
 - `api/legal-context.js`: Vercel serverless endpoint exposing minimal request metadata for legal evidence capture
 - `legal-documents.js`: shared current legal document metadata for public pages and signup UX
-- `scripts/sync-legacy-assets.mjs`: build-time sync of the remaining legacy guide pages and shared bridge assets into `public/`
+
+
 - `lib/legacy-route-manifest.mjs`: source of truth for legacy route rewrites and noindex headers
 - `supabase/migrations/20260309000100_pcs_pal_auth_and_user_data.sql`: schema and RLS setup
 
-Native Next.js routes now cover the landing/trust pages plus the checklist, organizer, inventory,
-logistics, the base index, and all native base detail routes. The remaining legacy runtime surface
-is now limited to guide pages and shared bridge assets that still support those guides.
+Native Next.js routes now cover the landing/trust pages, account and auth pages, the checklist,
+checklist guide articles, organizer, inventory, logistics, the base index, and all native base
+detail routes. The old `.html` entry points now resolve through rewrites instead of a copied
+runtime bridge.
 
 ## Native vs Legacy Auth Status
 Now native in Next.js:
@@ -75,6 +76,12 @@ Now native in Next.js:
 - `/create-account.html` alias via rewrite
 - `/sign-in`
 - `/account`
+- `/guides/receiving-pcs-orders`
+- `/guides/attending-pcs-briefings`
+- `/guides/confirming-report-dates`
+- `/guides/applying-advance-pay`
+- `/guides/updating-deers-rapids`
+- the five legacy guide `.html` URLs retained only as compatibility aliases for those native routes
 - package-based browser Supabase bootstrap for migrated auth pages
 - legal clickwrap enforcement and legal-context capture on the native signup page
 - native sign-in
@@ -110,22 +117,18 @@ Now native in Next.js:
   - legacy `base-*.html` detail URLs retained only as compatibility aliases for the native routes
 
 Still legacy:
-- route protection for bridged tool/content pages
-- guide pages only
-- legacy account dropdown on bridged pages only
-- local-storage sync, analytics, partner placements, and protected-route enforcement inside `auth-sync.js`
+- no primary user-facing route still depends on shipped legacy runtime HTML
+- source HTML files remain in the repo where checklist, guide, or base content is still being adapted into native render models
+- `auth-sync.js` remains as reference and rollback-era code, not as a dependency of the native Next routes
 
 Temporary coexistence is intentional:
 - migrated auth pages use:
   - `components/auth/native-auth-provider.js`
   - `lib/supabase/browser-client.js`
-- legacy pages still use the CDN client inside `auth-sync.js`
-- both paths share `account-data.js` so profile/privacy/move-profile/legal writes stay aligned
-- both paths share `checklist-data.js` so checklist local/remote semantics stay aligned
-- both paths share `inventory-data.js` so inventory local/remote semantics stay aligned
-- both paths share `logistics-data.js` so logistics local/remote semantics stay aligned
-- both paths share `/api/public-config` and `/api/legal-context`
-- native Next pages no longer load `auth-sync.js` from the root layout
+- native routes continue to share `account-data.js`, `checklist-data.js`, `inventory-data.js`, and `logistics-data.js` so browser storage and Supabase sync semantics stay aligned
+- native routes continue to rely on `/api/public-config` and `/api/legal-context`
+- some native content adapters still read legacy source HTML files where that is faster than rewriting content by hand
+- old `.html` paths now resolve through rewrites instead of shipped duplicate runtime pages
 - Google auth remains deferred
 
 ## Current Production State

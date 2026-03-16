@@ -1,31 +1,43 @@
-# PCS-Pal
+﻿# PCS-Pal
+
 Website to help with the PCS process.
 
 ## Deployment
-This repository is now transitioning to a Next.js App Router deployment on Vercel.
-The repo still carries a legacy static multi-page app, but build-time sync copies the untouched
-legacy `.html`, `.js`, and `.css` assets into `public/` so they keep working while native Next.js
-routes are migrated in phases.
+This repository now deploys as a native Next.js App Router application on Vercel.
+The primary user-facing routes are owned by Next.js, and legacy `.html` URLs are kept only as
+compatibility rewrites where they still help preserve old entry points.
 
-Current native Next.js public routes:
+Current native Next.js routes include:
 - `/`
+- `/create-account`
+- `/sign-in`
+- `/account`
+- `/checklist`
+- `/guides/[slug]`
+- `/organizer`
+- `/inventory`
+- `/logistics`
+- `/bases`
+- `/bases/<slug>`
 - `/terms`
 - `/privacy`
 - `/about`
 - `/contact`
 
-Legacy `.html` aliases preserved through rewrites:
+Legacy `.html` aliases preserved through rewrites include:
 - `/index.html`
+- `/create-account.html`
+- `/pcs-checklist.html`
+- the five checklist guide article `.html` URLs
+- `/move-organizer.html`
+- `/move-inventory.html`
+- `/move-logistics.html`
+- `/bases.html`
+- all migrated `base-*.html` detail URLs
 - `/terms-of-use.html`
 - `/privacy-policy.html`
 
-Legacy untouched routes still served as static bridge assets:
-- `create-account.html`
-- checklist / organizer / inventory / logistics
-- guide articles
-- base library and base detail pages
-
-Legacy GitHub Pages/Jekyll and unused framework scaffolding have been removed.
+Legacy GitHub Pages/Jekyll and the runtime HTML bridge have been retired from the build path.
 Production deployments are expected to come from the `main` branch.
 Current production URL: `https://pcs-pal-live.vercel.app/`
 
@@ -34,5 +46,5 @@ See [README-auth.md](README-auth.md) for Supabase auth, sync architecture, setup
 
 ## Migration Notes
 - Next.js build config lives in `next.config.mjs`.
-- Legacy bridge syncing lives in `scripts/sync-legacy-assets.mjs`.
 - Route inventory and migration notes live in `docs/next-migration-foundation.md`.
+- Checklist and guide content now render through structured data adapters under `lib/checklist/` and `lib/guides/`.

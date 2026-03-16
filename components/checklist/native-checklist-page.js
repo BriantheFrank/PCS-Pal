@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -19,53 +19,9 @@ const REDIRECT_MESSAGE = "Redirecting to sign in so you can open your checklist.
 const LOCAL_ONLY_MESSAGE =
   "Cloud checklist sync is unavailable right now. Progress will stay on this device.";
 
-const areSubtasksComplete = (item) => {
-  const subtasks = Array.from(item.querySelectorAll(".sub-checklist input[type='checkbox']"));
-  if (!subtasks.length) {
-    return false;
-  }
-
-  return subtasks.every((subtask) => subtask.checked);
-};
-
-const syncParentCheckboxState = (item) => {
-  const parentCheckbox = item.querySelector("input[type='checkbox'][data-role='parent']");
-  if (!parentCheckbox) {
-    return;
-  }
-
-  const isComplete = areSubtasksComplete(item);
-  parentCheckbox.checked = isComplete;
-  item.classList.toggle("is-complete", isComplete);
-};
-
-const setAccordionState = (item, isOpen) => {
-  const details = item.querySelector(".item-details");
-  const header = item.querySelector(".item-header");
-  const toggle = item.querySelector(".accordion-toggle");
-  if (!details || !header || !toggle) {
-    return;
-  }
-
-  item.classList.toggle("is-open", isOpen);
-  details.setAttribute("aria-hidden", String(!isOpen));
-  header.setAttribute("aria-expanded", String(isOpen));
-  toggle.setAttribute("aria-expanded", String(isOpen));
-};
-
-const applyChecklistStateToDom = (root, checklistState) => {
-  Array.from(root.querySelectorAll("input[type='checkbox'][data-id]")).forEach((checkbox) => {
-    if (checkbox.dataset.role === "parent") {
-      return;
-    }
-
-    checkbox.checked = Boolean(checklistState[checkbox.dataset.id]);
-  });
-
-  Array.from(root.querySelectorAll(".checklist-item")).forEach((item) => {
-    syncParentCheckboxState(item);
-    setAccordionState(item, item.classList.contains("is-open"));
-  });
+const initialStatus = {
+  message: "",
+  tone: "neutral",
 };
 
 const getPossessiveFirstName = (displayName) => {
@@ -80,16 +36,113 @@ const getPossessiveFirstName = (displayName) => {
   return firstName.endsWith("s") ? `${firstName}'` : `${firstName}'s`;
 };
 
-export function NativeChecklistPage({ legacyChecklistHtml }) {
+const buildInitialOpenState = (sections = []) =>
+  Object.fromEntries(
+    sections.flatMap((section) => section.items.map((item) => [item.id, false]))
+  );
+
+const isChecklistItemComplete = (item, checklistState) =>
+  item.subtasks.length > 0 &&
+  item.subtasks.every((subtask) => Boolean(checklistState[subtask.id]));
+
+function ChecklistItem({ item, isOpen, checklistState, onToggleOpen, onToggleSubtask }) {
+  const isComplete = isChecklistItemComplete(item, checklistState);
+
+  return (
+    <div
+      className={`checklist-item${isOpen ? " is-open" : ""}${isComplete ? " is-complete" : ""}`}
+      data-item={item.id}
+    >
+      <div
+        className="item-header"
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        aria-controls={item.detailsId}
+        onClick={(event) => {
+          if (event.target.closest("a")) {
+            return;
+          }
+          onToggleOpen(item.id);
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== "Enter" && event.key !== " ") {
+            return;
+          }
+          event.preventDefault();
+          onToggleOpen(item.id);
+        }}
+      >
+        <label className="item-parent">
+          <input
+            type="checkbox"
+            data-id={item.parentId}
+            data-role="parent"
+            checked={isComplete}
+            disabled
+            readOnly
+          />
+          <span className="item-title">{item.title}</span>
+        </label>
+        <button
+          className="accordion-toggle"
+          type="button"
+          aria-expanded={isOpen}
+          aria-controls={item.detailsId}
+          aria-label="Toggle details"
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleOpen(item.id);
+          }}
+        >
+          <span className="accordion-icon" aria-hidden="true">
+            {"\u25BE"}
+          </span>
+        </button>
+      </div>
+
+      <div className="item-details item-help" id={item.detailsId} aria-hidden={String(!isOpen)}>
+        {item.helpParagraphs.map((paragraph, index) => (
+          <p key={`${item.id}-help-${index}`} dangerouslySetInnerHTML={{ __html: paragraph }} />
+        ))}
+
+        <ul className="sub-checklist">
+          {item.subtasks.map((subtask) => (
+            <li key={subtask.id}>
+              <label>
+                <input
+                  type="checkbox"
+                  data-id={subtask.id}
+                  checked={Boolean(checklistState[subtask.id])}
+                  onChange={(event) => onToggleSubtask(subtask.id, event.target.checked)}
+                />
+                <span>{subtask.label}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+
+        {item.tips.length ? (
+          <ul className="item-tips">
+            {item.tips.map((tip, index) => (
+              <li key={`${item.id}-tip-${index}`} dangerouslySetInnerHTML={{ __html: tip }} />
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+export function NativeChecklistPage({ pageData }) {
   const router = useRouter();
   const { status, user, errorMessage } = useNativeAuth();
-  const contentRef = useRef(null);
   const checklistStateRef = useRef({});
   const syncTimerRef = useRef(null);
-  const [syncStatus, setSyncStatus] = useState({
-    message: "",
-    tone: "neutral",
-  });
+  const [checklistState, setChecklistState] = useState({});
+  const [checklistReady, setChecklistReady] = useState(false);
+  const [syncStatus, setSyncStatus] = useState(initialStatus);
+  const [openItems, setOpenItems] = useState(() => buildInitialOpenState(pageData.sections));
 
   useEffect(() => {
     if (status === "ready" && !user) {
@@ -98,58 +151,23 @@ export function NativeChecklistPage({ legacyChecklistHtml }) {
   }, [router, status, user]);
 
   useEffect(() => {
-    if (status !== "ready" || !user || !contentRef.current || typeof window === "undefined") {
+    checklistStateRef.current = checklistState;
+  }, [checklistState]);
+
+  useEffect(() => {
+    if (status !== "ready" || !user || typeof window === "undefined") {
+      if (status !== "ready") {
+        setChecklistReady(false);
+      }
       return undefined;
     }
 
     let active = true;
-    const root = contentRef.current;
     const storage = window.localStorage;
-    checklistStateRef.current = loadChecklistState(storage);
-    applyChecklistStateToDom(root, checklistStateRef.current);
-
-    const flushRemoteSync = async () => {
-      try {
-        const supabase = await getBrowserSupabaseClient();
-        await pushChecklist({
-          supabase,
-          userId: user.id,
-          checklistState: checklistStateRef.current,
-        });
-
-        if (!active) {
-          return;
-        }
-
-        setSyncStatus((current) =>
-          current.tone === "error"
-            ? {
-                message: "",
-                tone: "neutral",
-              }
-            : current
-        );
-      } catch (error) {
-        if (!active) {
-          return;
-        }
-
-        setSyncStatus({
-          message: error?.message || LOCAL_ONLY_MESSAGE,
-          tone: "error",
-        });
-      }
-    };
-
-    const scheduleRemoteSync = () => {
-      if (syncTimerRef.current) {
-        window.clearTimeout(syncTimerRef.current);
-      }
-
-      syncTimerRef.current = window.setTimeout(() => {
-        void flushRemoteSync();
-      }, SYNC_DELAY_MS);
-    };
+    const localChecklist = loadChecklistState(storage);
+    checklistStateRef.current = localChecklist;
+    setChecklistState(localChecklist);
+    setChecklistReady(false);
 
     const initializeChecklist = async () => {
       try {
@@ -165,7 +183,8 @@ export function NativeChecklistPage({ legacyChecklistHtml }) {
         }
 
         checklistStateRef.current = reconciliation.checklistState;
-        applyChecklistStateToDom(root, reconciliation.checklistState);
+        setChecklistState(reconciliation.checklistState);
+        setSyncStatus(initialStatus);
       } catch (error) {
         if (!active) {
           return;
@@ -175,84 +194,83 @@ export function NativeChecklistPage({ legacyChecklistHtml }) {
           message: error?.message || LOCAL_ONLY_MESSAGE,
           tone: "error",
         });
+      } finally {
+        if (active) {
+          setChecklistReady(true);
+        }
       }
     };
-
-    const handleClick = (event) => {
-      const header = event.target.closest(".item-header");
-      if (!header || !root.contains(header) || event.target.closest("a")) {
-        return;
-      }
-
-      const item = header.closest(".checklist-item");
-      if (!item) {
-        return;
-      }
-
-      setAccordionState(item, !item.classList.contains("is-open"));
-    };
-
-    const handleKeyDown = (event) => {
-      const header = event.target.closest(".item-header");
-      if (!header || !root.contains(header)) {
-        return;
-      }
-
-      if (event.key !== "Enter" && event.key !== " ") {
-        return;
-      }
-
-      event.preventDefault();
-      const item = header.closest(".checklist-item");
-      if (!item) {
-        return;
-      }
-
-      setAccordionState(item, !item.classList.contains("is-open"));
-    };
-
-    const handleChange = (event) => {
-      const checkbox = event.target;
-      if (!(checkbox instanceof HTMLInputElement)) {
-        return;
-      }
-
-      if (!checkbox.matches("input[type='checkbox'][data-id]") || checkbox.dataset.role === "parent") {
-        return;
-      }
-
-      checklistStateRef.current = {
-        ...checklistStateRef.current,
-        [checkbox.dataset.id]: checkbox.checked,
-      };
-      saveChecklistState(storage, checklistStateRef.current);
-
-      const item = checkbox.closest(".checklist-item");
-      if (item) {
-        syncParentCheckboxState(item);
-      }
-
-      scheduleRemoteSync();
-    };
-
-    root.addEventListener("click", handleClick);
-    root.addEventListener("keydown", handleKeyDown);
-    root.addEventListener("change", handleChange);
 
     void initializeChecklist();
 
     return () => {
       active = false;
-      root.removeEventListener("click", handleClick);
-      root.removeEventListener("keydown", handleKeyDown);
-      root.removeEventListener("change", handleChange);
       if (syncTimerRef.current) {
         window.clearTimeout(syncTimerRef.current);
       }
     };
   }, [status, user]);
 
-  if (status === "loading") {
+  const scheduleRemoteSync = () => {
+    if (!user || typeof window === "undefined") {
+      return;
+    }
+
+    if (syncTimerRef.current) {
+      window.clearTimeout(syncTimerRef.current);
+    }
+
+    setSyncStatus({
+      message: "Saving checklist changes to your account...",
+      tone: "neutral",
+    });
+
+    syncTimerRef.current = window.setTimeout(async () => {
+      try {
+        const supabase = await getBrowserSupabaseClient();
+        await pushChecklist({
+          supabase,
+          userId: user.id,
+          checklistState: checklistStateRef.current,
+        });
+
+        setSyncStatus({
+          message: "Checklist synced.",
+          tone: "success",
+        });
+      } catch (error) {
+        setSyncStatus({
+          message: error?.message || LOCAL_ONLY_MESSAGE,
+          tone: "error",
+        });
+      }
+    }, SYNC_DELAY_MS);
+  };
+
+  const updateChecklistValue = (checklistKey, checked) => {
+    const nextChecklistState = {
+      ...checklistStateRef.current,
+      [checklistKey]: checked,
+    };
+
+    checklistStateRef.current = nextChecklistState;
+    setChecklistState(nextChecklistState);
+
+    if (typeof window !== "undefined") {
+      saveChecklistState(window.localStorage, nextChecklistState);
+    }
+
+    scheduleRemoteSync();
+  };
+
+  const toggleChecklistItem = (itemId) => {
+    setOpenItems((current) => ({
+      ...current,
+      [itemId]: !current[itemId],
+    }));
+  };
+
+  if (status === "loading" || (status === "ready" && user && !checklistReady)) {
     return (
       <main className="container">
         <div className="info-panel signup-page-card">
@@ -296,13 +314,54 @@ export function NativeChecklistPage({ legacyChecklistHtml }) {
 
   return (
     <main className="container">
+      {pageData.disclaimerHtml ? (
+        <div className="disclaimer-banner" dangerouslySetInnerHTML={{ __html: pageData.disclaimerHtml }} />
+      ) : null}
+
       <div className="native-checklist-shell">
         {syncStatus.message ? (
           <p className="auth-status native-checklist-status" data-tone={syncStatus.tone} aria-live="polite">
             {syncStatus.message}
           </p>
         ) : null}
-        <div ref={contentRef} dangerouslySetInnerHTML={{ __html: legacyChecklistHtml }} />
+
+        <div className="checklist-layout">
+          <div className="checklist-main">
+            {pageData.sections.map((section) => (
+              <details className="checklist-section" data-section={section.id} key={section.id} open>
+                <summary>
+                  <h2>{section.title}</h2>
+                </summary>
+                <div className="checklist-section-body">
+                  <p className="checklist-intro">{section.intro}</p>
+                  {section.items.map((item) => (
+                    <ChecklistItem
+                      item={item}
+                      isOpen={Boolean(openItems[item.id])}
+                      checklistState={checklistState}
+                      key={item.id}
+                      onToggleOpen={toggleChecklistItem}
+                      onToggleSubtask={updateChecklistValue}
+                    />
+                  ))}
+                </div>
+              </details>
+            ))}
+          </div>
+
+          {pageData.sidebar?.items?.length ? (
+            <aside className="checklist-sidebar">
+              <div className="sidebar-card">
+                <h2>{pageData.sidebar.title}</h2>
+                <ul className="sidebar-list">
+                  {pageData.sidebar.items.map((item, index) => (
+                    <li key={`sidebar-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </aside>
+          ) : null}
+        </div>
       </div>
     </main>
   );
