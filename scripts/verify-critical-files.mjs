@@ -10,11 +10,12 @@ const requiredFiles = [
   "package-lock.json",
   "jsconfig.json",
   "next.config.mjs",
+  "vercel.json",
 ];
 
 const sourceRoots = ["app", "components", "lib", "scripts"];
 const scannedExtensions = new Set([".js", ".jsx", ".mjs", ".cjs", ".json", ".css", ".md"]);
-const jsonFiles = new Set(["package.json", "package-lock.json", "jsconfig.json"]);
+const jsonFiles = new Set(["package.json", "package-lock.json", "jsconfig.json", "vercel.json"]);
 
 function exists(filePath) {
   try {

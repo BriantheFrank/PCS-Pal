@@ -228,10 +228,16 @@ Policies allow access only to the authenticated owner:
 Required:
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` for server-side feedback intake and the weekly digest job
 
 Optional:
 - `SUPABASE_ENABLE_GOOGLE_AUTH=false`
 - `LEGAL_IP_HASH_SALT`
+- `FEEDBACK_IP_HASH_SALT`
+- `RESEND_API_KEY`
+- `FEEDBACK_DIGEST_FROM_EMAIL`
+- `FEEDBACK_DIGEST_TO_EMAIL=athenaeumgroupllc@gmail.com`
+- `CRON_SECRET`
 
 When `SUPABASE_ENABLE_GOOGLE_AUTH=true`, the Google sign-in button is shown in the UI.
 The migrated `/logistics` page now uses a native itinerary workspace plus an external Google Maps directions handoff, so no client-side Maps API key is required.
@@ -241,9 +247,10 @@ The migrated `/logistics` page now uses a native itinerary workspace plus an ext
 2. Run `supabase/migrations/20260309000100_pcs_pal_auth_and_user_data.sql`.
 3. Run `supabase/migrations/20260310000100_pcs_pal_privacy_analytics_and_partners.sql`.
 4. Run `supabase/migrations/20260312000100_pcs_pal_legal_documents_and_acceptance.sql`.
-5. In `Authentication -> Providers`, enable `Email`.
-6. Keep email confirmation enabled for production.
-7. In `Authentication -> URL Configuration`, set:
+5. Run `supabase/migrations/20260316000100_pcs_pal_feedback_intake_and_digest.sql`.
+6. In `Authentication -> Providers`, enable `Email`.
+7. Keep email confirmation enabled for production.
+8. In `Authentication -> URL Configuration`, set:
    - `Site URL`: `https://pcs-pal-live.vercel.app`
    - `Additional Redirect URLs`:
      - `https://pcs-pal-live.vercel.app/**`
@@ -271,11 +278,26 @@ Recommended staging flow:
 5. Add environment variables:
    - `SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
    - `SUPABASE_ENABLE_GOOGLE_AUTH=false`
    - `LEGAL_IP_HASH_SALT` before legal launch
+   - `FEEDBACK_IP_HASH_SALT`
+   - `RESEND_API_KEY`
+   - `FEEDBACK_DIGEST_FROM_EMAIL`
+   - `FEEDBACK_DIGEST_TO_EMAIL=athenaeumgroupllc@gmail.com`
+   - `CRON_SECRET`
 6. Deploy and verify:
    - `https://pcs-pal-live.vercel.app/api/public-config`
    - `https://pcs-pal-live.vercel.app/api/legal-context`
+   - `https://pcs-pal-live.vercel.app/api/feedback/digest` using `Authorization: Bearer $CRON_SECRET`
+
+## Feedback Intake + Weekly Digest
+- User feedback is submitted through the in-app feedback launcher and stored in `public.feedback_submissions`.
+- Anonymous feedback is allowed intentionally, but writes go through the Next.js server layer so the raw table is not exposed to browser clients.
+- Signed-in submissions automatically attach the user ID and account email when a valid access token is available.
+- The weekly digest job reads the last completed Monday-to-Monday UTC window, sends a roll-up email to `athenaeumgroupllc@gmail.com`, and records the send in `public.feedback_digest_runs`.
+- `vercel.json` schedules the weekly digest for `0 13 * * 1` (Monday at 13:00 UTC).
+- Duplicate sends are prevented by the unique `(window_start, window_end)` digest log plus a sent-status check before the email is dispatched.
 
 ## Local Development
 Recommended local options:

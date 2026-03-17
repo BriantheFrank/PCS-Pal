@@ -1,6 +1,7 @@
 import "../styles.css";
 
 import { NativeAuthProvider } from "@/components/auth/native-auth-provider";
+import { FeedbackLauncher } from "@/components/feedback/feedback-launcher";
 import { LegacyRuntimeScripts } from "@/components/site/chrome";
 import { defaultSiteRobots } from "@/lib/metadata";
 import { siteConfig } from "@/lib/site-config";
@@ -41,7 +42,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <NativeAuthProvider>{children}</NativeAuthProvider>
+        <NativeAuthProvider>
+          {children}
+          <FeedbackLauncher />
+        </NativeAuthProvider>
         <LegacyRuntimeScripts />
       </body>
     </html>
