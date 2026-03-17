@@ -5,7 +5,7 @@ Website to help with the PCS process.
 ## Deployment
 This repository now deploys as a native Next.js App Router application on Vercel.
 The primary user-facing routes are owned by Next.js, and legacy `.html` URLs are kept only as
-compatibility rewrites where they still help preserve old entry points.
+compatibility redirects where they still help preserve old entry points.
 
 Current native Next.js routes include:
 - `/`
@@ -24,7 +24,7 @@ Current native Next.js routes include:
 - `/about`
 - `/contact`
 
-Legacy `.html` aliases preserved through rewrites include:
+Legacy `.html` aliases preserved through redirects include:
 - `/index.html`
 - `/create-account.html`
 - `/pcs-checklist.html`
@@ -40,6 +40,7 @@ Legacy `.html` aliases preserved through rewrites include:
 Legacy GitHub Pages/Jekyll and the runtime HTML bridge have been retired from the build path.
 Production deployments are expected to come from the `main` branch.
 Current production URL: `https://pcs-pal-live.vercel.app/`
+Key crawl files are served by the App Router at `/robots.txt` and `/sitemap.xml`.
 
 ## Auth + Cloud Sync
 See [README-auth.md](README-auth.md) for Supabase auth, sync architecture, setup, deployment, and smoke-test instructions.

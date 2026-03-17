@@ -23,6 +23,7 @@ export default function ContactPage() {
           title,
           description,
           pathname: "/contact",
+          type: "ContactPage",
         })}
       />
 

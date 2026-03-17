@@ -7,10 +7,13 @@ import { useEffect, useRef, useState } from "react";
 
 import { NativeAccountShell } from "@/components/auth/native-account-shell";
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
+import { publicSiteLinks } from "@/lib/site-config";
 
 const DESKTOP_NAV_QUERY = "(min-width: 861px)";
 
 const LANDING_LINKS = [
+  { href: "/about", label: "About", key: "about" },
+  { href: "/contact", label: "Contact", key: "contact" },
   { href: "/checklist", label: "PCS Checklist", key: "checklist", protected: true },
   { href: "/organizer", label: "Move Organizer", key: "organizer", protected: true },
   { href: "/bases", label: "Destination Bases", key: "bases", protected: true },
@@ -159,10 +162,19 @@ export function SiteHeader({ topBar, children }) {
 }
 
 export function SiteFooter({ children }) {
+  const footerLinks = publicSiteLinks.filter((item) => item.href !== "/terms" && item.href !== "/privacy");
+
   return (
     <footer className="site-footer">
       <div className="container">
         {children}
+        <nav className="footer-nav-links" aria-label="Public site links">
+          {footerLinks.map((item) => (
+            <Link href={item.href} key={item.href}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
         <div className="footer-legal-links" data-footer-legal-links="native">
           <Link href="/terms">Terms of Use</Link>
           <Link href="/privacy">Privacy Policy</Link>

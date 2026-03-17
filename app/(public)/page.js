@@ -10,9 +10,36 @@ import {
   buildWebSiteSchema,
 } from "@/lib/structured-data";
 
-const title = "PCS Pal";
+const title = "Military PCS Planning Checklist and Move Organizer";
 const description =
-  "Keep your PCS checklist, household inventory, destination research, and move details together so the plan is easier to pick back up from any device.";
+  "Keep your Permanent Change of Station checklist, household inventory, destination research, and move details together so the plan is easier to pick back up from any device.";
+
+const PUBLIC_DISCOVERY_LINKS = [
+  {
+    href: "/about",
+    title: "About PCS Pal",
+    description: "See how PCS Pal fits into a military move-planning workflow and what is live today.",
+    cta: "Read the product overview",
+  },
+  {
+    href: "/contact",
+    title: "Contact",
+    description: "Use the public contact path for reviewer notes, bug reports, and launch-readiness questions.",
+    cta: "Open the contact page",
+  },
+  {
+    href: "/terms",
+    title: "Terms of Use",
+    description: "Review the current draft rules, disclaimers, and scope of the service before relying on it.",
+    cta: "Review the terms",
+  },
+  {
+    href: "/privacy",
+    title: "Privacy Policy",
+    description: "Read how account data, planning data, and consent choices are handled in the current product.",
+    cta: "Read the privacy policy",
+  },
+];
 
 export const metadata = buildPageMetadata({
   title,
@@ -48,9 +75,9 @@ export default function HomePage() {
             <p className="eyebrow">A Steady Starting Point</p>
             <h2>Start planning here, then move through the rest with more confidence</h2>
             <p>
-              A PCS move asks a lot at once. PCS Pal keeps the moving pieces in one place so
-              deadlines, household details, and arrival plans are easier to track when life is
-              already full.
+              A Permanent Change of Station move asks a lot at once. PCS Pal keeps the moving
+              pieces in one place so deadlines, household details, and arrival plans are easier to
+              track when life is already full.
             </p>
             <p>
               When you sign in, your progress stays tied to your account, so the checklist,
@@ -77,6 +104,27 @@ export default function HomePage() {
               through the cracks.
             </p>
           </article>
+        </section>
+
+        <section className="info-panel landing-link-hub" aria-labelledby="public-pages-title">
+          <div className="landing-link-hub-heading">
+            <p className="eyebrow">Public Pages</p>
+            <h2 id="public-pages-title">Start with the public pages that explain the product</h2>
+            <p>
+              These pages are the crawlable reference points for what PCS Pal does, how the legal
+              framework currently works, and how to reach the team while the product is still being
+              refined.
+            </p>
+          </div>
+          <div className="card-grid">
+            {PUBLIC_DISCOVERY_LINKS.map((link) => (
+              <Link className="nav-card" href={link.href} key={link.href}>
+                <h3>{link.title}</h3>
+                <p>{link.description}</p>
+                <span className="card-link">{link.cta}</span>
+              </Link>
+            ))}
+          </div>
         </section>
 
         <details
@@ -126,9 +174,12 @@ export default function HomePage() {
             open, while your planning details stay signed in and attached to your account.
           </p>
           <p>
-            Learn more <Link className="text-link" href="/about">about PCS Pal</Link> or use the{" "}
+            Learn more <Link className="text-link" href="/about">about PCS Pal</Link>, use the{" "}
             <Link className="text-link" href="/contact">contact page</Link> to share founder or
-            reviewer feedback.
+            reviewer feedback, and review the public{" "}
+            <Link className="text-link" href="/terms">Terms of Use</Link> and{" "}
+            <Link className="text-link" href="/privacy">Privacy Policy</Link> before creating an
+            account.
           </p>
         </section>
       </main>

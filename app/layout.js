@@ -2,6 +2,7 @@ import "../styles.css";
 
 import { NativeAuthProvider } from "@/components/auth/native-auth-provider";
 import { LegacyRuntimeScripts } from "@/components/site/chrome";
+import { defaultSiteRobots } from "@/lib/metadata";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata = {
@@ -12,8 +13,18 @@ export const metadata = {
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
+  keywords: [
+    "PCS planning",
+    "Permanent Change of Station",
+    "military move checklist",
+    "move inventory",
+    "PCS logistics",
+    "duty station research",
+  ],
+  robots: defaultSiteRobots,
   openGraph: {
     type: "website",
+    locale: siteConfig.locale,
     siteName: siteConfig.name,
     title: siteConfig.name,
     description: siteConfig.description,

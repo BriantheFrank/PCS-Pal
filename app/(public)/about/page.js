@@ -23,6 +23,7 @@ export default function AboutPage() {
           title,
           description,
           pathname: "/about",
+          type: "AboutPage",
         })}
       />
 

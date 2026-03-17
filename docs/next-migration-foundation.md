@@ -18,7 +18,7 @@
   - `/privacy`
   - `/about`
   - `/contact`
-- Existing legacy `.html` entry points for those pages are preserved through rewrites only:
+- Existing legacy `.html` entry points for those pages are preserved through permanent redirects only:
   - `/index.html`
   - `/create-account.html`
   - `/pcs-checklist.html`
@@ -33,8 +33,8 @@
 - Build-time public copying of legacy HTML has been removed from the normal `dev` and `build` flow.
 
 ## Route and content ownership
-- `lib/legacy-route-manifest.mjs` is now the source of truth for compatibility rewrites and noindex headers.
-- `next.config.mjs` applies those rewrites before files so old `.html` entry points resolve to the native App Router routes.
+- `lib/legacy-route-manifest.mjs` is now the source of truth for compatibility redirects and noindex headers.
+- `next.config.mjs` permanently redirects old `.html` entry points to the native App Router routes, and applies `X-Robots-Tag` headers to non-ranking native routes.
 - `app/checklist/page.js` now renders the checklist natively from structured data produced by `lib/checklist/page-data.js`.
 - `app/guides/[slug]/page.js` now renders the five checklist article pages natively from structured data produced by `lib/guides/page-data.js`.
 - `app/bases/[slug]/page.js` continues to own all base detail pages through the shared native base-detail template and data adapter.
@@ -53,9 +53,10 @@ Compatibility only:
 
 ## Noindex protection during migration
 To avoid making protected or compatibility-only paths indexable during migration:
-- `next.config.mjs` applies `X-Robots-Tag: noindex, nofollow` to:
-  - compatibility `.html` aliases
+- `next.config.mjs` applies `X-Robots-Tag: noindex, follow` to:
+  - `/account`
   - `/create-account`
+  - `/sign-in`
   - `/checklist`
   - `/guides/:path*`
   - `/organizer`
@@ -64,7 +65,8 @@ To avoid making protected or compatibility-only paths indexable during migration
   - `/bases`
   - `/bases/:path*`
   - `/app/:path*`
-- `app/robots.txt/route.js` also disallows those paths.
+- `next.config.mjs` also applies `X-Robots-Tag: noindex, nofollow` to `/api/:path*`.
+- `app/robots.txt/route.js` allows the site to be crawled and only disallows `/api/`, so crawlers can see canonical and noindex signals on the affected pages instead of being blocked before they fetch them.
 
 ## Runtime/API notes
 - `app/api/public-config/route.js` mirrors the existing public runtime config endpoint.

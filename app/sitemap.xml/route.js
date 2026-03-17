@@ -1,42 +1,12 @@
-import { absoluteUrl } from "@/lib/site-config";
+import { absoluteUrl, indexableSiteRoutes } from "@/lib/site-config";
 
 export const dynamic = "force-static";
 
-const publicRoutes = [
-  {
-    pathname: "/",
-    changeFrequency: "weekly",
-    priority: "1.0",
-  },
-  {
-    pathname: "/about",
-    changeFrequency: "monthly",
-    priority: "0.7",
-  },
-  {
-    pathname: "/contact",
-    changeFrequency: "monthly",
-    priority: "0.7",
-  },
-  {
-    pathname: "/terms",
-    changeFrequency: "monthly",
-    priority: "0.5",
-  },
-  {
-    pathname: "/privacy",
-    changeFrequency: "monthly",
-    priority: "0.5",
-  },
-];
-
 export function GET() {
-  const lastModified = new Date().toISOString();
-  const entries = publicRoutes
+  const entries = indexableSiteRoutes
     .map(
       (route) => `<url>
   <loc>${absoluteUrl(route.pathname)}</loc>
-  <lastmod>${lastModified}</lastmod>
   <changefreq>${route.changeFrequency}</changefreq>
   <priority>${route.priority}</priority>
 </url>`

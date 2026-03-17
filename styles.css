@@ -600,6 +600,25 @@ main {
   transform: none;
 }
 
+.landing-link-hub {
+  display: grid;
+  gap: 1rem;
+}
+
+.landing-link-hub-heading {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.landing-link-hub-heading h2,
+.landing-link-hub-heading p {
+  margin: 0;
+}
+
+.landing-link-hub-heading p {
+  color: var(--muted);
+}
+
 .landing-steps {
   padding-left: 0;
 }
@@ -717,7 +736,7 @@ main {
 }
 
 .checklist-section[open] summary::after {
-  content: "–";
+  content: "-";
 }
 
 .checklist-section summary:focus-visible {
@@ -934,6 +953,27 @@ main {
   padding-top: 0.75rem;
   border-top: 1px solid var(--border);
   font-size: 0.85rem;
+}
+
+.footer-nav-links {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.footer-nav-links a {
+  color: var(--accent-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.footer-nav-links a:hover,
+.footer-nav-links a:focus-visible {
+  text-decoration: underline;
+  outline: none;
 }
 
 .footer-legal-links {
@@ -2956,3 +2996,4 @@ main {
     padding-bottom: calc(2.25rem + env(safe-area-inset-bottom));
   }
 }
+
