@@ -567,7 +567,7 @@ main {
   .nav-card:hover h3,
   .nav-card:focus-visible h2,
   .nav-card:focus-visible h3 {
-    animation: card-title-sheen 960ms ease;
+    animation: card-title-sheen 1920ms ease;
   }
 }
 
