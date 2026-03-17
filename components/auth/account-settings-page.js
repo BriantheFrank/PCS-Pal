@@ -559,6 +559,10 @@ export function AccountSettingsPage() {
           <li>
             Review <a href="/bases">Destination Bases</a> after saving coarse move preferences here
           </li>
+          <li>
+            Internal team only: open <Link href="/account/feedback">Feedback review</Link> to triage
+            submitted product notes by status
+          </li>
         </ul>
       </aside>
     </div>

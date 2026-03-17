@@ -237,6 +237,7 @@ Optional:
 - `RESEND_API_KEY`
 - `FEEDBACK_DIGEST_FROM_EMAIL`
 - `FEEDBACK_DIGEST_TO_EMAIL=athenaeumgroupllc@gmail.com`
+- `FEEDBACK_ADMIN_EMAILS=athenaeumgroupllc@gmail.com`
 - `CRON_SECRET`
 
 When `SUPABASE_ENABLE_GOOGLE_AUTH=true`, the Google sign-in button is shown in the UI.
@@ -285,16 +286,21 @@ Recommended staging flow:
    - `RESEND_API_KEY`
    - `FEEDBACK_DIGEST_FROM_EMAIL`
    - `FEEDBACK_DIGEST_TO_EMAIL=athenaeumgroupllc@gmail.com`
+   - `FEEDBACK_ADMIN_EMAILS=athenaeumgroupllc@gmail.com`
    - `CRON_SECRET`
 6. Deploy and verify:
    - `https://pcs-pal-live.vercel.app/api/public-config`
    - `https://pcs-pal-live.vercel.app/api/legal-context`
    - `https://pcs-pal-live.vercel.app/api/feedback/digest` using `Authorization: Bearer $CRON_SECRET`
+   - `https://pcs-pal-live.vercel.app/account/feedback` while signed in as an allowlisted operator account
 
 ## Feedback Intake + Weekly Digest
 - User feedback is submitted through the in-app feedback launcher and stored in `public.feedback_submissions`.
 - Anonymous feedback is allowed intentionally, but writes go through the Next.js server layer so the raw table is not exposed to browser clients.
 - Signed-in submissions automatically attach the user ID and account email when a valid access token is available.
+- Internal review now lives at `/account/feedback` for allowlisted operator emails.
+- `FEEDBACK_ADMIN_EMAILS` accepts a comma-separated list of operator emails. If it is not set, PCS Pal falls back to the digest recipient list and finally `athenaeumgroupllc@gmail.com`.
+- The in-app review route can filter submissions by status and feedback type and can move items between `new`, `reviewed`, and `archived`.
 - The weekly digest job reads the last completed Monday-to-Monday UTC window, sends a roll-up email to `athenaeumgroupllc@gmail.com`, and records the send in `public.feedback_digest_runs`.
 - `vercel.json` schedules the weekly digest for `0 13 * * 1` (Monday at 13:00 UTC).
 - Duplicate sends are prevented by the unique `(window_start, window_end)` digest log plus a sent-status check before the email is dispatched.
@@ -334,6 +340,13 @@ Email auth:
 - [ ] email sign-in works
 - [ ] sign-out works
 - [ ] signup is blocked if the Terms/Privacy registry migration is missing or incomplete
+
+Feedback:
+- [ ] floating feedback launcher opens on native pages
+- [ ] feedback submission is stored in `public.feedback_submissions`
+- [ ] weekly digest endpoint responds when called with `Authorization: Bearer $CRON_SECRET`
+- [ ] `/account/feedback` loads for an allowlisted operator account
+- [ ] feedback status changes persist from `/account/feedback`
 
 Sync:
 - [ ] signed-in checklist changes persist to Supabase
