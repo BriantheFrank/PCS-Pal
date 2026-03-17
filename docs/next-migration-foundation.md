@@ -38,6 +38,7 @@
 - `app/checklist/page.js` now renders the checklist natively from structured data produced by `lib/checklist/page-data.js`.
 - `app/guides/[slug]/page.js` now renders the five checklist article pages natively from structured data produced by `lib/guides/page-data.js`.
 - `app/bases/[slug]/page.js` continues to own all base detail pages through the shared native base-detail template and data adapter.
+- `app/(public)/military-pcs-checklist/page.js`, `app/(public)/pcs-inventory-label-tracking/page.js`, `app/(public)/pcs-move-logistics-planning/page.js`, and `app/(public)/how-to-plan-a-military-pcs-move/page.js` now provide public, indexable PCS search-entry pages.
 
 ## Current native ownership
 Now native:
@@ -48,25 +49,25 @@ Now native:
 - landing, legal, support, account, and auth pages
 
 Compatibility only:
-- old `.html` URLs now exist as rewrite aliases, not as shipped runtime HTML pages
+- old `.html` URLs now exist as permanent redirect aliases, not as shipped runtime HTML pages
 - source HTML files remain in the repo where they are still being used as content inputs for structured data adapters
 
 ## Noindex protection during migration
 To avoid making protected or compatibility-only paths indexable during migration:
 - `next.config.mjs` applies `X-Robots-Tag: noindex, follow` to:
   - `/account`
+  - `/account/:path*`
   - `/create-account`
   - `/sign-in`
   - `/checklist`
-  - `/guides/:path*`
   - `/organizer`
   - `/inventory`
   - `/logistics`
-  - `/bases`
-  - `/bases/:path*`
   - `/app/:path*`
 - `next.config.mjs` also applies `X-Robots-Tag: noindex, nofollow` to `/api/:path*`.
-- `app/robots.txt/route.js` allows the site to be crawled and only disallows `/api/`, so crawlers can see canonical and noindex signals on the affected pages instead of being blocked before they fetch them.
+- Public guide articles, the base index, and base detail pages are now indexable and included in the native sitemap.
+- `app/robots.txt/route.js` allows the site to be crawled and only disallows `/api/`.
+- `app/sitemap.xml/route.js` now emits the canonical native public URLs for the homepage, public landing pages, guide articles, and base research routes.
 
 ## Runtime/API notes
 - `app/api/public-config/route.js` mirrors the existing public runtime config endpoint.

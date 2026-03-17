@@ -17,17 +17,22 @@ export function generateMetadata({ params }) {
   if (!pageData) {
     return buildPageMetadata({
       title: "Destination Base",
-      description: "Protected destination base guide.",
+      description: "Military destination base guide.",
       pathname: `/bases/${params.slug}`,
-      noindex: true,
     });
   }
 
   return buildPageMetadata({
-    title: pageData.heading,
+    title: `${pageData.installationName} PCS Guide`,
     description: pageData.overview,
     pathname: pageData.routePath,
-    noindex: true,
+    keywords: [
+      `${pageData.installationName} PCS guide`,
+      `${pageData.installationName} housing`,
+      `${pageData.installationName} lodging`,
+      `${pageData.installationName} transportation office`,
+      "military destination base research",
+    ],
   });
 }
 
@@ -45,7 +50,7 @@ export default function BaseDetailPage({ params }) {
     <>
       <JsonLd
         data={buildWebPageSchema({
-          title: pageData.heading,
+          title: `${pageData.installationName} PCS Guide`,
           description: pageData.overview,
           pathname: pageData.routePath,
         })}

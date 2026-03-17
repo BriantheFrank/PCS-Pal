@@ -5,15 +5,21 @@ import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome"
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "Destination Bases";
+const title = "Military Destination Base Research";
 const description =
-  "Browse the protected PCS Pal base library to search Army installations by name, location, or major unit before opening the detailed arrival guides.";
+  "Research major Army duty stations, compare installation overviews, and open PCS arrival guides for housing, lodging, transportation, medical, and first-week planning.";
 
 export const metadata = buildPageMetadata({
   title,
   description,
   pathname: "/bases",
-  noindex: true,
+  keywords: [
+    "military base research",
+    "PCS destination bases",
+    "Army duty stations",
+    "PCS arrival guides",
+    "military relocation research",
+  ],
 });
 
 export default function BasesPage() {
@@ -24,6 +30,7 @@ export default function BasesPage() {
           title,
           description,
           pathname: "/bases",
+          type: "CollectionPage",
         })}
       />
 
@@ -31,8 +38,8 @@ export default function BasesPage() {
         <p className="eyebrow">U.S. Army Duty Stations</p>
         <BasesHeading />
         <p className="subtitle">
-          Browse the 20 largest Army installations in the United States to get a quick sense of
-          where Soldiers are stationed and who calls each post home.
+          Research major Army installations, compare locations, and open public arrival guides for
+          housing, lodging, transportation, and first-week PCS planning.
         </p>
       </SiteHeader>
 

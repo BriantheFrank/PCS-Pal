@@ -33,6 +33,13 @@ export function LandingAuthSections() {
             ? "Your cloud account is active, so the workspace below is ready when you are."
             : "Once you are signed in, your PCS data stays with you across devices."}
         </p>
+        {!user ? (
+          <p className="landing-note">
+            Start with the public <Link href="/military-pcs-checklist">PCS checklist guide</Link>,{" "}
+            <Link href="/pcs-move-logistics-planning">logistics planning page</Link>, or{" "}
+            <Link href="/bases">destination base research</Link> before you sign in.
+          </p>
+        ) : null}
       </div>
 
       {user ? (

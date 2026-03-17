@@ -15,12 +15,14 @@ export const metadata = {
   description: siteConfig.description,
   applicationName: siteConfig.name,
   keywords: [
-    "PCS planning",
+    "military PCS planning",
     "Permanent Change of Station",
     "military move checklist",
-    "move inventory",
-    "PCS logistics",
-    "duty station research",
+    "PCS inventory tracking",
+    "PCS logistics planning",
+    "military destination base research",
+    "PCS move organizer",
+    "Army duty station guides",
   ],
   robots: defaultSiteRobots,
   openGraph: {

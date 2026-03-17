@@ -1,14 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
-import { useNativeAuth } from "@/components/auth/native-auth-provider";
-
-const LOADING_MESSAGE = "Loading this checklist guide.";
-const REDIRECT_MESSAGE = "Redirecting to sign in so you can open this guide.";
-const ERROR_MESSAGE = "Guide access is unavailable right now. Please try again in a moment.";
+import { useState } from "react";
 
 const isExternalHref = (href) => /^https?:\/\//i.test(String(href || ""));
 
@@ -29,57 +22,7 @@ function GuideLink({ href, children }) {
 }
 
 export function NativeGuidePage({ pageData }) {
-  const router = useRouter();
-  const { status, user, errorMessage } = useNativeAuth();
   const [checkedItems, setCheckedItems] = useState({});
-
-  useEffect(() => {
-    if (status === "ready" && !user) {
-      router.replace(`/sign-in?next=${pageData.routePath}`);
-    }
-  }, [pageData.routePath, router, status, user]);
-
-  if (status === "loading") {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">Checklist Guide</p>
-          <h2>Loading guide</h2>
-          <p className="signup-page-status" aria-live="polite">
-            {LOADING_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">Checklist Guide</p>
-          <h2>Guide access is unavailable</h2>
-          <p className="signup-page-status" data-tone="error" aria-live="polite">
-            {errorMessage || ERROR_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  if (!user) {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">Checklist Guide</p>
-          <h2>Redirecting to sign in</h2>
-          <p className="signup-page-status" aria-live="polite">
-            {REDIRECT_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="container">
@@ -160,6 +103,22 @@ export function NativeGuidePage({ pageData }) {
           </section>
         );
       })}
+
+      <section className="checklist-section">
+        <h2>Related PCS planning pages</h2>
+        <div className="card-grid">
+          <Link className="nav-card" href="/military-pcs-checklist">
+            <h3>Military PCS checklist guide</h3>
+            <p>Return to the broader PCS checklist workflow and open the next planning step.</p>
+            <span className="card-link">Open checklist guide</span>
+          </Link>
+          <Link className="nav-card" href="/how-to-plan-a-military-pcs-move">
+            <h3>How to plan a military PCS move</h3>
+            <p>See how this checklist step fits into inventory, logistics, and destination research.</p>
+            <span className="card-link">Open the planning guide</span>
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }

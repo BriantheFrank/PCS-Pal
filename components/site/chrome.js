@@ -6,18 +6,9 @@ import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 
 import { NativeAccountShell } from "@/components/auth/native-account-shell";
-import { useNativeAuth } from "@/components/auth/native-auth-provider";
-import { publicSiteLinks } from "@/lib/site-config";
+import { primaryPublicNavLinks, publicSiteLinks } from "@/lib/site-config";
 
 const DESKTOP_NAV_QUERY = "(min-width: 861px)";
-
-const LANDING_LINKS = [
-  { href: "/about", label: "About", key: "about" },
-  { href: "/contact", label: "Contact", key: "contact" },
-  { href: "/checklist", label: "PCS Checklist", key: "checklist", protected: true },
-  { href: "/organizer", label: "Move Organizer", key: "organizer", protected: true },
-  { href: "/bases", label: "Destination Bases", key: "bases", protected: true },
-];
 
 const INFO_LINKS = [
   { href: "/", label: "Home", key: "home" },
@@ -124,15 +115,12 @@ function SiteTopBar({ navItems }) {
 }
 
 export function LandingTopBar({ active = "" }) {
-  const { user } = useNativeAuth();
-
   return (
     <SiteTopBar
-      navItems={LANDING_LINKS.map((item) => ({
+      navItems={primaryPublicNavLinks.map((item) => ({
         href: item.href,
         label: item.label,
         active: item.key === active,
-        disabled: item.protected && !user,
       }))}
     />
   );
@@ -162,7 +150,9 @@ export function SiteHeader({ topBar, children }) {
 }
 
 export function SiteFooter({ children }) {
-  const footerLinks = publicSiteLinks.filter((item) => item.href !== "/terms" && item.href !== "/privacy");
+  const footerLinks = publicSiteLinks.filter(
+    (item) => item.href !== "/terms" && item.href !== "/privacy"
+  );
 
   return (
     <footer className="site-footer">

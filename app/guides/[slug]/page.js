@@ -26,7 +26,13 @@ export function generateMetadata({ params }) {
     title: pageData.title,
     description: pageData.description,
     pathname: pageData.routePath,
-    noindex: true,
+    keywords: [
+      "military PCS checklist",
+      "PCS planning guide",
+      "Permanent Change of Station checklist",
+      pageData.title,
+    ],
+    openGraphType: "article",
   });
 }
 
@@ -43,10 +49,11 @@ export default function GuideArticlePage({ params }) {
           title: pageData.title,
           description: pageData.description,
           pathname: pageData.routePath,
+          type: "Article",
         })}
       />
 
-      <SiteHeader topBar={<LandingTopBar active="checklist" />}>
+      <SiteHeader topBar={<LandingTopBar active="pcs-checklist-guide" />}>
         <p className="eyebrow">PCS Checklist Step</p>
         <h1>{pageData.title}</h1>
         <p className="subtitle">{pageData.description}</p>

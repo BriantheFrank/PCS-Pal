@@ -30,7 +30,7 @@ export default function ChecklistPage() {
         })}
       />
 
-      <SiteHeader topBar={<LandingTopBar active="checklist" />}>
+      <SiteHeader topBar={<LandingTopBar active="pcs-checklist-guide" />}>
         <p className="eyebrow">U.S. Military PCS Toolkit</p>
         <ChecklistHeading />
         <p className="subtitle">

@@ -1,14 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import Link from "next/link";
 
-import { useNativeAuth } from "@/components/auth/native-auth-provider";
 import { SponsoredPlacementsSection } from "@/components/bases/detail/sponsored-placements";
-
-const LOADING_MESSAGE = "Loading your destination base guide.";
-const REDIRECT_MESSAGE = "Redirecting to sign in so you can open this base guide.";
-const ERROR_MESSAGE = "This base guide is unavailable right now. Please try again in a moment.";
 
 function BaseCard({ card }) {
   return (
@@ -58,57 +52,6 @@ function DetailSection({ section }) {
 }
 
 export function NativeBaseDetailPage({ pageData }) {
-  const router = useRouter();
-  const { status, user, errorMessage } = useNativeAuth();
-
-  useEffect(() => {
-    if (status === "ready" && !user) {
-      router.replace(`/sign-in?next=${pageData.routePath}`);
-    }
-  }, [pageData.routePath, router, status, user]);
-
-  if (status === "loading") {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">{pageData.installationName}</p>
-          <h2>Loading your base guide</h2>
-          <p className="signup-page-status" aria-live="polite">
-            {LOADING_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">{pageData.installationName}</p>
-          <h2>Base guide access is unavailable</h2>
-          <p className="signup-page-status" data-tone="error" aria-live="polite">
-            {errorMessage || ERROR_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  if (!user) {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">{pageData.installationName}</p>
-          <h2>Redirecting to sign in</h2>
-          <p className="signup-page-status" aria-live="polite">
-            {REDIRECT_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="container">
       <DetailSection section={pageData.arrivalSection} />
@@ -117,9 +60,24 @@ export function NativeBaseDetailPage({ pageData }) {
       {pageData.staticSections.map((section) => (
         <DetailSection section={section} key={section.title} />
       ))}
-      <a className="back-link" href={pageData.backLink.href}>
+      <section className="base-detail">
+        <h2>Keep this base guide tied to the rest of your PCS plan</h2>
+        <div className="base-grid">
+          <Link className="base-card" href="/military-pcs-checklist">
+            <h3>Military PCS checklist</h3>
+            <p>Use the checklist guide to keep reporting, finance, and family tasks visible while you prepare for arrival.</p>
+            <span className="card-link">Open checklist guide</span>
+          </Link>
+          <Link className="base-card" href="/pcs-move-logistics-planning">
+            <h3>PCS logistics planning</h3>
+            <p>Keep lodging, travel stops, and delivery details aligned with the destination base plan.</p>
+            <span className="card-link">Open logistics planning</span>
+          </Link>
+        </div>
+      </section>
+      <Link className="back-link" href={pageData.backLink.href}>
         {pageData.backLink.label}
-      </a>
+      </Link>
     </main>
   );
 }

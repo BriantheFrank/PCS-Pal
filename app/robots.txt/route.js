@@ -1,4 +1,4 @@
-import { siteConfig } from "@/lib/site-config";
+import { absoluteUrl, siteConfig } from "@/lib/site-config";
 
 export const dynamic = "force-static";
 
@@ -7,7 +7,8 @@ export function GET() {
     "User-agent: *",
     "Allow: /",
     "Disallow: /api/",
-    `Sitemap: ${siteConfig.siteUrl}/sitemap.xml`,
+    `Host: ${siteConfig.siteUrl}`,
+    `Sitemap: ${absoluteUrl("/sitemap.xml")}`,
   ];
 
   return new Response(`${lines.join("\n")}\n`, {

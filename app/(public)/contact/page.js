@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { JsonLd } from "@/components/seo/json-ld";
-import { InfoTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
+import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
@@ -13,6 +13,12 @@ export const metadata = buildPageMetadata({
   title,
   description,
   pathname: "/contact",
+  keywords: [
+    "contact PCS Pal",
+    "PCS planning feedback",
+    "military PCS app contact",
+    "PCS bug report",
+  ],
 });
 
 export default function ContactPage() {
@@ -27,7 +33,7 @@ export default function ContactPage() {
         })}
       />
 
-      <SiteHeader topBar={<InfoTopBar active="contact" />}>
+      <SiteHeader topBar={<LandingTopBar active="contact" />}>
         <p className="eyebrow">Contact PCS Pal</p>
         <h1>Questions, feedback, and reviewer notes</h1>
         <p className="subtitle">
@@ -52,6 +58,12 @@ export default function ContactPage() {
           <p>
             Include the page you were using, what you expected to happen, what happened instead, and
             any browser or device detail that may help reproduce the issue.
+          </p>
+          <p>
+            If the question is really about move planning workflow rather than a product issue, start
+            with the public <Link className="text-link" href="/how-to-plan-a-military-pcs-move">PCS planning guide</Link>,{" "}
+            <Link className="text-link" href="/military-pcs-checklist">checklist guide</Link>, or{" "}
+            <Link className="text-link" href="/bases">destination base research</Link> pages first.
           </p>
         </section>
 

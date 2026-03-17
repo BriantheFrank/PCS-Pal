@@ -12,12 +12,12 @@ Additive components:
 - `legal-documents.js`: shared current legal document metadata for public pages and signup UX
 
 
-- `lib/legacy-route-manifest.mjs`: source of truth for legacy route rewrites and noindex headers
+- `lib/legacy-route-manifest.mjs`: source of truth for legacy route redirects and noindex headers
 - `supabase/migrations/20260309000100_pcs_pal_auth_and_user_data.sql`: schema and RLS setup
 
 Native Next.js routes now cover the landing/trust pages, account and auth pages, the checklist,
 checklist guide articles, organizer, inventory, logistics, the base index, and all native base
-detail routes. The old `.html` entry points now resolve through rewrites instead of a copied
+detail routes. The old `.html` entry points now resolve through permanent redirects instead of a copied
 runtime bridge.
 
 ## Native vs Legacy Auth Status
@@ -128,7 +128,7 @@ Temporary coexistence is intentional:
 - native routes continue to share `account-data.js`, `checklist-data.js`, `inventory-data.js`, and `logistics-data.js` so browser storage and Supabase sync semantics stay aligned
 - native routes continue to rely on `/api/public-config` and `/api/legal-context`
 - some native content adapters still read legacy source HTML files where that is faster than rewriting content by hand
-- old `.html` paths now resolve through rewrites instead of shipped duplicate runtime pages
+- old `.html` paths now resolve through permanent redirects instead of shipped duplicate runtime pages
 - Google auth remains deferred
 
 ## Current Production State

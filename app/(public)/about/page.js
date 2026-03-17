@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { JsonLd } from "@/components/seo/json-ld";
-import { InfoTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
+import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
@@ -13,6 +13,12 @@ export const metadata = buildPageMetadata({
   title,
   description,
   pathname: "/about",
+  keywords: [
+    "about PCS Pal",
+    "military PCS planning app",
+    "PCS checklist and move organizer",
+    "military relocation planning tool",
+  ],
 });
 
 export default function AboutPage() {
@@ -27,7 +33,7 @@ export default function AboutPage() {
         })}
       />
 
-      <SiteHeader topBar={<InfoTopBar active="about" />}>
+      <SiteHeader topBar={<LandingTopBar active="about" />}>
         <p className="eyebrow">About PCS Pal</p>
         <h1>Built to make PCS planning easier to hold together</h1>
         <p className="subtitle">
@@ -54,6 +60,12 @@ export default function AboutPage() {
             <li>Base research pages and arrival-focused resource links.</li>
             <li>Account, privacy, and legal-acknowledgment settings.</li>
           </ul>
+          <p>
+            Start with the public <Link className="text-link" href="/military-pcs-checklist">PCS checklist guide</Link>,{" "}
+            <Link className="text-link" href="/pcs-inventory-label-tracking">inventory planning page</Link>,{" "}
+            <Link className="text-link" href="/pcs-move-logistics-planning">logistics planning page</Link>, and{" "}
+            <Link className="text-link" href="/bases">destination base research</Link> before you open the synced planner.
+          </p>
         </section>
 
         <section className="info-panel legal-page-section">
@@ -61,6 +73,11 @@ export default function AboutPage() {
           <p>
             PCS Pal is still in a founder-and-reviewer stage. The site is being refined for product
             clarity, workflow stability, and legal/compliance readiness before any broader launch.
+          </p>
+          <p>
+            The current public site is also being shaped to better support military PCS search intent,
+            so the public planning pages increasingly explain the checklist, inventory, logistics, and
+            base-research workflows directly.
           </p>
         </section>
 

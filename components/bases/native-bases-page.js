@@ -1,25 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
-import { useNativeAuth } from "@/components/auth/native-auth-provider";
-
-const LOADING_MESSAGE = "Loading your destination base library.";
-const REDIRECT_MESSAGE = "Redirecting to sign in so you can open the base library.";
-const ERROR_MESSAGE = "The base library is unavailable right now. Please try again in a moment.";
-
-const getPossessiveFirstName = (displayName) => {
-  const firstName = String(displayName || "")
-    .split(/\s+/)
-    .filter(Boolean)[0];
-
-  if (!firstName) {
-    return "";
-  }
-
-  return firstName.endsWith("s") ? `${firstName}'` : `${firstName}'s`;
-};
+import Link from "next/link";
+import { useState } from "react";
 
 const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => {
   if (visibleCount === items.length && !searchValue && !stateValue) {
@@ -44,66 +26,14 @@ const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => 
 };
 
 export function BasesHeading() {
-  const { displayName } = useNativeAuth();
-  const possessiveName = getPossessiveFirstName(displayName);
-  const heading = possessiveName ? `${possessiveName} Destination Bases` : "Army Duty Stations";
+  const heading = "Military Destination Base Research";
 
   return <h1>{heading}</h1>;
 }
 
 export function NativeBasesPage({ items }) {
-  const router = useRouter();
-  const { status, user, errorMessage } = useNativeAuth();
   const [searchValue, setSearchValue] = useState("");
   const [stateValue, setStateValue] = useState("");
-
-  useEffect(() => {
-    if (status === "ready" && !user) {
-      router.replace("/sign-in?next=/bases");
-    }
-  }, [router, status, user]);
-
-  if (status === "loading") {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">Destination Bases</p>
-          <h2>Loading your base library</h2>
-          <p className="signup-page-status" aria-live="polite">
-            {LOADING_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">Destination Bases</p>
-          <h2>Base access is unavailable</h2>
-          <p className="signup-page-status" data-tone="error" aria-live="polite">
-            {errorMessage || ERROR_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  if (!user) {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">Destination Bases</p>
-          <h2>Redirecting to sign in</h2>
-          <p className="signup-page-status" aria-live="polite">
-            {REDIRECT_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
 
   const normalizedQuery = searchValue.trim().toLowerCase();
   const uniqueStates = Array.from(new Set(items.map((item) => item.state).filter(Boolean))).sort(
@@ -195,7 +125,7 @@ export function NativeBasesPage({ items }) {
 
       <section className="base-grid" id="base-directory-grid">
         {visibleItems.map((item) => (
-          <a className="base-card" href={item.href} key={item.slug}>
+          <Link className="base-card" href={item.href} key={item.slug}>
             <h2>{item.title}</h2>
             <p className="base-state">{item.state}</p>
             <p className="base-label">Major units</p>
@@ -205,8 +135,31 @@ export function NativeBasesPage({ items }) {
               ))}
             </ul>
             <span className="card-link base-card-cta">View base details</span>
-          </a>
+          </Link>
         ))}
+      </section>
+
+      <section className="info-panel base-browser-panel" aria-labelledby="base-planning-links-title">
+        <div className="base-browser-header">
+          <p className="eyebrow">Related PCS Planning</p>
+          <h2 id="base-planning-links-title">Use base research with the rest of the move plan</h2>
+          <p>
+            Installation research is most useful when it stays connected to checklist work, travel
+            planning, and arrival-week logistics.
+          </p>
+        </div>
+        <div className="card-grid">
+          <Link className="nav-card" href="/military-pcs-checklist">
+            <h3>Military PCS checklist</h3>
+            <p>Keep the administrative and family tasks visible while you research the next base.</p>
+            <span className="card-link">Open checklist guide</span>
+          </Link>
+          <Link className="nav-card" href="/pcs-move-logistics-planning">
+            <h3>PCS logistics planning</h3>
+            <p>Use arrival-day lodging, delivery, and first-stop details alongside the base guide.</p>
+            <span className="card-link">Open logistics planning</span>
+          </Link>
+        </div>
       </section>
     </main>
   );

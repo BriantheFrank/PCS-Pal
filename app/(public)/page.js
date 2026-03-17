@@ -12,9 +12,42 @@ import {
 
 const title = "Military PCS Planning Checklist and Move Organizer";
 const description =
-  "Keep your Permanent Change of Station checklist, household inventory, destination research, and move details together so the plan is easier to pick back up from any device.";
+  "Plan a military PCS move with public checklist guidance, inventory and logistics planning pages, destination base research, and a synced organizer built for service members and families.";
 
-const PUBLIC_DISCOVERY_LINKS = [
+const PRIMARY_SEARCH_LINKS = [
+  {
+    href: "/military-pcs-checklist",
+    title: "Military PCS Checklist",
+    description: "Use the public checklist guide to organize orders, briefings, travel prep, and arrival tasks.",
+    cta: "Open the checklist guide",
+  },
+  {
+    href: "/pcs-inventory-label-tracking",
+    title: "PCS Inventory and Label Tracking",
+    description: "See how to plan room-by-room inventory, label logic, and high-value item tracking before pack-out.",
+    cta: "Open inventory planning",
+  },
+  {
+    href: "/pcs-move-logistics-planning",
+    title: "PCS Move Logistics Planning",
+    description: "Keep movers, lodging, delivery windows, travel stops, and arrival-week handoffs in one plan.",
+    cta: "Open logistics planning",
+  },
+  {
+    href: "/bases",
+    title: "Military Destination Base Research",
+    description: "Research Army duty stations and save arrival, housing, transportation, and lodging links before you travel.",
+    cta: "Open base research",
+  },
+  {
+    href: "/how-to-plan-a-military-pcs-move",
+    title: "How to Plan a Military PCS Move",
+    description: "Follow a practical stage-by-stage framework for checklists, inventory, logistics, and destination prep.",
+    cta: "Open the planning guide",
+  },
+];
+
+const SUPPORTING_PUBLIC_LINKS = [
   {
     href: "/about",
     title: "About PCS Pal",
@@ -45,6 +78,14 @@ export const metadata = buildPageMetadata({
   title,
   description,
   pathname: "/",
+  keywords: [
+    "military PCS planning",
+    "PCS checklist",
+    "PCS move organizer",
+    "PCS inventory",
+    "military base research",
+    "PCS logistics planning",
+  ],
 });
 
 export default function HomePage() {
@@ -64,8 +105,8 @@ export default function HomePage() {
         <p className="eyebrow">PCS Pal - An Athenaeum Group Solution</p>
         <h1>A calmer place to plan your PCS move</h1>
         <p className="subtitle">
-          Keep your checklist, household inventory, destination research, and move details in one
-          place so you can pick the plan back up from any device.
+          Plan a military PCS move with public guides for checklist, inventory, logistics, and base
+          research, then save the working details to a synced planner when you sign in.
         </p>
       </SiteHeader>
 
@@ -75,13 +116,13 @@ export default function HomePage() {
             <p className="eyebrow">A Steady Starting Point</p>
             <h2>Start planning here, then move through the rest with more confidence</h2>
             <p>
-              A Permanent Change of Station move asks a lot at once. PCS Pal keeps the moving
-              pieces in one place so deadlines, household details, and arrival plans are easier to
-              track when life is already full.
+              A Permanent Change of Station move asks a lot at once. PCS Pal keeps the checklist,
+              household details, inventory, travel notes, and destination research closer together so
+              the move is easier to restart after interruptions.
             </p>
             <p>
-              When you sign in, your progress stays tied to your account, so the checklist,
-              organizer, and logistics details are ready when you come back.
+              Start with the public planning pages below, then sign in when you want the synced
+              checklist, organizer, inventory, logistics workspace, and account-linked progress.
             </p>
           </div>
 
@@ -89,35 +130,57 @@ export default function HomePage() {
         </section>
 
         <section className="card-grid" id="what-is-inside">
-          <article className="nav-card landing-preview-card">
+          <Link className="nav-card landing-preview-card" href="/military-pcs-checklist">
             <h2>Checklist Tracking</h2>
-            <p>Keep service-member and family tasks in one place so everyone can see what is next.</p>
-          </article>
-          <article className="nav-card landing-preview-card">
+            <p>Map service-member and family tasks in a public PCS checklist before deadlines start stacking up.</p>
+            <span className="card-link">Open the checklist guide</span>
+          </Link>
+          <Link className="nav-card landing-preview-card" href="/pcs-inventory-label-tracking">
             <h2>Inventory and Labels</h2>
-            <p>Build a room-by-room record before pack-out so important items are easier to track.</p>
-          </article>
-          <article className="nav-card landing-preview-card">
+            <p>Build a room-by-room record before pack-out so boxes, labels, and high-value items are easier to track.</p>
+            <span className="card-link">Open inventory planning</span>
+          </Link>
+          <Link className="nav-card landing-preview-card" href="/pcs-move-logistics-planning">
             <h2>Logistics and Travel</h2>
             <p>
-              Keep tabs on packers, delivery windows, overnight stops, and the details that can slip
-              through the cracks.
+              Keep tabs on packers, delivery windows, overnight stops, and the arrival-week details
+              that can slip through the cracks.
             </p>
-          </article>
+            <span className="card-link">Open logistics planning</span>
+          </Link>
         </section>
 
         <section className="info-panel landing-link-hub" aria-labelledby="public-pages-title">
           <div className="landing-link-hub-heading">
-            <p className="eyebrow">Public Pages</p>
-            <h2 id="public-pages-title">Start with the public pages that explain the product</h2>
+            <p className="eyebrow">Public PCS Planning Pages</p>
+            <h2 id="public-pages-title">Use the public pages as search-friendly entry points into PCS planning</h2>
             <p>
-              These pages are the crawlable reference points for what PCS Pal does, how the legal
-              framework currently works, and how to reach the team while the product is still being
-              refined.
+              These pages are the crawlable reference points for military PCS checklist work,
+              inventory planning, logistics coordination, base research, and the broader product story.
             </p>
           </div>
           <div className="card-grid">
-            {PUBLIC_DISCOVERY_LINKS.map((link) => (
+            {PRIMARY_SEARCH_LINKS.map((link) => (
+              <Link className="nav-card" href={link.href} key={link.href}>
+                <h3>{link.title}</h3>
+                <p>{link.description}</p>
+                <span className="card-link">{link.cta}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="info-panel landing-link-hub" aria-labelledby="supporting-pages-title">
+          <div className="landing-link-hub-heading">
+            <p className="eyebrow">Supporting Public Pages</p>
+            <h2 id="supporting-pages-title">Product context, contact, and legal pages</h2>
+            <p>
+              These supporting pages explain what PCS Pal is, how to contact the team, and how the
+              current legal framework is structured while the product is still being refined.
+            </p>
+          </div>
+          <div className="card-grid">
+            {SUPPORTING_PUBLIC_LINKS.map((link) => (
               <Link className="nav-card" href={link.href} key={link.href}>
                 <h3>{link.title}</h3>
                 <p>{link.description}</p>
@@ -171,10 +234,13 @@ export default function HomePage() {
           <h2>Built for service members and families in transition</h2>
           <p>
             PCS Pal is meant to make a demanding move feel more organized. The landing page stays
-            open, while your planning details stay signed in and attached to your account.
+            open, while the synced planning details stay signed in and attached to your account.
           </p>
           <p>
-            Learn more <Link className="text-link" href="/about">about PCS Pal</Link>, use the{" "}
+            Start with the <Link className="text-link" href="/how-to-plan-a-military-pcs-move">PCS planning guide</Link>, the{" "}
+            <Link className="text-link" href="/military-pcs-checklist">military PCS checklist</Link>, and the{" "}
+            <Link className="text-link" href="/bases">destination base research</Link> pages. Learn more{" "}
+            <Link className="text-link" href="/about">about PCS Pal</Link>, use the{" "}
             <Link className="text-link" href="/contact">contact page</Link> to share founder or
             reviewer feedback, and review the public{" "}
             <Link className="text-link" href="/terms">Terms of Use</Link> and{" "}
