@@ -530,6 +530,18 @@ main {
   .base-card h3,
   .nav-card h2,
   .nav-card h3 {
+    color: var(--text);
+    -webkit-text-fill-color: currentColor;
+  }
+
+  .base-card:hover h2,
+  .base-card:hover h3,
+  .base-card:focus-visible h2,
+  .base-card:focus-visible h3,
+  .nav-card:hover h2,
+  .nav-card:hover h3,
+  .nav-card:focus-visible h2,
+  .nav-card:focus-visible h3 {
     background-image: linear-gradient(
       110deg,
       var(--text) 0%,
@@ -555,7 +567,7 @@ main {
   .nav-card:hover h3,
   .nav-card:focus-visible h2,
   .nav-card:focus-visible h3 {
-    animation: card-title-sheen 720ms ease;
+    animation: card-title-sheen 960ms ease;
   }
 }
 
