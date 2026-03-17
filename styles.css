@@ -525,72 +525,80 @@ main {
   font-size: 1.1rem;
 }
 
-@supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .base-card h2,
-  .base-card h3,
-  .nav-card h2,
-  .nav-card h3 {
-    color: var(--text);
-    -webkit-text-fill-color: currentColor;
-  }
+.base-card h2,
+.base-card h3,
+.nav-card h2,
+.nav-card h3 {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
 
-  .base-card:hover h2,
-  .base-card:hover h3,
-  .base-card:focus-visible h2,
-  .base-card:focus-visible h3,
-  .nav-card:hover h2,
-  .nav-card:hover h3,
-  .nav-card:focus-visible h2,
-  .nav-card:focus-visible h3 {
-    background-image: linear-gradient(
-      110deg,
-      var(--text) 0%,
-      var(--text) 44%,
-      rgba(255, 255, 255, 0.98) 50%,
-      var(--text) 56%,
-      var(--text) 100%
-    );
-    background-repeat: no-repeat;
-    background-size: 240% 100%;
-    background-position: 140% 0;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-  }
+.base-card h2::after,
+.base-card h3::after,
+.nav-card h2::after,
+.nav-card h3::after {
+  content: "";
+  position: absolute;
+  inset: -0.18em -0.22em;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-180%) skewX(-18deg);
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.06) 28%,
+    rgba(255, 255, 255, 0.82) 48%,
+    rgba(255, 255, 255, 0.34) 54%,
+    rgba(255, 255, 255, 0.06) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  mix-blend-mode: screen;
+}
 
-  .base-card:hover h2,
-  .base-card:hover h3,
-  .base-card:focus-visible h2,
-  .base-card:focus-visible h3,
-  .nav-card:hover h2,
-  .nav-card:hover h3,
-  .nav-card:focus-visible h2,
-  .nav-card:focus-visible h3 {
-    animation: card-title-sheen 1920ms ease;
-  }
+.base-card:hover h2::after,
+.base-card:hover h3::after,
+.base-card:focus-visible h2::after,
+.base-card:focus-visible h3::after,
+.nav-card:hover h2::after,
+.nav-card:hover h3::after,
+.nav-card:focus-visible h2::after,
+.nav-card:focus-visible h3::after {
+  animation: card-title-sheen 1920ms ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .base-card h2,
-  .base-card h3,
-  .nav-card h2,
-  .nav-card h3 {
-    background-image: none;
-    background-position: 0 0;
+  .base-card h2::after,
+  .base-card h3::after,
+  .nav-card h2::after,
+  .nav-card h3::after {
     animation: none !important;
-    color: var(--text);
-    -webkit-text-fill-color: currentColor;
+    opacity: 0 !important;
+    transform: translateX(-180%) skewX(-18deg);
   }
 }
 
 @keyframes card-title-sheen {
-  from {
-    background-position: 120% 0;
+  0% {
+    opacity: 0;
+    transform: translateX(-180%) skewX(-18deg);
   }
 
-  to {
-    background-position: -40% 0;
+  18% {
+    opacity: 0.18;
+  }
+
+  42% {
+    opacity: 0.82;
+  }
+
+  72% {
+    opacity: 0.56;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(235%) skewX(-18deg);
   }
 }
 
