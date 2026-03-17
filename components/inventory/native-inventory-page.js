@@ -26,6 +26,12 @@ const REDIRECT_MESSAGE = "Redirecting to sign in so you can open your inventory.
 const LOCAL_ONLY_MESSAGE =
   "Cloud inventory sync is unavailable right now. Progress will stay on this device.";
 const EMPTY_INVENTORY_MESSAGE = "Start your room list";
+const PRINT_LABEL_SURFACE = "#FFFFFF";
+const PRINT_LABEL_TEXT = "#0F172A";
+const PRINT_LABEL_MUTED = "#475569";
+const PRINT_LABEL_BORDER = "#E2E8F0";
+const PRINT_LABEL_INSET = "rgba(15, 23, 42, 0.04)";
+const PRINT_LABEL_DIVIDER = "rgba(226, 232, 240, 0.85)";
 
 const initialStatus = {
   message: "",
@@ -176,18 +182,18 @@ const buildLabelMarkup = (settings) => {
           margin: 0;
           padding: 2rem;
           font-family: "Inter", "Roboto", "Segoe UI", system-ui, sans-serif;
-          background: #ffffff;
+          background: ${PRINT_LABEL_SURFACE};
         }
         .print-label {
-          border: 2px solid #d7d1c7;
-          border-radius: 12px;
+          border: 2px solid ${PRINT_LABEL_BORDER};
+          border-radius: 16px;
           padding: 1.5rem;
           display: grid;
           gap: 0.75rem;
-          background: #ffffff;
-          color: #111827;
+          background: ${PRINT_LABEL_SURFACE};
+          color: ${PRINT_LABEL_TEXT};
           max-width: 780px;
-          box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.04);
+          box-shadow: inset 0 0 0 1px ${PRINT_LABEL_INSET};
         }
         .label-row {
           display: grid;
@@ -199,11 +205,11 @@ const buildLabelMarkup = (settings) => {
           text-transform: uppercase;
           letter-spacing: 0.06em;
           font-size: 0.85rem;
-          color: #5d6a73;
+          color: ${PRINT_LABEL_MUTED};
         }
         .label-value {
           font-weight: 600;
-          color: #111827;
+          color: ${PRINT_LABEL_TEXT};
           word-break: break-word;
           line-height: 1.35;
         }
@@ -344,21 +350,21 @@ const renderLabelCanvas = (settings) => {
   }
 
   context.scale(scale, scale);
-  context.fillStyle = "#ffffff";
+  context.fillStyle = PRINT_LABEL_SURFACE;
   context.fillRect(0, 0, width, canvas.height / scale);
-  context.strokeStyle = "#d7d1c7";
+  context.strokeStyle = PRINT_LABEL_BORDER;
   context.lineWidth = 3;
   context.strokeRect(16, 16, width - 32, canvas.height / scale - 32);
 
   let y = padding;
   sections.forEach((section, sectionIndex) => {
-    context.fillStyle = "#5d6a73";
+    context.fillStyle = PRINT_LABEL_MUTED;
     context.font = `700 ${labelSize}px ${fontFamily}`;
     context.textBaseline = "top";
     context.fillText(section.label.toUpperCase(), padding, y);
     y += labelLineHeight + 10;
 
-    context.fillStyle = "#22303b";
+    context.fillStyle = PRINT_LABEL_TEXT;
     context.font = `600 ${section.fontSize}px ${fontFamily}`;
     const lineHeight = section.fontSize * 1.35;
     section.lines.forEach((line) => {
@@ -368,7 +374,7 @@ const renderLabelCanvas = (settings) => {
 
     if (sectionIndex < sections.length - 1) {
       y += 10;
-      context.strokeStyle = "rgba(215, 209, 199, 0.85)";
+      context.strokeStyle = PRINT_LABEL_DIVIDER;
       context.lineWidth = 1;
       context.beginPath();
       context.moveTo(padding, y);

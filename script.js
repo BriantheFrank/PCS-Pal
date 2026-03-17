@@ -1174,15 +1174,15 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
           background: #ffffff;
         }
         .print-label {
-          border: 2px solid #d7d1c7;
-          border-radius: 12px;
+          border: 2px solid #e2e8f0;
+          border-radius: 16px;
           padding: 1.5rem;
           display: grid;
           gap: 0.75rem;
           background: #ffffff;
-          color: #111827;
+          color: #0f172a;
           max-width: 780px;
-          box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.04);
+          box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
         }
         .label-row {
           display: grid;
@@ -1194,11 +1194,11 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
           text-transform: uppercase;
           letter-spacing: 0.06em;
           font-size: 0.85rem;
-          color: #5d6a73;
+          color: #475569;
         }
         .label-value {
           font-weight: 600;
-          color: #111827;
+          color: #0f172a;
           word-break: break-word;
           line-height: 1.35;
         }
@@ -1344,19 +1344,19 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
     context.scale(scale, scale);
     context.fillStyle = "#ffffff";
     context.fillRect(0, 0, width, canvas.height / scale);
-    context.strokeStyle = "#d7d1c7";
+    context.strokeStyle = "#e2e8f0";
     context.lineWidth = 3;
     context.strokeRect(16, 16, width - 32, canvas.height / scale - 32);
 
     let y = padding;
     sections.forEach((section, sectionIndex) => {
-      context.fillStyle = "#5d6a73";
+      context.fillStyle = "#475569";
       context.font = `700 ${labelSize}px ${fontFamily}`;
       context.textBaseline = "top";
       context.fillText(section.label.toUpperCase(), padding, y);
       y += labelLineHeight + 10;
 
-      context.fillStyle = "#22303b";
+      context.fillStyle = "#0f172a";
       context.font = `600 ${section.fontSize}px ${fontFamily}`;
       const lineHeight = section.fontSize * 1.35;
       section.lines.forEach((line) => {
@@ -1366,7 +1366,7 @@ if (inventorySearch && roomForm && roomNameInput && roomsContainer) {
 
       if (sectionIndex < sections.length - 1) {
         y += 10;
-        context.strokeStyle = "rgba(215, 209, 199, 0.85)";
+        context.strokeStyle = "rgba(226, 232, 240, 0.85)";
         context.lineWidth = 1;
         context.beginPath();
         context.moveTo(padding, y);
