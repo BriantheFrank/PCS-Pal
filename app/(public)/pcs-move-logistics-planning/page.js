@@ -26,6 +26,11 @@ const relatedLinks = [
     title: "Base Guides",
     description: "Review lodging, housing, transportation, and key offices before travel day.",
   },
+  {
+    href: "/pcs-glossary",
+    title: "PCS glossary",
+    description: "Decode terms like HHG, PPM, DEERS, and RAPIDS in plain English.",
+  },
 ];
 
 export const metadata = buildPageMetadata({
@@ -73,10 +78,10 @@ export default function LogisticsLandingPage() {
         <section className="info-panel legal-page-section">
           <h2>Core logistics details to track</h2>
           <ul className="legal-page-list">
-            <li>Packing and delivery windows from your transportation office and movers.</li>
-            <li>Travel dates, overnight stops, and arrival timing for family members and pets.</li>
-            <li>Temporary lodging plans while housing and shipment delivery details settle.</li>
-            <li>First-week tasks such as reporting, transportation, and DEERS or ID-card support.</li>
+            <li>Packing and delivery windows from the transportation or HHG (household goods) workflow.</li>
+            <li>Travel-day dates, overnight stops, and arrival timing for family members and pets.</li>
+            <li>Temporary lodging plans while housing, shipment delivery, or check-in details settle.</li>
+            <li>Installation-specific first-week tasks such as reporting, transportation, and DEERS (family benefits and ID records system) or ID-card support.</li>
           </ul>
         </section>
 

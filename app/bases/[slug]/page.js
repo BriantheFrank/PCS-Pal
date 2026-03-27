@@ -60,6 +60,10 @@ export default function BaseDetailPage({ params }) {
         <p className="eyebrow">{pageData.eyebrow}</p>
         <h1>{pageData.heading}</h1>
         <p className="subtitle">{pageData.subtitle}</p>
+        <p>
+          This guide is meant to help your family get oriented faster before arrival and during the
+          first few days at the installation.
+        </p>
         <p>{pageData.overview}</p>
       </SiteHeader>
 

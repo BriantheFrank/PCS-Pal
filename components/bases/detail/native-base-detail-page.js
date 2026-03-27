@@ -80,13 +80,10 @@ function DetailSection({ section }) {
 export function NativeBaseDetailPage({ pageData }) {
   return (
     <main className="container">
-      <DetailSection section={pageData.arrivalSection} />
-      <SponsoredPlacementsSection baseId={pageData.baseId} />
-      <DetailSection section={pageData.helpfulStopsSection} />
-      <DetailSection section={pageData.pcsCommunitySection} />
-      {pageData.staticSections.map((section) => (
+      {(pageData.spouseSections || []).map((section) => (
         <DetailSection section={section} key={section.title} />
       ))}
+      <SponsoredPlacementsSection baseId={pageData.baseId} />
       <section className="base-detail">
         <h2>Keep this base guide tied to the rest of your PCS plan</h2>
         <div className="base-grid">

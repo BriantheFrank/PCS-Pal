@@ -5,9 +5,9 @@ import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome"
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "Military Base Guides";
+const title = "Base Guides";
 const description =
-  "Use base guides to find lodging, housing, transportation, and key office information before and after your PCS arrival.";
+  "Use this section to quickly find the most important arrival information for your installation, including lodging, housing, transportation, and key offices.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -38,8 +38,16 @@ export default function BasesPage() {
         <p className="eyebrow">Base Guides</p>
         <BasesHeading />
         <p className="subtitle">
-          Use this page to quickly find the most important arrival information for your installation,
-          including lodging, housing, transportation, and key offices.
+          Use this section to quickly find the most important arrival information for your
+          installation, including lodging, housing, transportation, and key offices.
+        </p>
+        <p>
+          Best for: Families getting familiar with a new duty station before travel or shortly after
+          arrival.
+        </p>
+        <p>
+          Start by: Choose your installation, then review lodging, housing, and the first offices or
+          resources you expect to need.
         </p>
       </SiteHeader>
 

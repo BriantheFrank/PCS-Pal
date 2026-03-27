@@ -25,7 +25,8 @@ const LOADING_MESSAGE = "Loading your move inventory.";
 const REDIRECT_MESSAGE = "Redirecting to sign in so you can open your inventory.";
 const LOCAL_ONLY_MESSAGE =
   "Cloud inventory sync is unavailable right now. Progress will stay on this device.";
-const EMPTY_INVENTORY_MESSAGE = "Start your room list";
+const EMPTY_INVENTORY_MESSAGE =
+  "You have not added any inventory items yet. Start with one room, then add the items you would struggle most to replace first.";
 const PRINT_LABEL_SURFACE = "#FFFFFF";
 const PRINT_LABEL_TEXT = "#0F172A";
 const PRINT_LABEL_MUTED = "#475569";
@@ -485,6 +486,7 @@ export function NativeInventoryPage() {
   const labelTitleInputRef = useRef(null);
   const focusLabelInputRef = useRef(true);
   const lastLabelTriggerRef = useRef(null);
+  const roomNameInputRef = useRef(null);
 
   useEffect(() => {
     inventoryRef.current = inventory;
@@ -1209,19 +1211,95 @@ export function NativeInventoryPage() {
           <span className="mobile-disclosure-hint" aria-hidden="true"></span>
         </summary>
         <div className="mobile-disclosure-body">
-          <p>
-            Build a complete household inventory that matches how movers pack and how claims are
-            processed.
-          </p>
-          <ol>
-            <li>Create one entry for every room, including garages and storage areas.</li>
-            <li>Start with large, high-value items like furniture, electronics, and appliances.</li>
-            <li>Flag expensive or sentimental items so they are clearly identified.</li>
-            <li>Add boxed items under the correct room as packing happens.</li>
-            <li>Label every box with the room name and box number to match your list.</li>
-            <li>Before pack-out, confirm all rooms and high-value items are captured.</li>
-          </ol>
-          <p>Tip: Keep labels short and consistent so movers can match boxes quickly.</p>
+          <section>
+            <h3>Why this matters</h3>
+            <p>
+              PCS moves get harder when you do not know what was packed, where it went, or what
+              condition it was in before the move. A simple inventory can make unpacking easier and
+              help if something is delayed, damaged, or missing.
+            </p>
+          </section>
+          <section>
+            <h3>How to build a useful inventory</h3>
+            <p>
+              A good move inventory does not need to be perfect. It just needs to help you answer
+              three questions later:
+            </p>
+            <ul>
+              <li>What was packed?</li>
+              <li>Where should I look first?</li>
+              <li>What do I need to document if something is wrong?</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Start with one room</h3>
+            <p>
+              Start with one room so the process feels manageable. Focus first on the items that
+              would be hardest to replace, easiest to lose track of, or most likely to matter for
+              claims.
+            </p>
+            <ul>
+              <li>Start with one room at a time.</li>
+              <li>Begin with the hardest-to-replace items first.</li>
+              <li>Add more detail for valuable, fragile, or important items.</li>
+              <li>Lighter detail is okay for low-risk bulk items.</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Suggested box-label system</h3>
+            <ul>
+              <li>KITCHEN-01</li>
+              <li>KITCHEN-02</li>
+              <li>PRIMARY-BEDROOM-01</li>
+              <li>KIDS-ROOM-03</li>
+              <li>OFFICE-01</li>
+              <li>OPEN-FIRST-01</li>
+            </ul>
+            <p>
+              Use simple, consistent labels that tell you both the room and the box number. If you
+              know a box should be opened quickly after arrival, label it clearly as OPEN FIRST.
+            </p>
+          </section>
+          <section>
+            <h3>High-value item documentation</h3>
+            <p>
+              For high-value or fragile items, consider adding a short description, condition notes,
+              and photos before pack-out. This can make follow-up easier if something is missing or
+              damaged later.
+            </p>
+            <ul>
+              <li>Electronics</li>
+              <li>Jewelry</li>
+              <li>Important tools</li>
+              <li>Collectibles</li>
+              <li>Sentimental items that are hard to replace</li>
+              <li>Anything fragile or expensive</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Open first setup</h3>
+            <p>
+              Choose a small number of boxes or bins that your family will need right away. Label
+              them clearly so you are not searching through your shipment for basic items on day one.
+            </p>
+            <ul>
+              <li>Bedding</li>
+              <li>Basic cookware</li>
+              <li>Toiletries</li>
+              <li>Chargers</li>
+              <li>Kids&apos; essentials</li>
+              <li>Pet basics</li>
+              <li>Work items</li>
+              <li>Cleaning basics</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Claims-support notes</h3>
+            <p>
+              If you may need to file a claims process later, clearer labels, better condition notes,
+              and pre-move photos can save time and reduce confusion.
+            </p>
+          </section>
         </div>
       </details>
 
@@ -1251,6 +1329,7 @@ export function NativeInventoryPage() {
             name="room-name"
             type="text"
             placeholder="Kitchen, Garage, Bedroom"
+            ref={roomNameInputRef}
             required
           />
           <button type="submit">Add Room</button>
@@ -1291,7 +1370,17 @@ export function NativeInventoryPage() {
         {inventory.rooms.length === 0 ? (
           <section className="info-panel">
             <h2>{EMPTY_INVENTORY_MESSAGE}</h2>
-            <p>Add a room above to begin tracking boxes and household items for your move.</p>
+            <button
+              type="button"
+              onClick={() => roomNameInputRef.current?.focus()}
+            >
+              Add your first item
+            </button>
+            <ul>
+              <li>Start with the kitchen, primary bedroom, or kids&rsquo; room.</li>
+              <li>Use simple labels like KITCHEN-01 or OPEN-FIRST-01.</li>
+              <li>Add photos for high-value items before pack-out.</li>
+            </ul>
           </section>
         ) : (
           visibleRooms.map(({ room, roomIndex, filteredItems, shouldOpen }) => (

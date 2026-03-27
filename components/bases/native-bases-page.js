@@ -29,7 +29,9 @@ const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => 
 };
 
 export function BasesHeading() {
-  return <h1>Find your next duty station faster</h1>;
+  const heading = "Base Guides";
+
+  return <h1>{heading}</h1>;
 }
 
 export function NativeBasesPage({ items }) {
@@ -54,33 +56,46 @@ export function NativeBasesPage({ items }) {
 
   return (
     <main className="container">
-      <section className="info-panel legal-page-section" aria-label="How to use base guides">
-        <p>
-          <strong>What this page helps with:</strong> Use this page to quickly find the most important
-          arrival information for your installation, including lodging, housing, transportation, and key
-          offices.
-        </p>
-        <p>
-          <strong>Best for:</strong> Families trying to get familiar with a new duty station before
-          travel or shortly after arrival.
-        </p>
-        <p>
-          <strong>Start by:</strong> Choosing your installation and reviewing lodging, housing, and
-          first-stop offices.
-        </p>
-        <p>
-          <strong>Next likely step:</strong>{" "}
-          <Link className="text-link" href="/contact">
-            Contact us with gaps you want covered
-          </Link>
-        </p>
-      </section>
+      <details
+        className="info-panel mobile-disclosure"
+        data-mobile-collapse="true"
+        open
+        aria-labelledby="base-guidance-title"
+      >
+        <summary className="mobile-disclosure-summary">
+          <div>
+            <h2 id="base-guidance-title">How to Use Destination Base Information</h2>
+            <p>Find your installation fast, verify the name, and preview what each guide includes.</p>
+          </div>
+          <span className="mobile-disclosure-hint" aria-hidden="true"></span>
+        </summary>
+        <div className="mobile-disclosure-body">
+          <p>
+            Open a base guide to find practical first-week resources for lodging, housing,
+            transportation, medical and ID-card support, and local arrival basics.
+          </p>
+          <p>
+            Some installations are known by more than one name depending on the source or what
+            families are used to calling them. We include common naming references to make guides
+            easier to find.
+          </p>
+          <ol>
+            <li>Start with the arrival and reporting section so you know where to check in first.</li>
+            <li>Save the official links for lodging, housing, medical, transportation, and ID card support.</li>
+            <li>Use the Google Maps shortcuts on travel day so you are not hunting for the right building from the parking lot.</li>
+          </ol>
+          <p>Tip: Save the reception location and at least one backup stop before you get on the road.</p>
+        </div>
+      </details>
 
       <section className="info-panel base-browser-panel" aria-labelledby="base-browser-title">
         <div className="base-browser-header">
           <p className="eyebrow">Quick Find</p>
           <h2 id="base-browser-title">Search and narrow the base list</h2>
-          <p>Search by installation, state, or major unit to quickly open the guide you need.</p>
+          <p>
+            Search by installation, old or new installation names, state, or major unit so the next
+            base guide is easier to reach on a phone.
+          </p>
         </div>
         <div className="base-browser-controls">
           <label className="base-browser-field" htmlFor="base-search">
@@ -121,10 +136,19 @@ export function NativeBasesPage({ items }) {
           <Link className="base-card" href={item.href} key={item.slug}>
             <h2>{item.title}</h2>
             <p className="base-state">{item.state}</p>
+            {item.aliases?.length ? (
+              <p className="inventory-notes">Also commonly known as {item.aliases.join(", ")}</p>
+            ) : null}
             <p className="base-label">Major units</p>
             <ul className="base-units">
               {item.units.map((unit) => (
                 <li key={unit}>{unit}</li>
+              ))}
+            </ul>
+            <p className="base-label">Guide preview</p>
+            <ul className="base-units">
+              {(item.previewSections || []).map((section) => (
+                <li key={`${item.slug}-${section}`}>{section}</li>
               ))}
             </ul>
             <span className="card-link base-card-cta">View base details</span>

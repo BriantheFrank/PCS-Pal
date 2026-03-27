@@ -864,8 +864,8 @@ export function NativeLogisticsPage() {
         <p className="eyebrow">Move Logistics</p>
         <h2>Centralize dates, contacts, and travel plans</h2>
         <p>
-          This native logistics workspace replaces the old DOM-driven planner. Track mover touchpoints,
-          household delivery dates, family travel, and custom events without relying on the legacy page shell.
+          This workspace is built for real move coordination: travel windows, temporary lodging,
+          arrival timing, and first-week priorities that affect your family immediately.
         </p>
         <p className="signup-page-status" data-tone={syncStatus.tone} aria-live="polite">
           {syncStatus.message || "Changes save locally and sync through the existing logistics storage model."}
@@ -877,15 +877,86 @@ export function NativeLogisticsPage() {
         </p>
       </section>
 
-      <details className="info-panel mobile-disclosure">
+      <details className="info-panel mobile-disclosure" open>
         <summary>
-          <h2>How to use this page</h2>
+          <h2>How to use Move Logistics</h2>
         </summary>
         <div>
+          <h3>Before you travel</h3>
+          <p>
+            Before travel starts, focus on the items that will affect your first few days the most:
+            where you are sleeping, what you need to carry, and what must happen soon after arrival.
+          </p>
           <ul>
-            <li>Start with the family itinerary so the move dates anchor the rest of the timeline.</li>
-            <li>Add packers, truck loading, and HHG delivery when your transportation office confirms them.</li>
-            <li>Use custom events for school tours, housing appointments, storage, or anything else not tied to the shipment itself.</li>
+            <li>Confirm travel dates.</li>
+            <li>Confirm lodging or backup lodging.</li>
+            <li>Review what must stay with you in the vehicle or luggage.</li>
+            <li>Identify likely arrival-day priorities.</li>
+            <li>Make a plan for children, pets, medications, and overnight basics.</li>
+            <li>Keep the first night as simple as possible.</li>
+          </ul>
+          <h3>During travel</h3>
+          <p>
+            Travel days rarely go exactly to plan. Build for flexibility and keep the items you may
+            need quickly easy to reach.
+          </p>
+          <ul>
+            <li>Keep reservations and key contacts easy to access.</li>
+            <li>Keep medications, chargers, snacks, and family essentials close by.</li>
+            <li>Track route adjustments if timing changes.</li>
+            <li>Save receipts if they may matter later.</li>
+            <li>Confirm next lodging stop or arrival details as needed.</li>
+          </ul>
+          <h3>When you arrive</h3>
+          <p>Arrival is usually easier when you focus on immediate function first, not full move completion.</p>
+          <ul>
+            <li>Confirm lodging.</li>
+            <li>Identify reporting/check-in location.</li>
+            <li>Verify housing next steps.</li>
+            <li>Locate grocery, pharmacy, and urgent needs nearby.</li>
+            <li>Review HHG (household goods shipment) delivery timing.</li>
+            <li>Prioritize the few tasks that matter most in the first 24–72 hours.</li>
+          </ul>
+          <h3>If plans change</h3>
+          <p>
+            PCS moves often change at the last minute. A backup plan for lodging, documents, family
+            essentials, and arrival priorities can reduce stress when timing shifts.
+          </p>
+          <ul>
+            <li>Delayed travel</li>
+            <li>Delayed lodging check-in</li>
+            <li>HHG delays</li>
+            <li>Housing not ready</li>
+            <li>Service member report timing shifts</li>
+            <li>Family arriving separately</li>
+          </ul>
+          <h3>Family practical callouts</h3>
+          <p>
+            <strong>Travel with kids:</strong> Travel days are easier when snacks, chargers, comfort
+            items, changes of clothes, and first-night supplies are easy to reach without unpacking
+            the entire car.
+          </p>
+          <p>
+            <strong>Travel with pets:</strong> Keep pet records, medications, food, water, and crate
+            or leash essentials accessible. Confirm pet rules before arriving at lodging.
+          </p>
+          <p>
+            <strong>Housing not ready:</strong> If permanent housing may not be ready on arrival,
+            build a temporary lodging plan before travel and think through parking, pet rules, school
+            timing, and commute impact.
+          </p>
+          <p>
+            <strong>First-night kit:</strong> Set aside one bag or bin for the first night so you do
+            not need to search through everything after a long travel day.
+          </p>
+          <ul>
+            <li>Clothes</li>
+            <li>Medications</li>
+            <li>Toiletries</li>
+            <li>Chargers</li>
+            <li>Bedding basics</li>
+            <li>Kids&rsquo; comfort items</li>
+            <li>Pet basics</li>
           </ul>
         </div>
       </details>

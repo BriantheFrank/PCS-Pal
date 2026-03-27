@@ -26,6 +26,11 @@ const relatedLinks = [
     title: "Base Guides",
     description: "Save the local links you need for housing, transportation, and first-week offices.",
   },
+  {
+    href: "/pcs-glossary",
+    title: "PCS glossary",
+    description: "Look up military acronyms and PCS shorthand in plain English.",
+  },
 ];
 
 export const metadata = buildPageMetadata({
