@@ -83,6 +83,7 @@ export function NativeBaseDetailPage({ pageData }) {
       <DetailSection section={pageData.arrivalSection} />
       <SponsoredPlacementsSection baseId={pageData.baseId} />
       <DetailSection section={pageData.helpfulStopsSection} />
+      <DetailSection section={pageData.pcsCommunitySection} />
       {pageData.staticSections.map((section) => (
         <DetailSection section={section} key={section.title} />
       ))}

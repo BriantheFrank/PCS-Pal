@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { pcsGeneralLinks } from "@/lib/bases/pcs-community-links";
+
 const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => {
   if (visibleCount === items.length && !searchValue && !stateValue) {
     return `${items.length} base guides available.`;
@@ -137,6 +139,28 @@ export function NativeBasesPage({ items }) {
             <span className="card-link base-card-cta">View base details</span>
           </Link>
         ))}
+      </section>
+
+
+
+      <section className="info-panel base-browser-panel" aria-labelledby="base-helpful-links-title">
+        <div className="base-browser-header">
+          <p className="eyebrow">Helpful Links and Online Groups</p>
+          <h2 id="base-helpful-links-title">Location-agnostic PCS support communities</h2>
+          <p>
+            Use these resources when you need broad PCS guidance. Base-specific community links are
+            listed on each destination base detail page when a vetted group is available.
+          </p>
+        </div>
+        <div className="base-grid">
+          {pcsGeneralLinks.map((link) => (
+            <a className="base-card" href={link.href} key={link.href} target="_blank" rel="noopener noreferrer">
+              <h3>{link.title}</h3>
+              <p>{link.description}</p>
+              <span className="card-link">Open resource</span>
+            </a>
+          ))}
+        </div>
       </section>
 
       <section className="info-panel base-browser-panel" aria-labelledby="base-planning-links-title">
