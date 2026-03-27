@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
 import {
@@ -333,6 +333,134 @@ const buildGoogleMapsDirectionsHref = (itinerarySection, itineraryStops) => {
 const makeItemId = (prefix) =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTH_LABEL_FORMATTER = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" });
+
+const toDateKey = (value) => {
+  const dateValue = normalizeText(value);
+  if (!dateValue) {
+    return "";
+  }
+
+  const date = new Date(`${dateValue}T00:00:00`);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const expandDateKeys = (startValue, endValue) => {
+  const startKey = toDateKey(startValue);
+  if (!startKey) {
+    return [];
+  }
+
+  const endKey = toDateKey(endValue) || startKey;
+  const start = new Date(`${startKey}T00:00:00`);
+  const end = new Date(`${endKey}T00:00:00`);
+  const last = end.getTime() >= start.getTime() ? end : start;
+
+  const keys = [];
+  const cursor = new Date(start);
+  while (cursor.getTime() <= last.getTime()) {
+    const year = cursor.getFullYear();
+    const month = String(cursor.getMonth() + 1).padStart(2, "0");
+    const day = String(cursor.getDate()).padStart(2, "0");
+    keys.push(`${year}-${month}-${day}`);
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return keys;
+};
+
+const buildCalendarEvents = (logisticsState) => {
+  const events = [];
+
+  EVENT_SECTIONS.forEach((section) => {
+    const sectionState = logisticsState.sections?.[section.id] || {};
+    if (section.id === "packers") {
+      expandDateKeys(sectionState["packers-start-date"], sectionState["packers-end-date"]).forEach((dateKey) => {
+        events.push({
+          key: `${section.id}-${dateKey}`,
+          dateKey,
+          title: section.title,
+        });
+      });
+      return;
+    }
+
+    const dateKey = toDateKey(sectionState.date);
+    if (!dateKey) {
+      return;
+    }
+
+    events.push({
+      key: `${section.id}-${dateKey}`,
+      dateKey,
+      title: section.title,
+    });
+  });
+
+  const itinerarySection = logisticsState.sections?.["family-itinerary"] || {};
+  const itineraryStart = toDateKey(itinerarySection["itinerary-start-date"]);
+  if (itineraryStart) {
+    events.push({ key: `itinerary-start-${itineraryStart}`, dateKey: itineraryStart, title: "Family departure" });
+  }
+
+  const itineraryEnd = toDateKey(itinerarySection["itinerary-end-date"]);
+  if (itineraryEnd) {
+    events.push({ key: `itinerary-end-${itineraryEnd}`, dateKey: itineraryEnd, title: "Family arrival" });
+  }
+
+  (logisticsState.itineraryStops || []).forEach((stop, index) => {
+    const dateKey = toDateKey(stop["stop-date"]);
+    if (!dateKey) {
+      return;
+    }
+
+    events.push({
+      key: `${stop.id || `stop-${index}`}-${dateKey}`,
+      dateKey,
+      title: `Overnight stop ${index + 1}`,
+    });
+  });
+
+  (logisticsState.customEvents || []).forEach((event, index) => {
+    expandDateKeys(event["custom-start-date"], event["custom-end-date"]).forEach((dateKey) => {
+      events.push({
+        key: `${event.id || `custom-${index}`}-${dateKey}`,
+        dateKey,
+        title: normalizeText(event["custom-title"]) || "Custom event",
+      });
+    });
+  });
+
+  return events;
+};
+
+const buildCalendarMonthDays = (monthStartDate) => {
+  const monthStart = new Date(monthStartDate.getFullYear(), monthStartDate.getMonth(), 1);
+  const gridStart = new Date(monthStart);
+  gridStart.setDate(monthStart.getDate() - monthStart.getDay());
+
+  return Array.from({ length: 42 }, (_, offset) => {
+    const date = new Date(gridStart);
+    date.setDate(gridStart.getDate() + offset);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return {
+      date,
+      dateKey: `${year}-${month}-${day}`,
+      inMonth: date.getMonth() === monthStart.getMonth(),
+    };
+  });
+};
+
 function LogisticsField({ field, value, onChange }) {
   if (field.type === "textarea") {
     return (
@@ -365,6 +493,10 @@ export function NativeLogisticsPage() {
   const [logisticsState, setLogisticsState] = useState(() => normalizeLogisticsState({}));
   const [workspaceReady, setWorkspaceReady] = useState(false);
   const [syncStatus, setSyncStatus] = useState(initialStatus);
+  const [visibleMonthStart, setVisibleMonthStart] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
   const logisticsRef = useRef(logisticsState);
   const syncTimerRef = useRef(null);
 
@@ -589,6 +721,23 @@ export function NativeLogisticsPage() {
     commitLogistics(nextState);
   };
 
+  const calendarEvents = buildCalendarEvents(logisticsState);
+  const eventsByDate = useMemo(() => {
+    const grouped = new Map();
+    calendarEvents.forEach((event) => {
+      const existing = grouped.get(event.dateKey) || [];
+      const alreadyListed = existing.some((current) => current.title === event.title);
+      if (!alreadyListed) {
+        existing.push(event);
+      }
+      grouped.set(event.dateKey, existing);
+    });
+    return grouped;
+  }, [calendarEvents]);
+  const visibleMonthLabel = MONTH_LABEL_FORMATTER.format(visibleMonthStart);
+  const monthDays = buildCalendarMonthDays(visibleMonthStart);
+  const todayDateKey = toDateKey(new Date().toISOString().slice(0, 10));
+
   if (status === "loading" || (status === "ready" && user && !workspaceReady)) {
     return (
       <main className="container">
@@ -638,6 +787,79 @@ export function NativeLogisticsPage() {
 
   return (
     <main className="container logistics-layout">
+      <section className="info-panel calendar-panel">
+        <p className="eyebrow">Master Calendar</p>
+        <h2>Move logistics monthly view</h2>
+        <p>Every dated move-plan item appears here. Calendar cells only show event type names to reduce clutter.</p>
+        <div className="calendar-toolbar">
+          <div className="calendar-meta">
+            <h3>{visibleMonthLabel}</h3>
+          </div>
+          <div className="calendar-nav">
+            <button
+              type="button"
+              className="calendar-nav-button"
+              onClick={() =>
+                setVisibleMonthStart(
+                  (current) => new Date(current.getFullYear(), current.getMonth() - 1, 1),
+                )
+              }
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              className="calendar-nav-button"
+              onClick={() => {
+                const now = new Date();
+                setVisibleMonthStart(new Date(now.getFullYear(), now.getMonth(), 1));
+              }}
+            >
+              Current month
+            </button>
+            <button
+              type="button"
+              className="calendar-nav-button"
+              onClick={() =>
+                setVisibleMonthStart(
+                  (current) => new Date(current.getFullYear(), current.getMonth() + 1, 1),
+                )
+              }
+            >
+              Next
+            </button>
+          </div>
+        </div>
+        <div className="calendar-grid" role="grid" aria-label={`Move logistics events for ${visibleMonthLabel}`}>
+          {monthDays.map((day) => {
+            const dayEvents = eventsByDate.get(day.dateKey) || [];
+            const visibleEvents = dayEvents.slice(0, 3);
+            const remainingCount = dayEvents.length - visibleEvents.length;
+
+            return (
+              <article
+                className={`calendar-day${day.inMonth ? "" : " is-outside"}${day.dateKey === todayDateKey ? " is-today" : ""}`}
+                key={day.dateKey}
+                role="gridcell"
+              >
+                <div className="calendar-day-header">
+                  <span>{WEEKDAY_LABELS[day.date.getDay()]}</span>
+                  <strong>{day.date.getDate()}</strong>
+                </div>
+                <div className="calendar-events">
+                  {visibleEvents.map((entry) => (
+                    <p className="calendar-event" key={entry.key}>
+                      <span className="calendar-event-title">{entry.title}</span>
+                    </p>
+                  ))}
+                  {remainingCount > 0 ? <p className="calendar-event-meta">+{remainingCount} more</p> : null}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="info-panel organizer-native-note">
         <p className="eyebrow">Move Logistics</p>
         <h2>Centralize dates, contacts, and travel plans</h2>
@@ -668,7 +890,7 @@ export function NativeLogisticsPage() {
         </div>
       </details>
 
-      <section className="info-panel calendar-panel">
+      <section className="info-panel">
         <p className="eyebrow">Master Timeline</p>
         <h2>Upcoming move events</h2>
         <p>Any dated event in this workspace appears here so the move schedule stays readable.</p>
