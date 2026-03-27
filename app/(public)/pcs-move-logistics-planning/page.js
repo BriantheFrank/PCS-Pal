@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { GuidedPageIntro, PageStepNav } from "@/components/site/guided-page-intro";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
@@ -7,23 +8,23 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "PCS Move Logistics Planning";
 const description =
-  "Use this PCS move logistics planning guide to keep packers, lodging, travel stops, delivery dates, and arrival-week coordination organized during a military move.";
+  "Use this page to map travel, lodging, arrival timing, and your first tasks at a new duty station.";
 
 const relatedLinks = [
   {
-    href: "/how-to-plan-a-military-pcs-move",
-    title: "How to plan a military PCS move",
-    description: "See where logistics planning fits in the larger PCS timeline.",
+    href: "/military-pcs-checklist",
+    title: "Checklist",
+    description: "Keep your admin timeline and family to-dos visible while travel plans change.",
   },
   {
-    href: "/inventory",
-    title: "Move inventory workspace",
-    description: "Open inventory to track rooms, labels, and special items tied to move logistics.",
+    href: "/pcs-inventory-label-tracking",
+    title: "Inventory",
+    description: "Track what was packed so delivery and unpacking decisions are easier on arrival.",
   },
   {
     href: "/bases",
-    title: "Military destination base research",
-    description: "Save installation lodging, housing, transportation, and newcomer links before travel day.",
+    title: "Base Guides",
+    description: "Review lodging, housing, transportation, and key offices before travel day.",
   },
   {
     href: "/pcs-glossary",
@@ -56,16 +57,24 @@ export default function LogisticsLandingPage() {
         })}
       />
 
-      <SiteHeader topBar={<LandingTopBar />}>
-        <p className="eyebrow">PCS Logistics Planning</p>
-        <h1>Keep movers, travel dates, and arrival-week handoffs in one plan</h1>
+      <SiteHeader topBar={<LandingTopBar active="logistics-guide" />}>
+        <p className="eyebrow">Logistics</p>
+        <h1>Plan travel and arrival details in one place</h1>
         <p className="subtitle">
-          PCS logistics gets easier when packing, travel, delivery, lodging, and first-week base
-          tasks all live in the same timeline instead of scattered notes.
+          Use this page to map out your travel, lodging, arrival timing, and the first tasks you need
+          to handle at your new duty station.
         </p>
       </SiteHeader>
 
       <main className="container legal-page-layout">
+        <GuidedPageIntro
+          purpose="Use this page to map out your travel, lodging, arrival timing, and the first tasks you need to handle at your new duty station."
+          bestFor="Families coordinating travel days, temporary lodging, check-in timing, and arrival-week planning."
+          startBy="Adding your expected travel window, temporary lodging plan, and first-day arrival priorities."
+          nextStepLabel="Review base guides"
+          nextStepHref="/bases"
+        />
+
         <section className="info-panel legal-page-section">
           <h2>Core logistics details to track</h2>
           <ul className="legal-page-list">
@@ -77,29 +86,7 @@ export default function LogisticsLandingPage() {
         </section>
 
         <section className="info-panel legal-page-section">
-          <h2>Why PCS logistics breaks down</h2>
-          <p>
-            Families usually know the big dates, but the move becomes stressful when small handoffs
-            get buried: the packer window, the lodging confirmation, the delivery estimate, the base
-            check-in address, and the backup stop if arrival day changes.
-          </p>
-          <p>
-            PCS Pal’s logistics workspace is meant to keep those details visible together, while the
-            public planning layer here helps clarify what needs to be tracked in the first place.
-          </p>
-        </section>
-
-        <section className="info-panel legal-page-section">
-          <h2>Use base research before the travel week</h2>
-          <p>
-            The public <Link className="text-link" href="/bases">destination base research</Link> pages
-            are designed to support logistics planning. Save lodging, housing, transportation, clinic,
-            and newcomer links before the move starts moving quickly.
-          </p>
-        </section>
-
-        <section className="info-panel legal-page-section">
-          <h2>Related PCS planning pages</h2>
+          <h2>Related pages</h2>
           <div className="card-grid">
             {relatedLinks.map((link) => (
               <Link className="nav-card" href={link.href} key={link.href}>
@@ -110,12 +97,17 @@ export default function LogisticsLandingPage() {
             ))}
           </div>
         </section>
+
+        <PageStepNav
+          previousLabel="Inventory"
+          previousHref="/pcs-inventory-label-tracking"
+          nextLabel="Base Guides"
+          nextHref="/bases"
+        />
       </main>
 
       <SiteFooter>
-        <p className="footer-tip">
-          Public logistics guidance is here; the working logistics planner stays available behind sign-in.
-        </p>
+        <p className="footer-tip">Sign in when you want your travel and arrival plan saved across devices.</p>
       </SiteFooter>
     </>
   );

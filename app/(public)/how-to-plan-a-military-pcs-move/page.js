@@ -5,29 +5,29 @@ import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome"
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "How to Plan a Military PCS Move";
+const title = "Start Here: Plan Your Military PCS Move";
 const description =
-  "Plan a military PCS move in stages: orders and checklist work first, inventory second, logistics third, and destination base research before arrival.";
+  "Start your PCS plan with a simple order: checklist first, inventory second, logistics third, and base guides before arrival.";
 
 const planningStages = [
   {
-    title: "1. Start with orders, dates, and the PCS checklist",
-    copy: "Build the move around reporting dates, required briefings, finance decisions, DEERS updates, and the family tasks that cannot wait until the travel week.",
+    title: "1. Checklist",
+    copy: "Start with dates, must-do tasks, and documents you need to keep with you.",
     href: "/military-pcs-checklist",
   },
   {
-    title: "2. Build the inventory before pack-out",
-    copy: "Capture rooms, labels, fragile items, and high-value records early enough that the inventory is useful during loading, delivery, and any follow-up claims work.",
-    href: "/inventory",
+    title: "2. Inventory",
+    copy: "Track rooms, labels, and high-priority items before pack-out.",
+    href: "/pcs-inventory-label-tracking",
   },
   {
-    title: "3. Tie the move together with logistics planning",
-    copy: "Keep movers, overnight stops, lodging, delivery windows, and arrival-week handoffs inside a single timeline so small misses do not compound.",
-    href: "/logistics",
+    title: "3. Logistics",
+    copy: "Map travel days, lodging, and arrival-week handoffs.",
+    href: "/pcs-move-logistics-planning",
   },
   {
-    title: "4. Research the destination base before arrival",
-    copy: "Save newcomer, housing, transportation, clinic, and lodging links before you need them from the car or the hotel parking lot.",
+    title: "4. Base Guides",
+    copy: "Save local housing, lodging, and first-stop office links before you travel.",
     href: "/bases",
   },
 ];
@@ -37,8 +37,8 @@ export const metadata = buildPageMetadata({
   description,
   pathname: "/how-to-plan-a-military-pcs-move",
   keywords: [
-    "how to plan a military PCS move",
-    "PCS planning guide",
+    "start PCS move",
+    "PCS getting started",
     "military relocation planning",
     "Permanent Change of Station planning",
     "PCS move guide",
@@ -56,60 +56,29 @@ export default function PcsPlanningGuidePage() {
         })}
       />
 
-      <SiteHeader topBar={<LandingTopBar active="pcs-planning-guide" />}>
-        <p className="eyebrow">PCS Planning Guide</p>
-        <h1>How to plan a military PCS move without losing the thread</h1>
-        <p className="subtitle">
-          The easiest way to calm a PCS move is to work it in stages instead of treating orders,
-          inventory, travel, and destination research as separate systems.
-        </p>
+      <SiteHeader topBar={<LandingTopBar active="home" />}>
+        <p className="eyebrow">Start Here</p>
+        <h1>New to PCS planning? Use this simple order.</h1>
+        <p className="subtitle">You do not need to solve everything today. Start with one step, then move to the next.</p>
       </SiteHeader>
 
       <main className="container legal-page-layout">
         <section className="info-panel legal-page-section">
-          <h2>A practical four-stage PCS framework</h2>
+          <h2>Your four-step PCS plan</h2>
           <div className="card-grid">
             {planningStages.map((stage) => (
               <Link className="nav-card" href={stage.href} key={stage.href}>
                 <h3>{stage.title}</h3>
                 <p>{stage.copy}</p>
-                <span className="card-link">Open this stage</span>
+                <span className="card-link">Open this step</span>
               </Link>
             ))}
           </div>
         </section>
-
-        <section className="info-panel legal-page-section">
-          <h2>Where PCS Pal fits</h2>
-          <p>
-            PCS Pal is meant to give military families one place to hold the checklist, organizer,
-            inventory, logistics notes, and destination base research that normally get fragmented
-            across apps, paper, and browser tabs.
-          </p>
-          <p>
-            The public planning pages explain the workflow. The protected planner surfaces exist to
-            save that work to an account so it can be picked back up from another device.
-          </p>
-        </section>
-
-        <section className="info-panel legal-page-section">
-          <h2>Start with the highest-friction part of the move</h2>
-          <p>
-            If orders and deadlines feel fuzzy, start with the checklist. If the household itself
-            feels chaotic, start with inventory. If the move dates are set and the handoffs are the
-            hard part, go straight to logistics and destination research.
-          </p>
-          <p>
-            The important thing is to connect those parts early enough that each one informs the next.
-          </p>
-        </section>
       </main>
 
       <SiteFooter>
-        <p className="footer-tip">
-          Use the public planning pages to understand the workflow, then sign in when you want the
-          synced planner to carry the details.
-        </p>
+        <p className="footer-tip">Use this page as your quick guide whenever the move starts to feel overwhelming.</p>
       </SiteFooter>
     </>
   );

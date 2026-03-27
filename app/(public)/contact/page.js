@@ -6,7 +6,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Contact";
 const description =
-  "Questions, feedback, or a problem with the site? Use the PCS Pal contact page to ask for help, report issues, and share suggestions.";
+  "Use the PCS Pal contact page for questions, feedback, and bug reports.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -31,9 +31,7 @@ export default function ContactPage() {
         <p className="eyebrow">Contact</p>
         <h1>Contact</h1>
         <p className="subtitle">
-          Questions, feedback, or a problem with the site? Use this page to get in touch. Whether
-          you found something confusing, noticed an error, or want to suggest a feature, we want to
-          hear about it.
+          PCS Pal is still in an early product stage, so the contact process is simple right now.
         </p>
       </SiteHeader>
 
@@ -41,16 +39,29 @@ export default function ContactPage() {
         <section className="info-panel legal-page-section">
           <h2>What can we help with?</h2>
           <ul className="legal-page-list">
-            <li>Ask a question</li>
-            <li>Report a problem</li>
-            <li>Suggest a feature</li>
-            <li>Request a correction</li>
-            <li>General feedback</li>
+            <li>Founder or reviewer product feedback.</li>
+            <li>Bug reports tied to account, sync, or tool behavior.</li>
+            <li>Questions about the current draft legal or privacy pages.</li>
+            <li>Notes on clarity, trust, or common problems.</li>
           </ul>
         </section>
 
         <section className="info-panel legal-page-section">
-          <h2>Before you send</h2>
+          <h2>What to include</h2>
+          <p>
+            Include the page you were using, what you expected to happen, what happened instead, and
+            any browser or device detail that may help reproduce the issue.
+          </p>
+          <p>
+            If the question is really about move-planning steps rather than a site issue, start
+            with the public <Link className="text-link" href="/how-to-plan-a-military-pcs-move">Start Here guide</Link>,{" "}
+            <Link className="text-link" href="/military-pcs-checklist">checklist guide</Link>, or{" "}
+            <Link className="text-link" href="/bases">base guides</Link> pages first.
+          </p>
+        </section>
+
+        <section className="info-panel legal-page-section">
+          <h2>Security and privacy note</h2>
           <p>
             Please do not include Social Security numbers, full orders, account credentials, or other
             sensitive documents. Share only what is needed so we can review your request.

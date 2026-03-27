@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { PageStepNav } from "@/components/site/guided-page-intro";
 import { pcsGeneralLinks } from "@/lib/bases/pcs-community-links";
 
 const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => {
@@ -16,7 +17,7 @@ const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => 
 
   const filters = [];
   if (searchValue) {
-    filters.push(`"${searchValue}"`);
+    filters.push(`\"${searchValue}\"`);
   }
   if (stateValue) {
     filters.push(stateValue);
@@ -155,15 +156,13 @@ export function NativeBasesPage({ items }) {
         ))}
       </section>
 
-
-
       <section className="info-panel base-browser-panel" aria-labelledby="base-helpful-links-title">
         <div className="base-browser-header">
           <p className="eyebrow">Helpful Links and Online Groups</p>
           <h2 id="base-helpful-links-title">Location-agnostic PCS support communities</h2>
           <p>
             Use these resources when you need broad PCS guidance. Base-specific community links are
-            listed on each destination base detail page when a vetted group is available.
+            listed on each base detail page when a vetted group is available.
           </p>
         </div>
         <div className="base-grid">
@@ -177,28 +176,12 @@ export function NativeBasesPage({ items }) {
         </div>
       </section>
 
-      <section className="info-panel base-browser-panel" aria-labelledby="base-planning-links-title">
-        <div className="base-browser-header">
-          <p className="eyebrow">Related PCS Planning</p>
-          <h2 id="base-planning-links-title">Use base research with the rest of the move plan</h2>
-          <p>
-            Installation research is most useful when it stays connected to checklist work, travel
-            planning, and arrival-week logistics.
-          </p>
-        </div>
-        <div className="card-grid">
-          <Link className="nav-card" href="/military-pcs-checklist">
-            <h3>Military PCS checklist</h3>
-            <p>Keep the administrative and family tasks visible while you research the next base.</p>
-            <span className="card-link">Open checklist guide</span>
-          </Link>
-          <Link className="nav-card" href="/pcs-move-logistics-planning">
-            <h3>PCS logistics planning</h3>
-            <p>Use arrival-day lodging, delivery, and first-stop details alongside the base guide.</p>
-            <span className="card-link">Open logistics planning</span>
-          </Link>
-        </div>
-      </section>
+      <PageStepNav
+        previousLabel="Logistics"
+        previousHref="/pcs-move-logistics-planning"
+        nextLabel="Contact"
+        nextHref="/contact"
+      />
     </main>
   );
 }

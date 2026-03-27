@@ -7,7 +7,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Privacy Policy";
 const description =
-  "This page explains what information PCS Pal collects, how it is used, and what choices users have regarding their information.";
+  "Review the current draft PCS Pal Privacy Policy covering account data, saved move-plan data, legal acceptance records, analytics, and consent choices.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -59,9 +59,12 @@ export default function PrivacyPage() {
         <section className="info-panel legal-page-section">
           <h2>1. Information we collect</h2>
           <ul className="legal-page-list">
-            <li>Account details such as name and email address.</li>
-            <li>Move-planning details you choose to save, including checklist and organizer data.</li>
-            <li>Privacy and communication preferences you set in your account.</li>
+            <li>Account information such as name, email address, and authentication identifiers.</li>
+            <li>Planning data you choose to enter, such as checklist progress, inventory details, and move logistics.</li>
+            <li>Privacy settings and marketing consent choices that you submit.</li>
+            <li>Coarse move-profile details that you save for planning and product-personalization purposes.</li>
+            <li>Legal-acceptance records such as accepted document versions, acceptance time, user agent, and hashed IP snapshot when available.</li>
+            <li>Analytics and referral data only when the relevant consent settings and explicit consent allows it.</li>
           </ul>
         </section>
 
@@ -75,10 +78,41 @@ export default function PrivacyPage() {
         </section>
 
         <section className="info-panel legal-page-section">
-          <h2>3. Your choices</h2>
+          <h2>4. Analytics and marketing choices</h2>
           <p>
-            You can review and update privacy settings in your account. If you have a privacy-related
-            question, use the PCS Pal <Link className="text-link" href="/contact">contact page</Link>.
+            Marketing consent is optional and separate from required legal acknowledgment. Analytics
+            collection is also handled separately from the legal clickwrap used for account creation.
+          </p>
+          <p>
+            If you do not opt in to optional marketing, PCS Pal should not treat your legal
+            acknowledgment as permission to send marketing messages. If you do not opt in to
+            analytics, the product is designed to avoid the related event tracking path.
+          </p>
+        </section>
+
+        <section className="info-panel legal-page-section">
+          <h2>5. Sharing and disclosures</h2>
+          <p>
+            PCS Pal is not designed as a raw personal-data marketplace. The current architecture
+            separates explicit partner lead requests from passive browsing data.
+          </p>
+          <p>
+            PCS Pal may share information with service providers that support hosting,
+            authentication, storage, analytics, or explicitly requested partner introductions, but
+            only as needed to operate the service and the consented process.
+          </p>
+        </section>
+
+        <section className="info-panel legal-page-section">
+          <h2>6. Data minimization and retention</h2>
+          <p>
+            The product aims to avoid collecting exact street addresses, uploaded documents, or
+            other sensitive data in analytics and monetization tables. Retention settings for
+            certain raw analytics tables should remain limited and operationally pruned.
+          </p>
+          <p>
+            Final retention windows, deletion processes, and legal-hold handling still require
+            operator and legal review before production legal launch.
           </p>
         </section>
 
