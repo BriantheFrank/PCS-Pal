@@ -18,10 +18,10 @@ import { getBrowserSupabaseClient } from "@/lib/supabase/browser-client";
 
 const CLOUD_SIGNUP_UNAVAILABLE_MESSAGE = "Cloud sign-up is unavailable right now. Please try again later.";
 const LEGAL_REGISTRY_UNAVAILABLE_MESSAGE =
-  "Account creation is temporarily unavailable because the current legal documents are not fully configured. Please try again later.";
+  "Account creation is unavailable right now. Please refresh and try again.";
 const LEGAL_VERSION_UNAVAILABLE_MESSAGE =
   "Current legal document versions are unavailable right now. Please try again in a moment.";
-const LOADING_SIGNUP_MESSAGE = "Loading secure account setup...";
+const LOADING_SIGNUP_MESSAGE = "Getting account setup ready";
 const REDIRECT_TARGET = "/";
 
 export function CreateAccountForm() {
@@ -175,7 +175,7 @@ export function CreateAccountForm() {
     });
 
     setSubmitState({
-      message: "Creating account...",
+      message: "Creating your account...",
       tone: "neutral",
       isSubmitting: true,
     });
@@ -201,7 +201,7 @@ export function CreateAccountForm() {
 
     if (data.session) {
       setSubmitState({
-        message: "Account created and signed in. Redirecting to your workspace...",
+        message: "Account created. Taking you to your saved plans...",
         tone: "success",
         isSubmitting: false,
       });
@@ -219,10 +219,9 @@ export function CreateAccountForm() {
   return (
     <div className="info-panel signup-page-card">
       <p className="eyebrow">New Account</p>
-      <h2>Set up your secure planning space</h2>
+      <h2>Set up your planning space</h2>
       <p>
-        Add your name, email address, and password to get started. Email confirmation stays enabled
-        so your planning details stay tied to you.
+        Add your name, email address, and password to get started. Email confirmation helps keep your move information connected to your account.
       </p>
       <p className="signup-page-legal-note">
         PCS Pal is a planning and organizational service, not official government, legal, tax, or
@@ -280,7 +279,7 @@ export function CreateAccountForm() {
             submitState.isSubmitting || sessionStatus === "loading" || sessionStatus === "error"
           }
         >
-          {submitState.isSubmitting ? "Creating account..." : "Create account"}
+          {submitState.isSubmitting ? "Creating your account..." : "Create account"}
         </button>
       </form>
       <div className="signup-page-actions">

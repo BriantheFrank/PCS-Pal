@@ -1,4 +1,3 @@
-import { INVENTORY_STORAGE_KEY } from "@/inventory-data";
 import { InventoryHeading, NativeInventoryPage } from "@/components/inventory/native-inventory-page";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
@@ -40,8 +39,7 @@ export default function InventoryPage() {
 
       <SiteFooter>
         <p className="footer-tip">
-          Tip: Inventory changes still save through the existing <code>{INVENTORY_STORAGE_KEY}</code>{" "}
-          browser storage key.
+          Tip: Your inventory updates save automatically so you can keep planning across sessions.
         </p>
         <p className="footer-disclaimer">
           This tool is for planning purposes only and does not replace official guidance from your

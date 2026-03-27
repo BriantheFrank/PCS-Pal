@@ -14,10 +14,10 @@ import { getBrowserSupabaseClient } from "@/lib/supabase/browser-client";
 
 const SYNC_DELAY_MS = 600;
 
-const LOADING_MESSAGE = "Loading your checklist.";
-const REDIRECT_MESSAGE = "Redirecting to sign in so you can open your checklist.";
+const LOADING_MESSAGE = "Opening your checklist";
+const REDIRECT_MESSAGE = "Opening sign-in";
 const LOCAL_ONLY_MESSAGE =
-  "Cloud checklist sync is unavailable right now. Progress will stay on this device.";
+  "We could not load your saved move information right now. Please refresh and try again.";
 
 const initialStatus = {
   message: "",
@@ -221,7 +221,7 @@ export function NativeChecklistPage({ pageData }) {
     }
 
     setSyncStatus({
-      message: "Saving checklist changes to your account...",
+      message: "Saving your checklist changes...",
       tone: "neutral",
     });
 
@@ -235,7 +235,7 @@ export function NativeChecklistPage({ pageData }) {
         });
 
         setSyncStatus({
-          message: "Checklist synced.",
+          message: "Checklist saved.",
           tone: "success",
         });
       } catch (error) {
@@ -275,7 +275,7 @@ export function NativeChecklistPage({ pageData }) {
       <main className="container">
         <div className="info-panel signup-page-card">
           <p className="eyebrow">PCS Checklist</p>
-          <h2>Loading your checklist</h2>
+          <h2>Opening your checklist</h2>
           <p className="signup-page-status" aria-live="polite">
             {LOADING_MESSAGE}
           </p>
@@ -289,7 +289,7 @@ export function NativeChecklistPage({ pageData }) {
       <main className="container">
         <div className="info-panel signup-page-card">
           <p className="eyebrow">PCS Checklist</p>
-          <h2>Checklist access is unavailable</h2>
+          <h2>We could not load your checklist</h2>
           <p className="signup-page-status" data-tone="error" aria-live="polite">
             {errorMessage || LOCAL_ONLY_MESSAGE}
           </p>

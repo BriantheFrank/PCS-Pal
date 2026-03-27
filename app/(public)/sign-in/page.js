@@ -7,7 +7,7 @@ import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome"
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "Sign In";
+const title = "Sign in";
 const description =
   "Sign in to PCS Pal to pick up your checklist, move organizer, and planning details from any device.";
 
@@ -23,9 +23,9 @@ function SignInFormFallback() {
     <div className="info-panel signup-page-card">
       <p className="eyebrow">Sign In</p>
       <h2>Return to your PCS Pal workspace</h2>
-      <p>Loading secure sign-in...</p>
+      <p>Opening sign-in</p>
       <p className="signup-page-status" aria-live="polite">
-        Preparing your sign-in form.
+        Getting sign-in ready
       </p>
     </div>
   );
@@ -44,11 +44,12 @@ export default function SignInPage() {
 
       <SiteHeader topBar={<LandingTopBar />}>
         <p className="eyebrow">PCS Pal Account Access</p>
-        <h1>Sign in to PCS Pal</h1>
+        <h1>Sign in</h1>
         <p className="subtitle">
-          Return to the planning details already tied to your account so you can pick the move back
-          up without starting over.
+          Sign in to access your saved checklist, inventory, and move plans.
         </p>
+        <p className="subtitle">You can still browse public guides without an account.</p>
+        <p className="subtitle">An account helps keep your move information available across devices.</p>
       </SiteHeader>
 
       <main className="container">
@@ -59,10 +60,9 @@ export default function SignInPage() {
 
           <div className="info-panel signup-page-card signup-page-side">
             <p className="eyebrow">Need an account first?</p>
-            <h2>Create one secure place for the move</h2>
+            <h2>Create an account</h2>
             <p>
-              A PCS Pal account keeps your checklist, organizer, and logistics details tied to you
-              across browsers and devices.
+              A PCS Pal account helps you save your move information and return to it later from any device.
             </p>
             <ul className="signup-page-list">
               <li>Use the same email account you created during setup</li>

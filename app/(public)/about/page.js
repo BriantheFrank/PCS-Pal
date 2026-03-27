@@ -7,7 +7,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "About PCS Pal";
 const description =
-  "Learn what PCS Pal covers, what stage the product is in today, and how it fits into a military PCS planning workflow.";
+  "Learn what PCS Pal covers, how it helps military families stay organized, and how to use it alongside official resources.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -37,8 +37,7 @@ export default function AboutPage() {
         <p className="eyebrow">About PCS Pal</p>
         <h1>Built to make PCS planning easier to hold together</h1>
         <p className="subtitle">
-          PCS Pal is an MVP product focused on helping service members and families keep the moving
-          pieces in one place without pretending to replace official guidance.
+          PCS Pal is designed to help families stay organized during a move without replacing official guidance.
         </p>
       </SiteHeader>
 
@@ -69,15 +68,12 @@ export default function AboutPage() {
         </section>
 
         <section className="info-panel legal-page-section">
-          <h2>Current stage</h2>
+          <h2>How to use PCS Pal today</h2>
           <p>
-            PCS Pal is still in a founder-and-reviewer stage. The site is being refined for product
-            clarity, workflow stability, and legal/compliance readiness before any broader launch.
+            Start with the public guides, then sign in when you want to save your checklist, inventory, and move plans for later.
           </p>
           <p>
-            The current public site is also being shaped to better support military PCS search intent,
-            so the public planning pages increasingly explain the checklist, inventory, logistics, and
-            base-research workflows directly.
+            Official links are included to help you get to the right installation resources faster.
           </p>
         </section>
 
@@ -90,15 +86,14 @@ export default function AboutPage() {
           </p>
           <p>
             Review the <Link className="text-link" href="/terms">Terms of Use</Link> and{" "}
-            <Link className="text-link" href="/privacy">Privacy Policy</Link> for the current draft
-            legal framework.
+            <Link className="text-link" href="/privacy">Privacy Policy</Link> for details on how PCS Pal works.
           </p>
         </section>
       </main>
 
       <SiteFooter>
         <p className="footer-tip">
-          Founder and reviewer feedback helps shape the current migration and product-hardening work.
+          Use the contact page if you want to report a problem, ask a question, or suggest an improvement.
         </p>
       </SiteFooter>
     </>

@@ -30,8 +30,7 @@ export default function AccountFeedbackRoute() {
         <p className="eyebrow">PCS Pal Internal Feedback</p>
         <h1>Feedback review</h1>
         <p className="subtitle">
-          Review submitted feedback, filter the queue by status, and move items through lightweight
-          triage from inside the app.
+          Review submitted feedback, filter the queue by status, and review submissions and update status from inside the app.
         </p>
       </SiteHeader>
 

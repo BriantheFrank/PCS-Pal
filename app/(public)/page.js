@@ -57,13 +57,13 @@ const SUPPORTING_PUBLIC_LINKS = [
   {
     href: "/contact",
     title: "Contact",
-    description: "Use the public contact path for reviewer notes, bug reports, and launch-readiness questions.",
+    description: "Use the contact page to ask questions, report a problem, or suggest an improvement.",
     cta: "Open the contact page",
   },
   {
     href: "/terms",
     title: "Terms of Use",
-    description: "Review the current draft rules, disclaimers, and scope of the service before relying on it.",
+    description: "Review the terms that explain how PCS Pal works and what to expect.",
     cta: "Review the terms",
   },
   {
@@ -175,8 +175,7 @@ export default function HomePage() {
             <p className="eyebrow">Supporting Public Pages</p>
             <h2 id="supporting-pages-title">Product context, contact, and legal pages</h2>
             <p>
-              These supporting pages explain what PCS Pal is, how to contact the team, and how the
-              current legal framework is structured while the product is still being refined.
+              These pages explain what PCS Pal is, how to contact support, and how legal and privacy information is handled.
             </p>
           </div>
           <div className="card-grid">
@@ -241,8 +240,7 @@ export default function HomePage() {
             <Link className="text-link" href="/military-pcs-checklist">military PCS checklist</Link>, and the{" "}
             <Link className="text-link" href="/bases">destination base research</Link> pages. Learn more{" "}
             <Link className="text-link" href="/about">about PCS Pal</Link>, use the{" "}
-            <Link className="text-link" href="/contact">contact page</Link> to share founder or
-            reviewer feedback, and review the public{" "}
+            <Link className="text-link" href="/contact">contact page</Link> to get help or share feedback, and review the public{" "}
             <Link className="text-link" href="/terms">Terms of Use</Link> and{" "}
             <Link className="text-link" href="/privacy">Privacy Policy</Link> before creating an
             account.

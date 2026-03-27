@@ -168,7 +168,7 @@ export function SiteFooter({ children }) {
         <div className="footer-legal-links" data-footer-legal-links="native">
           <Link href="/terms">Terms of Use</Link>
           <Link href="/privacy">Privacy Policy</Link>
-          <span className="footer-legal-review">Draft legal pages pending attorney review</span>
+          <span className="footer-legal-review">PCS Pal is intended as an informational planning tool. Always confirm time-sensitive or official requirements with the appropriate installation or military office.</span>
         </div>
       </div>
     </footer>

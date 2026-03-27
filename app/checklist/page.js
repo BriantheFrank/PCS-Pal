@@ -1,4 +1,3 @@
-import { CHECKLIST_STORAGE_KEY } from "@/checklist-data";
 import { ChecklistHeading, NativeChecklistPage } from "@/components/checklist/native-checklist-page";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
@@ -47,8 +46,7 @@ export default function ChecklistPage() {
 
       <SiteFooter>
         <p className="footer-tip">
-          Tip: Your checklist progress still saves automatically using the existing{" "}
-          <code>{CHECKLIST_STORAGE_KEY}</code> browser storage key.
+          Tip: Your checklist progress saves automatically to this device and your account when sync is available.
         </p>
         <p className="footer-disclaimer">
           This checklist is for planning purposes only and does not replace official guidance from
