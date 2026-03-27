@@ -1197,112 +1197,6 @@ export function NativeInventoryPage() {
   const previewValues = getPreviewLabelValues(labelSettings || {});
   return (
     <main className="container inventory-grid">
-      <details
-        className="info-panel mobile-disclosure"
-        data-mobile-collapse="true"
-        open
-        aria-labelledby="inventory-guidance-title"
-      >
-        <summary className="mobile-disclosure-summary">
-          <div>
-            <h2 id="inventory-guidance-title">How to Use Move Inventory</h2>
-            <p>Keep the packing guidance nearby, but collapse it when you just need to add rooms or items.</p>
-          </div>
-          <span className="mobile-disclosure-hint" aria-hidden="true"></span>
-        </summary>
-        <div className="mobile-disclosure-body">
-          <section>
-            <h3>Why this matters</h3>
-            <p>
-              PCS moves get harder when you do not know what was packed, where it went, or what
-              condition it was in before the move. A simple inventory can make unpacking easier and
-              help if something is delayed, damaged, or missing.
-            </p>
-          </section>
-          <section>
-            <h3>How to build a useful inventory</h3>
-            <p>
-              A good move inventory does not need to be perfect. It just needs to help you answer
-              three questions later:
-            </p>
-            <ul>
-              <li>What was packed?</li>
-              <li>Where should I look first?</li>
-              <li>What do I need to document if something is wrong?</li>
-            </ul>
-          </section>
-          <section>
-            <h3>Start with one room</h3>
-            <p>
-              Start with one room so the process feels manageable. Focus first on the items that
-              would be hardest to replace, easiest to lose track of, or most likely to matter for
-              claims.
-            </p>
-            <ul>
-              <li>Start with one room at a time.</li>
-              <li>Begin with the hardest-to-replace items first.</li>
-              <li>Add more detail for valuable, fragile, or important items.</li>
-              <li>Lighter detail is okay for low-risk bulk items.</li>
-            </ul>
-          </section>
-          <section>
-            <h3>Suggested box-label system</h3>
-            <ul>
-              <li>KITCHEN-01</li>
-              <li>KITCHEN-02</li>
-              <li>PRIMARY-BEDROOM-01</li>
-              <li>KIDS-ROOM-03</li>
-              <li>OFFICE-01</li>
-              <li>OPEN-FIRST-01</li>
-            </ul>
-            <p>
-              Use simple, consistent labels that tell you both the room and the box number. If you
-              know a box should be opened quickly after arrival, label it clearly as OPEN FIRST.
-            </p>
-          </section>
-          <section>
-            <h3>High-value item documentation</h3>
-            <p>
-              For high-value or fragile items, consider adding a short description, condition notes,
-              and photos before pack-out. This can make follow-up easier if something is missing or
-              damaged later.
-            </p>
-            <ul>
-              <li>Electronics</li>
-              <li>Jewelry</li>
-              <li>Important tools</li>
-              <li>Collectibles</li>
-              <li>Sentimental items that are hard to replace</li>
-              <li>Anything fragile or expensive</li>
-            </ul>
-          </section>
-          <section>
-            <h3>Open first setup</h3>
-            <p>
-              Choose a small number of boxes or bins that your family will need right away. Label
-              them clearly so you are not searching through your shipment for basic items on day one.
-            </p>
-            <ul>
-              <li>Bedding</li>
-              <li>Basic cookware</li>
-              <li>Toiletries</li>
-              <li>Chargers</li>
-              <li>Kids&apos; essentials</li>
-              <li>Pet basics</li>
-              <li>Work items</li>
-              <li>Cleaning basics</li>
-            </ul>
-          </section>
-          <section>
-            <h3>Claims-support notes</h3>
-            <p>
-              If you may need to file a claims process later, clearer labels, better condition notes,
-              and pre-move photos can save time and reduce confusion.
-            </p>
-          </section>
-        </div>
-      </details>
-
       <section className="inventory-controls">
         {syncStatus.message ? (
           <p className="auth-status" data-tone={syncStatus.tone} aria-live="polite">
@@ -1637,6 +1531,111 @@ export function NativeInventoryPage() {
           ))
         )}
       </section>
+
+      <details
+        className="info-panel mobile-disclosure"
+        data-mobile-collapse="true"
+        aria-labelledby="inventory-guidance-title"
+      >
+        <summary className="mobile-disclosure-summary">
+          <div>
+            <h2 id="inventory-guidance-title">Inventory guidance</h2>
+            <p>Need help? Open this section for packing and labeling best practices.</p>
+          </div>
+          <span className="mobile-disclosure-hint" aria-hidden="true"></span>
+        </summary>
+        <div className="mobile-disclosure-body">
+          <section>
+            <h3>Why this matters</h3>
+            <p>
+              PCS moves get harder when you do not know what was packed, where it went, or what
+              condition it was in before the move. A simple inventory can make unpacking easier and
+              help if something is delayed, damaged, or missing.
+            </p>
+          </section>
+          <section>
+            <h3>How to build a useful inventory</h3>
+            <p>
+              A good move inventory does not need to be perfect. It just needs to help you answer
+              three questions later:
+            </p>
+            <ul>
+              <li>What was packed?</li>
+              <li>Where should I look first?</li>
+              <li>What do I need to document if something is wrong?</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Start with one room</h3>
+            <p>
+              Start with one room so the process feels manageable. Focus first on the items that
+              would be hardest to replace, easiest to lose track of, or most likely to matter for
+              claims.
+            </p>
+            <ul>
+              <li>Start with one room at a time.</li>
+              <li>Begin with the hardest-to-replace items first.</li>
+              <li>Add more detail for valuable, fragile, or important items.</li>
+              <li>Lighter detail is okay for low-risk bulk items.</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Suggested box-label system</h3>
+            <ul>
+              <li>KITCHEN-01</li>
+              <li>KITCHEN-02</li>
+              <li>PRIMARY-BEDROOM-01</li>
+              <li>KIDS-ROOM-03</li>
+              <li>OFFICE-01</li>
+              <li>OPEN-FIRST-01</li>
+            </ul>
+            <p>
+              Use simple, consistent labels that tell you both the room and the box number. If you
+              know a box should be opened quickly after arrival, label it clearly as OPEN FIRST.
+            </p>
+          </section>
+          <section>
+            <h3>High-value item documentation</h3>
+            <p>
+              For high-value or fragile items, consider adding a short description, condition notes,
+              and photos before pack-out. This can make follow-up easier if something is missing or
+              damaged later.
+            </p>
+            <ul>
+              <li>Electronics</li>
+              <li>Jewelry</li>
+              <li>Important tools</li>
+              <li>Collectibles</li>
+              <li>Sentimental items that are hard to replace</li>
+              <li>Anything fragile or expensive</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Open first setup</h3>
+            <p>
+              Choose a small number of boxes or bins that your family will need right away. Label
+              them clearly so you are not searching through your shipment for basic items on day one.
+            </p>
+            <ul>
+              <li>Bedding</li>
+              <li>Basic cookware</li>
+              <li>Toiletries</li>
+              <li>Chargers</li>
+              <li>Kids&apos; essentials</li>
+              <li>Pet basics</li>
+              <li>Work items</li>
+              <li>Cleaning basics</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Claims-support notes</h3>
+            <p>
+              If you may need to file a claims process later, clearer labels, better condition notes,
+              and pre-move photos can save time and reduce confusion.
+            </p>
+          </section>
+        </div>
+      </details>
 
       <section
         className="label-panel"

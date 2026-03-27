@@ -7,7 +7,9 @@ import { useNativeAuth } from "@/components/auth/native-auth-provider";
 
 const WORKSPACE_LINKS = [
   { href: "/checklist", label: "PCS Checklist" },
-  { href: "/organizer", label: "Move Organizer" },
+  { href: "/inventory", label: "Move Inventory" },
+  { href: "/logistics", label: "Move Logistics" },
+  { href: "/organizer", label: "Organizer Hub" },
   { href: "/bases", label: "Destination Bases" },
 ];
 
@@ -161,4 +163,3 @@ export function NativeAccountShell() {
     </div>
   );
 }
-
