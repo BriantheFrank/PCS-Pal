@@ -10,8 +10,8 @@ export function GET(request) {
     .split(",")
     .map((segment) => segment.trim())
     .find(Boolean);
-  const ipHashSalt = process.env.LEGAL_IP_HASH_SALT || "";
-  const ipHash = observedIp
+  const ipHashSalt = String(process.env.LEGAL_IP_HASH_SALT || "").trim();
+  const ipHash = observedIp && ipHashSalt
     ? crypto
         .createHash("sha256")
         .update(`${ipHashSalt}::${observedIp}`)
@@ -22,7 +22,7 @@ export function GET(request) {
     {
       observedAt: new Date().toISOString(),
       ipHash,
-      ipHashMethod: ipHash ? (ipHashSalt ? "sha256_salted" : "sha256_unsalted") : "unavailable",
+      ipHashMethod: ipHash ? "sha256_salted" : observedIp ? "unavailable_missing_salt" : "unavailable",
       userAgent: String(request.headers.get("user-agent") || ""),
     },
     {
