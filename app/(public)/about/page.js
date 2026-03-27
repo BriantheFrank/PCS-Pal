@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { GuidedPageIntro } from "@/components/site/guided-page-intro";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
@@ -7,7 +8,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "About PCS Pal";
 const description =
-  "Learn what PCS Pal covers, what stage the product is in today, and how it fits into a military PCS planning workflow.";
+  "Learn how PCS Pal helps military families track move tasks, documents, travel plans, and arrival information in one place.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -15,9 +16,9 @@ export const metadata = buildPageMetadata({
   pathname: "/about",
   keywords: [
     "about PCS Pal",
-    "military PCS planning app",
-    "PCS checklist and move organizer",
-    "military relocation planning tool",
+    "military PCS planning",
+    "PCS checklist and inventory",
+    "military relocation support",
   ],
 });
 
@@ -35,71 +36,50 @@ export default function AboutPage() {
 
       <SiteHeader topBar={<LandingTopBar active="about" />}>
         <p className="eyebrow">About PCS Pal</p>
-        <h1>Built to make PCS planning easier to hold together</h1>
+        <h1>Built to help military families stay organized during a PCS</h1>
         <p className="subtitle">
-          PCS Pal is an MVP product focused on helping service members and families keep the moving
-          pieces in one place without pretending to replace official guidance.
+          PCS Pal is built to help military families stay organized during a PCS move. The goal is
+          simple: make it easier to keep track of tasks, documents, travel plans, and arrival
+          information in one place.
         </p>
       </SiteHeader>
 
       <main className="container legal-page-layout">
-        <section className="info-panel legal-page-section">
-          <h2>What PCS Pal is trying to solve</h2>
-          <p>
-            A PCS move spreads deadlines, notes, household details, arrival planning, and local
-            research across too many places at once. PCS Pal brings those pieces together so the move
-            is easier to restart after interruptions.
-          </p>
-        </section>
+        <GuidedPageIntro
+          purpose="Understand what PCS Pal is built to help with and how to use the core pages."
+          bestFor="Military families who want a practical, step-by-step way to plan a move without juggling multiple apps and notes."
+          startBy="Opening the checklist page, then move to inventory, logistics, and base guides as your move details become clearer."
+          nextStepLabel="Go to Checklist"
+          nextStepHref="/military-pcs-checklist"
+        />
 
         <section className="info-panel legal-page-section">
-          <h2>What is in the product today</h2>
+          <h2>What is included right now</h2>
           <ul className="legal-page-list">
-            <li>A synced PCS checklist.</li>
-            <li>A move organizer with inventory and logistics tools.</li>
-            <li>Base research pages and arrival-focused resource links.</li>
-            <li>Account, privacy, and legal-acknowledgment settings.</li>
+            <li>A checklist for before, during, and after your move.</li>
+            <li>An inventory tool for rooms, labels, and important items.</li>
+            <li>A logistics page for travel, lodging, and arrival-week planning.</li>
+            <li>Base guides focused on the first information families usually need.</li>
           </ul>
-          <p>
-            Start with the public <Link className="text-link" href="/military-pcs-checklist">PCS checklist guide</Link>,{" "}
-            <Link className="text-link" href="/pcs-inventory-label-tracking">inventory planning page</Link>,{" "}
-            <Link className="text-link" href="/pcs-move-logistics-planning">logistics planning page</Link>, and{" "}
-            <Link className="text-link" href="/bases">destination base research</Link> before you open the synced planner.
-          </p>
         </section>
 
         <section className="info-panel legal-page-section">
-          <h2>Current stage</h2>
+          <h2>How to start</h2>
           <p>
-            PCS Pal is still in a founder-and-reviewer stage. The site is being refined for product
-            clarity, workflow stability, and legal/compliance readiness before any broader launch.
+            Start with the public <Link className="text-link" href="/military-pcs-checklist">checklist</Link>, then
+            use <Link className="text-link" href="/pcs-inventory-label-tracking"> inventory</Link>,{" "}
+            <Link className="text-link" href="/pcs-move-logistics-planning">logistics</Link>, and{" "}
+            <Link className="text-link" href="/bases">base guides</Link> as your plan takes shape.
           </p>
           <p>
-            The current public site is also being shaped to better support military PCS search intent,
-            so the public planning pages increasingly explain the checklist, inventory, logistics, and
-            base-research workflows directly.
-          </p>
-        </section>
-
-        <section className="info-panel legal-page-section">
-          <h2>What PCS Pal is not</h2>
-          <p>
-            PCS Pal is not an official government service, not a transportation office, not legal
-            counsel, and not a tax advisor. It is a planner and organizational aid that should be
-            used alongside official sources.
-          </p>
-          <p>
-            Review the <Link className="text-link" href="/terms">Terms of Use</Link> and{" "}
-            <Link className="text-link" href="/privacy">Privacy Policy</Link> for the current draft
-            legal framework.
+            You can sign in to save your move plan across devices. Public guides stay available even
+            without an account.
           </p>
         </section>
       </main>
 
       <SiteFooter>
-        <p className="footer-tip">
-          Founder and reviewer feedback helps shape the current migration and product-hardening work.
-        </p>
+        <p className="footer-tip">PCS Pal supports your planning but does not replace official military guidance.</p>
       </SiteFooter>
     </>
   );

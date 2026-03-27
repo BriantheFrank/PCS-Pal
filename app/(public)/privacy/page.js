@@ -7,7 +7,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Privacy Policy";
 const description =
-  "Review the current draft PCS Pal Privacy Policy covering account data, planner data, legal acceptance records, analytics, and consent choices.";
+  "Review the current draft PCS Pal Privacy Policy covering account data, saved move-plan data, legal acceptance records, analytics, and consent choices.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -79,7 +79,7 @@ export default function PrivacyPage() {
             <li>Privacy settings and marketing consent choices that you submit.</li>
             <li>Coarse move-profile details that you save for planning and product-personalization purposes.</li>
             <li>Legal-acceptance records such as accepted document versions, acceptance time, user agent, and hashed IP snapshot when available.</li>
-            <li>Analytics and referral data only when the relevant consent settings and explicit workflows permit it.</li>
+            <li>Analytics and referral data only when the relevant consent settings and explicit consent allows it.</li>
           </ul>
         </section>
 
@@ -117,7 +117,7 @@ export default function PrivacyPage() {
           <p>
             PCS Pal may share information with service providers that support hosting,
             authentication, storage, analytics, or explicitly requested partner introductions, but
-            only as needed to operate the service and the consented workflow.
+            only as needed to operate the service and the consented process.
           </p>
         </section>
 
@@ -129,7 +129,7 @@ export default function PrivacyPage() {
             certain raw analytics tables should remain limited and operationally pruned.
           </p>
           <p>
-            Final retention windows, deletion workflows, and legal-hold handling still require
+            Final retention windows, deletion processes, and legal-hold handling still require
             operator and legal review before production legal launch.
           </p>
         </section>

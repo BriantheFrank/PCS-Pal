@@ -14,11 +14,11 @@ export const metadata = buildPageMetadata({
   description,
   pathname: "/bases",
   keywords: [
-    "military base research",
-    "PCS destination bases",
-    "Army duty stations",
+    "military base guides",
+    "PCS duty stations",
+    "Army installations",
     "PCS arrival guides",
-    "military relocation research",
+    "military relocation planning",
   ],
 });
 
@@ -35,7 +35,7 @@ export default function BasesPage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="bases" />}>
-        <p className="eyebrow">U.S. Army Duty Stations</p>
+        <p className="eyebrow">Base Guides</p>
         <BasesHeading />
         <p className="subtitle">
           Use this section to quickly find the most important arrival information for your
@@ -54,7 +54,7 @@ export default function BasesPage() {
       <NativeBasesPage items={baseIndexItems} />
 
       <SiteFooter>
-        <p>More duty station tools are coming soon.</p>
+        <p>More base guides are coming soon.</p>
       </SiteFooter>
     </>
   );
