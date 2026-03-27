@@ -6,7 +6,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Move Logistics";
 const description =
-  "Coordinate travel dates, moving contacts, itinerary stops, and custom events in one protected logistics workspace.";
+  "Use this page to map out your travel, lodging, arrival timing, and the first tasks you need to handle at your new duty station.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -30,8 +30,16 @@ export default function LogisticsPage() {
         <p className="eyebrow">Move Organizer</p>
         <LogisticsHeading />
         <p className="subtitle">
-          Coordinate travel dates, moving contacts, itinerary stops, and custom events in one
-          protected logistics workspace.
+          Use this page to map out your travel, lodging, arrival timing, and the first tasks you
+          need to handle at your new duty station.
+        </p>
+        <p>
+          Best for: Families coordinating travel days, temporary lodging, check-in timing, and
+          arrival-week planning.
+        </p>
+        <p>
+          Start by: Adding your expected travel window, temporary lodging plan, and first-day
+          arrival priorities.
         </p>
       </SiteHeader>
 

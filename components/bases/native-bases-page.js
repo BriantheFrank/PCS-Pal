@@ -28,7 +28,7 @@ const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => 
 };
 
 export function BasesHeading() {
-  const heading = "Military Destination Base Research";
+  const heading = "Base Guides";
 
   return <h1>{heading}</h1>;
 }
@@ -64,14 +64,19 @@ export function NativeBasesPage({ items }) {
         <summary className="mobile-disclosure-summary">
           <div>
             <h2 id="base-guidance-title">How to Use Destination Base Information</h2>
-            <p>Start with reporting, first-week resources, and the links worth saving before travel day.</p>
+            <p>Find your installation fast, verify the name, and preview what each guide includes.</p>
           </div>
           <span className="mobile-disclosure-hint" aria-hidden="true"></span>
         </summary>
         <div className="mobile-disclosure-body">
           <p>
-            Open a base page to see where arriving Soldiers commonly start, which first-week offices
-            matter most, and which links are worth saving before travel day.
+            Open a base guide to find practical first-week resources for lodging, housing,
+            transportation, medical and ID-card support, and local arrival basics.
+          </p>
+          <p>
+            Some installations are known by more than one name depending on the source or what
+            families are used to calling them. We include common naming references to make guides
+            easier to find.
           </p>
           <ol>
             <li>Start with the arrival and reporting section so you know where to check in first.</li>
@@ -87,8 +92,8 @@ export function NativeBasesPage({ items }) {
           <p className="eyebrow">Quick Find</p>
           <h2 id="base-browser-title">Search and narrow the base list</h2>
           <p>
-            Search by installation, state, or major unit so the next base guide is easier to reach
-            on a phone.
+            Search by installation, old or new installation names, state, or major unit so the next
+            base guide is easier to reach on a phone.
           </p>
         </div>
         <div className="base-browser-controls">
@@ -130,10 +135,19 @@ export function NativeBasesPage({ items }) {
           <Link className="base-card" href={item.href} key={item.slug}>
             <h2>{item.title}</h2>
             <p className="base-state">{item.state}</p>
+            {item.aliases?.length ? (
+              <p className="inventory-notes">Also commonly known as {item.aliases.join(", ")}</p>
+            ) : null}
             <p className="base-label">Major units</p>
             <ul className="base-units">
               {item.units.map((unit) => (
                 <li key={unit}>{unit}</li>
+              ))}
+            </ul>
+            <p className="base-label">Guide preview</p>
+            <ul className="base-units">
+              {(item.previewSections || []).map((section) => (
+                <li key={`${item.slug}-${section}`}>{section}</li>
               ))}
             </ul>
             <span className="card-link base-card-cta">View base details</span>

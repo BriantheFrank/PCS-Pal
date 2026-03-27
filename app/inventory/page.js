@@ -6,7 +6,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Move Inventory";
 const description =
-  "Build a protected room-by-room inventory with box labels, high-value tracking, local persistence, and the existing PCS Pal inventory sync semantics.";
+  "Use this page to keep track of what is being packed, how boxes are labeled, and which items may need better documentation for claims.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -30,9 +30,11 @@ export default function InventoryPage() {
         <p className="eyebrow">Move Organizer</p>
         <InventoryHeading />
         <p className="subtitle">
-          Build a room-by-room inventory with boxes, item labels, and notes. Your data stays on this
-          device and syncs to your account when cloud sync is available.
+          Use this page to keep track of what is being packed, how boxes are labeled, and which items
+          may need better documentation for claims.
         </p>
+        <p>Best for: Families trying to stay organized during pack-out, delivery, and unpacking.</p>
+        <p>Start by: Adding one room, then list the items you would struggle most to replace first.</p>
       </SiteHeader>
 
       <NativeInventoryPage />
