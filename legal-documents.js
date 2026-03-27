@@ -10,8 +10,8 @@ export const LEGAL_DOC_FALLBACKS = Object.freeze({
     version: "2026-03-12",
     effectiveDate: "2026-03-12",
     url: "terms-of-use.html",
-    reviewStatus: "Draft pending attorney review",
-    reviewStatusCode: "draft_pending_attorney_review",
+    reviewStatus: "Current version published",
+    reviewStatusCode: "current_version_published",
   }),
   [LEGAL_DOC_TYPES.privacy]: Object.freeze({
     docType: LEGAL_DOC_TYPES.privacy,
@@ -19,8 +19,8 @@ export const LEGAL_DOC_FALLBACKS = Object.freeze({
     version: "2026-03-12",
     effectiveDate: "2026-03-12",
     url: "privacy-policy.html",
-    reviewStatus: "Draft pending attorney review",
-    reviewStatusCode: "draft_pending_attorney_review",
+    reviewStatus: "Current version published",
+    reviewStatusCode: "current_version_published",
   }),
 });
 

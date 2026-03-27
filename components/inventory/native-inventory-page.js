@@ -21,8 +21,8 @@ import { getBrowserSupabaseClient } from "@/lib/supabase/browser-client";
 
 const SYNC_DELAY_MS = 600;
 
-const LOADING_MESSAGE = "Loading your move inventory.";
-const REDIRECT_MESSAGE = "Redirecting to sign in so you can open your inventory.";
+const LOADING_MESSAGE = "Loading your saved move information";
+const REDIRECT_MESSAGE = "Opening sign-in";
 const LOCAL_ONLY_MESSAGE =
   "Cloud inventory sync is unavailable right now. Progress will stay on this device.";
 const EMPTY_INVENTORY_MESSAGE =

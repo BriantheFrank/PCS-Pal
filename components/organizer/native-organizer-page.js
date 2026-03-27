@@ -5,9 +5,9 @@ import { useEffect } from "react";
 
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
 
-const LOADING_MESSAGE = "Loading your move organizer.";
-const REDIRECT_MESSAGE = "Redirecting to sign in so you can open your organizer.";
-const ERROR_MESSAGE = "Organizer access is unavailable right now. Please try again in a moment.";
+const LOADING_MESSAGE = "Loading your plans";
+const REDIRECT_MESSAGE = "Opening sign-in";
+const ERROR_MESSAGE = "We could not load this section right now. Please refresh and try again. If the problem continues, use the contact page to let us know.";
 
 const getPossessiveFirstName = (displayName) => {
   const firstName = String(displayName || "")
@@ -58,7 +58,7 @@ export function NativeOrganizerPage() {
       <main className="container">
         <div className="info-panel signup-page-card">
           <p className="eyebrow">Move Organizer</p>
-          <h2>Organizer access is unavailable</h2>
+          <h2>We could not load your organizer</h2>
           <p className="signup-page-status" data-tone="error" aria-live="polite">
             {errorMessage || ERROR_MESSAGE}
           </p>
@@ -97,13 +97,11 @@ export function NativeOrganizerPage() {
       </section>
 
       <section className="info-panel organizer-native-note">
-        <p className="eyebrow">Organizer Status</p>
-        <h2>The organizer hub, inventory, and logistics now run on the Next side.</h2>
+        <p className="eyebrow">Move Organizer</p>
+        <h2>Choose where to continue your move plan</h2>
         <p>
-          Use this page as the protected hub for the native inventory and logistics workspaces.
-          Inventory labels, itinerary planning, custom events, and logistics sync now stay under
-          the migrated native shell while the remaining guide content still runs through the legacy
-          bridge.
+          Sign in to save your plans and return to them later. Use Inventory for room-by-room item
+          tracking and Logistics for dates, contacts, and arrival-week coordination.
         </p>
       </section>
     </main>

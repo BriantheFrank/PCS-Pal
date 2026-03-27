@@ -6,7 +6,7 @@ import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome"
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "Create Account";
+const title = "Create an account";
 const description =
   "Create your PCS Pal account to keep your checklist, move inventory, and logistics details tied to you across devices.";
 
@@ -30,10 +30,14 @@ export default function CreateAccountPage() {
 
       <SiteHeader topBar={<LandingTopBar />}>
         <p className="eyebrow">PCS Pal Account Setup</p>
-        <h1>Create your PCS Pal account</h1>
+        <h1>Create an account</h1>
         <p className="subtitle">
-          A few details now, so your checklist, move inventory, and logistics stay with you from
-          one device to the next.
+          Create an account to save your checklist, inventory, and move plans so you can return to
+          them later.
+        </p>
+        <p className="subtitle">
+          You can explore the public guides without an account, but sign-in is helpful if you want
+          to save your progress.
         </p>
       </SiteHeader>
 
@@ -43,10 +47,9 @@ export default function CreateAccountPage() {
 
           <div className="info-panel signup-page-card signup-page-side">
             <p className="eyebrow">What Comes Next</p>
-            <h2>One account, one place to keep the move together</h2>
+            <h2>Why create an account</h2>
             <p>
-              After you confirm your email and sign in, the landing page becomes your starting point
-              for the checklist, organizer, and base library.
+              After you sign in, your checklist, inventory, and move plans stay connected to your account.
             </p>
             <ul className="signup-page-list">
               <li>Keep checklist progress synced across browsers and devices</li>

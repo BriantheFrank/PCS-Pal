@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
 import { resolveSafeNextPath } from "@/lib/auth/navigation";
 
-const CLOUD_UNAVAILABLE_MESSAGE = "Cloud sign-in is unavailable right now. Please try again later.";
+const CLOUD_UNAVAILABLE_MESSAGE = "We could not open sign-in right now. Please refresh and try again.";
 
 export function SignInForm() {
   const router = useRouter();
@@ -64,7 +64,7 @@ export function SignInForm() {
     const password = String(formData.get("password") || "");
 
     setSubmitState({
-      message: "Signing in...",
+      message: "Opening your account...",
       tone: "neutral",
       isSubmitting: true,
     });
@@ -80,7 +80,7 @@ export function SignInForm() {
     }
 
     setSubmitState({
-      message: "Signed in. Redirecting to your workspace...",
+      message: "Signed in. Taking you to your saved plans...",
       tone: "success",
       isSubmitting: false,
     });
@@ -108,7 +108,7 @@ export function SignInForm() {
           <input type="password" name="password" autoComplete="current-password" required />
         </label>
         <button type="submit" disabled={submitState.isSubmitting || status === "error"}>
-          {submitState.isSubmitting ? "Signing in..." : "Sign in"}
+          {submitState.isSubmitting ? "Opening your account..." : "Sign in"}
         </button>
       </form>
       <div className="signup-page-actions">

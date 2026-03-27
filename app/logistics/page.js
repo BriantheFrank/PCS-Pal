@@ -1,4 +1,3 @@
-import { LOGISTICS_STORAGE_KEY } from "@/logistics-data";
 import { LogisticsHeading, NativeLogisticsPage } from "@/components/logistics/native-logistics-page";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
@@ -48,8 +47,7 @@ export default function LogisticsPage() {
 
       <SiteFooter>
         <p className="footer-tip">
-          Tip: Logistics changes still save through the existing <code>{LOGISTICS_STORAGE_KEY}</code>{" "}
-          browser storage key.
+          Tip: Your logistics updates save automatically so you can come back to them later.
         </p>
         <p className="footer-disclaimer">
           This logistics planner is for coordination purposes only and does not replace official

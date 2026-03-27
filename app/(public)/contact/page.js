@@ -1,11 +1,10 @@
-import Link from "next/link";
-
+import { ContactPageForm } from "@/components/contact/contact-page-form";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "Contact PCS Pal";
+const title = "Contact";
 const description =
   "Use the PCS Pal contact page for questions, feedback, and bug reports.";
 
@@ -13,12 +12,7 @@ export const metadata = buildPageMetadata({
   title,
   description,
   pathname: "/contact",
-  keywords: [
-    "contact PCS Pal",
-    "PCS planning feedback",
-    "military PCS app contact",
-    "PCS bug report",
-  ],
+  keywords: ["contact PCS Pal", "PCS planning support", "PCS bug report", "PCS feedback"],
 });
 
 export default function ContactPage() {
@@ -34,8 +28,8 @@ export default function ContactPage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="contact" />}>
-        <p className="eyebrow">Contact PCS Pal</p>
-        <h1>Questions, feedback, and reviewer notes</h1>
+        <p className="eyebrow">Contact</p>
+        <h1>Contact</h1>
         <p className="subtitle">
           PCS Pal is still in an early product stage, so the contact process is simple right now.
         </p>
@@ -43,7 +37,7 @@ export default function ContactPage() {
 
       <main className="container legal-page-layout">
         <section className="info-panel legal-page-section">
-          <h2>Best use of this contact path right now</h2>
+          <h2>What can we help with?</h2>
           <ul className="legal-page-list">
             <li>Founder or reviewer product feedback.</li>
             <li>Bug reports tied to account, sync, or tool behavior.</li>
@@ -69,31 +63,15 @@ export default function ContactPage() {
         <section className="info-panel legal-page-section">
           <h2>Security and privacy note</h2>
           <p>
-            Do not send full orders, account credentials, Social Security numbers, or other
-            sensitive documents through informal feedback channels. Use only the minimum detail needed
-            to describe the issue.
+            Please do not include Social Security numbers, full orders, account credentials, or other
+            sensitive documents. Share only what is needed so we can review your request.
           </p>
         </section>
 
-        <section className="info-panel legal-page-section">
-          <h2>Formal support commitments</h2>
-          <p className="legal-placeholder-note">
-            A final public support email address, response target, and formal privacy-request channel
-            still need to be finalized before broader launch.
-          </p>
-          <p>
-            In the meantime, the legal framework remains available through the{" "}
-            <Link className="text-link" href="/terms">Terms of Use</Link> and{" "}
-            <Link className="text-link" href="/privacy">Privacy Policy</Link>.
-          </p>
-        </section>
+        <ContactPageForm />
       </main>
 
-      <SiteFooter>
-        <p className="footer-tip">
-          Keep feedback concise and avoid sharing more personal data than necessary.
-        </p>
-      </SiteFooter>
+      <SiteFooter />
     </>
   );
 }

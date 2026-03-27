@@ -15,11 +15,11 @@ import { getBrowserSupabaseClient } from "@/lib/supabase/browser-client";
 
 const SYNC_DELAY_MS = 600;
 
-const LOADING_MESSAGE = "Loading your move logistics workspace.";
-const REDIRECT_MESSAGE = "Redirecting to sign in so you can open logistics.";
+const LOADING_MESSAGE = "Loading your plans";
+const REDIRECT_MESSAGE = "Opening sign-in";
 const LOCAL_ONLY_MESSAGE =
-  "Cloud logistics sync is unavailable right now. Progress will stay on this device.";
-const ERROR_MESSAGE = "Logistics access is unavailable right now. Please try again in a moment.";
+  "We could not load your saved move information right now. Please refresh and try again.";
+const ERROR_MESSAGE = "We could not load this section right now. Please refresh and try again. If the problem continues, use the contact page to let us know.";
 
 const initialStatus = {
   message: "",
@@ -743,7 +743,7 @@ export function NativeLogisticsPage() {
       <main className="container">
         <div className="info-panel signup-page-card">
           <p className="eyebrow">Move Logistics</p>
-          <h2>Loading your logistics workspace</h2>
+          <h2>Loading your plans</h2>
           <p className="signup-page-status" aria-live="polite">
             {LOADING_MESSAGE}
           </p>
@@ -757,7 +757,7 @@ export function NativeLogisticsPage() {
       <main className="container">
         <div className="info-panel signup-page-card">
           <p className="eyebrow">Move Logistics</p>
-          <h2>Logistics access is unavailable</h2>
+          <h2>We could not load your logistics plan</h2>
           <p className="signup-page-status" data-tone="error" aria-live="polite">
             {errorMessage || ERROR_MESSAGE}
           </p>
@@ -868,7 +868,7 @@ export function NativeLogisticsPage() {
           arrival timing, and first-week priorities that affect your family immediately.
         </p>
         <p className="signup-page-status" data-tone={syncStatus.tone} aria-live="polite">
-          {syncStatus.message || "Changes save locally and sync through the existing logistics storage model."}
+          {syncStatus.message || "Changes save automatically so you can pick up planning later."}
         </p>
         <p>
           <a className="card-link" href="/organizer">
