@@ -16,9 +16,9 @@ const relatedLinks = [
     description: "Map the admin and family tasks that need to happen before boxes start moving.",
   },
   {
-    href: "/pcs-move-logistics-planning",
-    title: "PCS move logistics planning",
-    description: "Keep packers, delivery dates, and travel plans aligned with your inventory work.",
+    href: "/logistics",
+    title: "Move logistics workspace",
+    description: "Open the calendar workspace for packers, delivery dates, and travel plans.",
   },
   {
     href: "/how-to-plan-a-military-pcs-move",

@@ -18,12 +18,12 @@ const planningStages = [
   {
     title: "2. Build the inventory before pack-out",
     copy: "Capture rooms, labels, fragile items, and high-value records early enough that the inventory is useful during loading, delivery, and any follow-up claims work.",
-    href: "/pcs-inventory-label-tracking",
+    href: "/inventory",
   },
   {
     title: "3. Tie the move together with logistics planning",
     copy: "Keep movers, overnight stops, lodging, delivery windows, and arrival-week handoffs inside a single timeline so small misses do not compound.",
-    href: "/pcs-move-logistics-planning",
+    href: "/logistics",
   },
   {
     title: "4. Research the destination base before arrival",

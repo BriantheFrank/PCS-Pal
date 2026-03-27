@@ -16,9 +16,9 @@ const relatedLinks = [
     description: "See where logistics planning fits in the larger PCS timeline.",
   },
   {
-    href: "/pcs-inventory-label-tracking",
-    title: "PCS inventory and label tracking",
-    description: "Inventory details make delivery, unpacking, and follow-up logistics easier.",
+    href: "/inventory",
+    title: "Move inventory workspace",
+    description: "Open inventory to track rooms, labels, and special items tied to move logistics.",
   },
   {
     href: "/bases",

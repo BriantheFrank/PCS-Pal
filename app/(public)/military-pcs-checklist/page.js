@@ -17,14 +17,14 @@ const relatedLinks = [
     description: "Use a stage-by-stage PCS planning framework before the moving parts stack up.",
   },
   {
-    href: "/pcs-inventory-label-tracking",
-    title: "PCS inventory and label tracking",
-    description: "Build the room, box, and high-value-item record before pack-out day.",
+    href: "/inventory",
+    title: "Move inventory workspace",
+    description: "Build and maintain the room, box, and high-value-item record before pack-out day.",
   },
   {
-    href: "/pcs-move-logistics-planning",
-    title: "PCS move logistics planning",
-    description: "Keep movers, lodging, travel stops, and delivery dates tied to the same plan.",
+    href: "/logistics",
+    title: "Move logistics workspace",
+    description: "Keep movers, lodging, travel stops, and delivery dates tied to the same calendar.",
   },
   {
     href: "/bases",
