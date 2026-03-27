@@ -6,9 +6,9 @@ import { getChecklistPageData } from "@/lib/checklist/page-data";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "PCS Move Checklist";
+const title = "PCS Checklist";
 const description =
-  "Track spouse, family, and service-member PCS tasks in one protected checklist that keeps local progress and signed-in sync aligned.";
+  "Use this practical PCS checklist to track what your family needs before, during, and after a military move.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -34,12 +34,10 @@ export default function ChecklistPage() {
         <p className="eyebrow">U.S. Military PCS Toolkit</p>
         <ChecklistHeading />
         <p className="subtitle">
-          A practical, offline-friendly checklist to guide each phase of your Permanent Change of
-          Station move. A PCS is a military move to a new duty station.
+          Use this checklist to keep track of what needs to happen before, during, and after your PCS. If this is your first move, start here.
         </p>
         <p className="subtitle">
-          This checklist is organized to support military families first. The spouse and family
-          checklist appears first, followed by tasks that must be completed by the service member.
+          Best for first-time movers, families moving with kids, and anyone trying to stay organized before pack-out and arrival.
         </p>
       </SiteHeader>
 

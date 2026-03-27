@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PCS Pal | PCS Move Checklist</title>
-    <!--
-      Checklist page retains all existing checklist behavior and styling.
-    -->
+    <title>PCS Pal | PCS Checklist</title>
     <link rel="stylesheet" href="styles.css" />
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -14,12 +11,8 @@
     <script defer src="/_vercel/insights/script.js"></script>
   </head>
   <body>
-    <!-- PAGE HEADER: Top-level navigation and page title -->
     <header class="site-header">
       <div class="container">
-        <!--
-          Shared navigation keeps the checklist connected to the home page.
-        -->
         <div class="top-bar">
           <a class="brand" href="index.html">PCS Pal</a>
           <nav class="site-nav">
@@ -29,1896 +22,480 @@
           </nav>
         </div>
         <p class="eyebrow">U.S. Military PCS Toolkit</p>
-        <h1 data-personalize-template="{possessiveFirstName} PCS Move Checklist">
-          PCS Move Checklist
-        </h1>
+        <h1 data-personalize-template="{possessiveFirstName} PCS Checklist">PCS Checklist</h1>
         <p class="subtitle">
-          A practical, offline-friendly checklist to guide each phase of your
-          Permanent Change of Station (PCS) move. A PCS is a military move to a
-          new duty station.
+          Use this checklist to keep track of what needs to happen before, during, and after your
+          PCS. If this is your first move, start here.
         </p>
         <p class="subtitle">
-          This checklist is organized to support military families first. The
-          spouse and family checklist appears first, followed by tasks that must
-          be completed by the service member.
+          Best for first-time movers, families moving with kids, and anyone trying to stay organized
+          before pack-out and arrival.
         </p>
       </div>
     </header>
 
-    <!-- MAIN CONTENT: Checklist layout and sections -->
     <main class="container">
-      <!-- LEGAL DISCLAIMER: Important notice about the checklist's limitations -->
       <div class="disclaimer-banner">
-        <strong>Disclaimer:</strong> This checklist is for planning purposes only
-        and does not replace official guidance from your unit, transportation
-        office, or finance office.
+        <strong>Start by:</strong> adding your orders date, report date, and the documents you know
+        you will need to keep with you.
       </div>
 
-      <!-- CHECKLIST LAYOUT: Main content area and sidebar for the checklist -->
       <div class="checklist-layout">
-        <!-- PRIMARY CHECKLIST CONTENT: All checklist sections and items -->
         <div class="checklist-main">
-          <!--
-            Split the checklist so service members and spouses can track separate
-            responsibilities without hiding either list.
-          -->
-          <!-- Family-first ordering: spouse & family checklist appears first. -->
-          <!-- SECTION 1: SPOUSE & FAMILY CHECKLIST
-               This expandable section contains tasks for military spouses and family members.
-               The 'open' attribute means this section is expanded by default on page load.
-               Each checklist item is a parent task with sub-tasks that auto-check the parent when complete.
-          -->
-          <details class="checklist-section" data-section="spouse-family" open>
-            <summary>
-              <h2>Spouse &amp; Family Checklist</h2>
-            </summary>
+          <details class="checklist-section" data-section="orders-now" open>
+            <summary><h2>As soon as you get orders</h2></summary>
             <div class="checklist-section-body">
-              <p class="checklist-intro">
-                These tasks focus on daily life, household planning, and family
-                routines. They often run in parallel with the service member's
-                official requirements.
-              </p>
-              <!-- CHECKLIST ITEM: Individual task with expandable details
-                   Attributes:
-                   - data-item: Unique identifier for tracking item state
-                   - Class 'checklist-item': Required for script.js accordion functionality
-              -->
-              <div class="checklist-item" data-item="family-housing-research">
-                <!-- ITEM HEADER: Clickable title area with parent checkbox and toggle button -->
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-housing-research-details"
-                >
-                  <!-- PARENT CHECKBOX: Main task checkbox that auto-checks when all subtasks are complete
-                       Attributes:
-                       - data-id: Unique identifier for localStorage persistence
-                       - data-role='parent': Signals script.js to auto-check this when subtasks complete
-                       - disabled: Parent state is calculated (not directly editable by user)
-                  -->
+              <p class="checklist-intro">Start fast on paperwork, housing, and family planning so problems do not pile up later.</p>
+              <div class="checklist-item" data-item="orders-now-core">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="orders-now-core-details">
                   <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-housing-research"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Research housing options and schools at the new location
-                    </span>
+                    <input type="checkbox" data-id="orders-now-core" data-role="parent" disabled />
+                    <span class="item-title">Build your early move plan and family timeline</span>
                   </label>
-                  <!-- ACCORDION TOGGLE BUTTON: Expands/collapses the item details section
-                       Attributes:
-                       - aria-expanded: Tells assistive technology whether details are visible
-                       - aria-controls: Links button to the details section it controls
-                       - aria-label: Provides accessible description for screen readers
-                  -->
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-housing-research-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="orders-now-core-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <!-- ITEM DETAILS: Expandable content section containing guidance and subtasks
-                     Attributes:
-                     - id: Must match aria-controls on the toggle button
-                     - aria-hidden: Tells assistive technology when section is visible/hidden
-                     - This section starts hidden and is revealed when user clicks the toggle
-                -->
-                <div
-                  class="item-details item-help"
-                  id="family-housing-research-details"
-                  aria-hidden="true"
-                >
-                  <!-- ITEM GUIDANCE: Explains the purpose and timing of this task -->
-                  <p>
-                    <strong>What this is:</strong> Compare on-post housing, off-post
-                    neighborhoods, school districts, and commuting time.
-                    <strong>Why it matters:</strong> Housing availability and school
-                    options drive your timeline and help you choose the right
-                    neighborhood for your family.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> Start 90–120 days out, or as soon as
-                    orders are in hand. Use the
-                    <a href="https://www.militaryonesource.mil/moving-pcs/plan-my-move/">
-                      Military OneSource Plan My Move
-                    </a>
-                    and
-                    <a href="https://www.dodea.edu/">DoDEA</a>
-                    to compare schools.
-                  </p>
-                  <!-- SUBTASKS: Individual checkboxes that are children of the parent task
-                       These are NOT disabled and can be checked/unchecked by the user.
-                       When ALL subtasks are checked, the parent checkbox auto-checks.
-                  -->
+                <div class="item-details item-help" id="orders-now-core-details" aria-hidden="true">
+                  <p>Review orders carefully and confirm report date. Start a move folder or binder for all important paperwork, decide what must stay with you during travel, and begin housing research early, especially if availability may be tight.</p>
+                  <p>Start school and childcare planning if applicable, review expected travel timeline and likely lodging needs, discuss whether any part of the move will be personally handled, and confirm whether any family medical or EFMP needs may require extra coordination.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <!-- SUBTASK CHECKBOX: Regular checkbox (no data-role attribute)
-                             These checkboxes trigger localStorage saves and parent sync on change
-                        -->
-                        <input
-                          type="checkbox"
-                          data-id="family-housing-research-1"
-                        />
-                        <span>Call the housing office about waitlists and pet policies.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-housing-research-2"
-                        />
-                        <span>Map commute times to the new installation during rush hour.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-housing-research-3"
-                        />
-                        <span>Check school ratings, bus routes, and transfer rules.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-housing-research-4"
-                        />
-                        <span>Ask current residents about utilities, noise, and safety.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-housing-research-5"
-                        />
-                        <span>Keep a short list of top two neighborhoods as backups.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <!-- TIPS & PITFALLS: Educational content highlighting common mistakes and best practices -->
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Relying only on photos without verifying commute and school zoning.</li>
-                    <li><strong>Pro tip:</strong> Ask about temporary lodging allowance limits before signing a lease.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-childcare-travel">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-childcare-travel-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-childcare-travel"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Align child care, leave, and travel plans with move dates
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-childcare-travel-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-childcare-travel-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Line up child care coverage,
-                    school breaks, and family travel with confirmed move windows.
-                    <strong>Why it matters:</strong> A tight plan keeps kids safe
-                    and reduces last-minute leave changes.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 60–90 days before the move and update
-                    again when movers confirm dates. Use
-                    <a href="https://public.militarychildcare.csd.disa.mil/">
-                      MilitaryChildCare.com
-                    </a>
-                    for child care options.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-childcare-travel-1"
-                        />
-                        <span>Cross-check mover dates with school calendars and breaks.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-childcare-travel-2"
-                        />
-                        <span>Request leave days early so the family can travel together.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-childcare-travel-3"
-                        />
-                        <span>Arrange short-term care for pack-out and delivery days.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-childcare-travel-4"
-                        />
-                        <span>Book flights or hotels only after travel dates are approved.</span>
-                      </label>
-                    </li>
+                    <li><label><input type="checkbox" data-id="orders-now-core-1" /><span>Review orders and lock in the report date on your calendar.</span></label></li>
+                    <li><label><input type="checkbox" data-id="orders-now-core-2" /><span>Start your move folder or binder and put key records in one place.</span></label></li>
+                    <li><label><input type="checkbox" data-id="orders-now-core-3" /><span>Start housing, school, childcare, lodging, and route planning this week.</span></label></li>
+                    <li><label><input type="checkbox" data-id="orders-now-core-4" /><span>Flag EFMP, medical, and PPM coordination needs early.</span></label></li>
                   </ul>
                   <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Booking nonrefundable travel before the leave request is signed.</li>
-                    <li><strong>Pro tip:</strong> Ask the gaining unit about early reporting options for school start dates.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-inventory">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-inventory-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-inventory"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Build a home inventory and prepare for pack-out
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-inventory-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-inventory-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Create a room-by-room list of
-                    furniture, electronics, and valuable items before movers
-                    arrive. <strong>Why it matters:</strong> A solid inventory
-                    protects your claim and helps you spot missing boxes later.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 45–60 days out. Review
-                    <a href="https://www.move.mil/">Move.mil</a>
-                    for household goods claims guidance.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-inventory-1" />
-                        <span>Walk each room and photograph major items.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-inventory-2" />
-                        <span>Record serial numbers for TVs, laptops, and appliances.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-inventory-3" />
-                        <span>Separate items that should not be shipped (meds, passports).</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-inventory-4" />
-                        <span>Save digital backups of photos and receipts.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-inventory-5" />
-                        <span>Store the inventory in a shared folder for easy access.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Assuming the mover inventory is enough for claims.</li>
-                    <li><strong>Pro tip:</strong> Use short videos to capture working condition before pack-out.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-room-labels">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-room-labels-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-room-labels"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Label rooms and set aside essentials during packing
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-room-labels-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-room-labels-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Mark each room and clearly flag
-                    items that must stay with you. <strong>Why it matters:</strong>
-                    Labels speed up delivery day and prevent must-have items from
-                    being packed by mistake.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 1–2 weeks before pack-out. Reference
-                    the
-                    <a href="https://www.move.mil/preparing-your-move">
-                      Move.mil preparing guide
-                    </a>
-                    for do-not-pack rules.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-room-labels-1" />
-                        <span>Post large room signs with destination room names.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-room-labels-2" />
-                        <span>Use colored tape to mark boxes by room.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-room-labels-3" />
-                        <span>Set aside a “do not pack” area with luggage or bins.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-room-labels-4" />
-                        <span>Label cords and hardware in sealed bags.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Forgetting to label kids’ rooms, which delays setup.</li>
-                    <li><strong>Pro tip:</strong> Tape a printed floor plan to the front door on delivery day.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-travel-kit">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-travel-kit-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-travel-kit"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Prepare a travel kit with must-haves (meds, documents, chargers)
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-travel-kit-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-travel-kit-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> A carry-with-you bag with
-                    documents, medications, snacks, and chargers for travel and
-                    the first week. <strong>Why it matters:</strong> Household
-                    goods may arrive late, so you need essentials on hand.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> "Pack 1–3 days before departure. Most 
-                    PCS moves within the continental U.S. are by car, so prioritize 
-                    comfort items (snacks, books, entertainment for kids) and clothing 
-                    for overnight stops. If you're flying, Check the
-                    <a href="https://www.tsa.gov/travel/security-screening/whatcanibring/all">
-                      TSA “What Can I Bring?”
-                    </a>
-                    list if you fly.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-travel-kit-1" />
-                        <span>Include ID cards, orders, and copies of medical records.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-travel-kit-2" />
-                        <span>Pack one week of prescriptions and a basic first-aid kit.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-travel-kit-3" />
-                        <span>Add chargers, power banks, and key electronics.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-travel-kit-4" />
-                        <span>Pack one week of clothing for each family member.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-travel-kit-5" />
-                        <span>Bring kid comfort items, snacks, and a change of clothes.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-travel-kit-6" />
-                        <span>Keep small valuables and jewelry with you.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Packing passports or orders in checked luggage.</li>
-                    <li><strong>Pro tip:</strong> For driving trips, bring extra snacks and entertainment. For flights, use a clear folder so paperwork is easy at check-in.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-school-transfer">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-school-transfer-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-school-transfer"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Request and transfer school records for children
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-school-transfer-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-school-transfer-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Collect academic records,
-                    special education plans, and immunization documents and send
-                    them to the new school. <strong>Why it matters:</strong>
-                    Schools need records to enroll your child quickly.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 30–60 days before the move. Use
-                    <a href="https://www.militarychild.org/">
-                      Military Child Education Coalition
-                    </a>
-                    resources for school transitions.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-school-transfer-1"
-                        />
-                        <span>Request transcripts, report cards, and standardized test scores.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-school-transfer-2"
-                        />
-                        <span>Gather IEP/504 plans or gifted program documentation.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-school-transfer-3"
-                        />
-                        <span>Ask the new school about immunization and enrollment requirements.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input
-                          type="checkbox"
-                          data-id="family-school-transfer-4"
-                        />
-                        <span>Schedule intake or counseling appointments before arrival.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Waiting until arrival to request records, which delays enrollment.</li>
-                    <li><strong>Pro tip:</strong> Keep a sealed copy with you in case records lag behind.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-pet-planning">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-pet-planning-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-pet-planning"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Arrange pet travel (health certificates, airlines, lodging rules)
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-pet-planning-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-pet-planning-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Confirm pet policies, obtain
-                    health certificates, and plan pet-friendly travel. <strong>Why
-                    it matters:</strong> Airlines and states may require specific
-                    documentation and vaccines.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 45–60 days out. Check
-                    <a href="https://www.aphis.usda.gov/pet-travel">
-                      USDA APHIS pet travel requirements
-                    </a>
-                    for your destination.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-pet-planning-1" />
-                        <span>Schedule a vet visit for vaccinations and a health certificate.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-pet-planning-2" />
-                        <span>Confirm airline or hotel pet size and crate rules.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-pet-planning-3" />
-                        <span>Update microchip info and tags with your new address.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-pet-planning-4" />
-                        <span>Pack food, water, and a comfort item for travel day.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Waiting too long for international pet paperwork.</li>
-                    <li><strong>Pro tip:</strong> Freeze a water bowl so it melts during travel.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-address-updates">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-address-updates-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-address-updates"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Set up mail forwarding and update addresses
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-address-updates-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-address-updates-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Forward your mail and update
-                    banks, insurance, medical providers, and subscriptions.
-                    <strong>Why it matters:</strong> Missing bills or medical
-                    notices adds stress in the first weeks.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 2–4 weeks before departure. Use the
-                    <a href="https://moversguide.usps.com/">
-                      USPS Change of Address
-                    </a>
-                    tool.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-address-updates-1" />
-                        <span>Submit a USPS change of address for each adult.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-address-updates-2" />
-                        <span>Update auto insurance, banks, and credit cards.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-address-updates-3" />
-                        <span>Notify schools, child care, and medical offices.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-address-updates-4" />
-                        <span>Transfer subscriptions or set vacation holds.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Forgetting to update online retailers for auto-deliveries.</li>
-                    <li><strong>Pro tip:</strong> Keep a simple spreadsheet to track who was updated.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-temporary-lodging">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-temporary-lodging-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-temporary-lodging"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Plan for temporary lodging if needed
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-temporary-lodging-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-temporary-lodging-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Identify hotels, base lodging,
-                    or short-term rentals in case housing or deliveries are
-                    delayed. <strong>Why it matters:</strong> Temporary lodging
-                    is often needed between homes.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 30–60 days out. Review
-                    <a href="https://www.dodlodging.net/">DoD Lodging</a>
-                    availability and pet policies.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-temporary-lodging-1" />
-                        <span>Check allowable Temporary Lodging Expense (TLE) limits.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-temporary-lodging-2" />
-                        <span>Reserve a refundable room near the installation.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-temporary-lodging-3" />
-                        <span>Confirm kitchen or laundry access for longer stays.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-temporary-lodging-4" />
-                        <span>Ask about pet fees and weight limits.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Booking outside of allowable lodging limits.</li>
-                    <li><strong>Pro tip:</strong> Keep receipts organized for reimbursement.</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="checklist-item" data-item="family-arrival-day-plan">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="family-arrival-day-plan-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="family-arrival-day-plan"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Plan for arrival-day realities without household goods
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="family-arrival-day-plan-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
-                </div>
-                <div
-                  class="item-details item-help"
-                  id="family-arrival-day-plan-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> A simple plan for sleeping,
-                    meals, and routines while you wait for household goods.
-                    <strong>Why it matters:</strong> A calm first week helps kids
-                    adjust and reduces stress.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> Finalize 1–2 weeks before departure.
-                    Use the
-                    <a href="https://www.militaryonesource.mil/moving-pcs/">Military OneSource moving hub</a>
-                    for arrival tips.
-                  </p>
-                  <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-arrival-day-plan-1" />
-                        <span>Pack an air mattress, linens, and easy meals.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-arrival-day-plan-2" />
-                        <span>Identify nearby grocery stores and pharmacies.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-arrival-day-plan-3" />
-                        <span>Plan low-stress activities for kids during unpacking.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="family-arrival-day-plan-4" />
-                        <span>Keep basic cleaning supplies accessible.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Packing bedding in household goods boxes.</li>
-                    <li><strong>Pro tip:</strong> Use disposable plates for the first few days.</li>
+                    <li><strong>Common mistake:</strong> Waiting too long to gather records and housing information can create avoidable stress later.</li>
                   </ul>
                 </div>
               </div>
             </div>
           </details>
 
-          <details class="checklist-section" data-section="service-member" open>
-            <summary>
-              <h2>Service Member Checklist</h2>
-            </summary>
+          <details class="checklist-section" data-section="days-30-45" open>
+            <summary><h2>30–45 days before the move</h2></summary>
             <div class="checklist-section-body">
-              <p class="checklist-intro">
-                These tasks must be handled by the service member because they
-                involve official orders, finance, or command requirements. Either
-                spouse can check items here so both can see progress.
-              </p>
-              <div class="checklist-item" data-item="service-orders-review">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-orders-review-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-orders-review"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Receive and review PCS orders
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-orders-review-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+              <p class="checklist-intro">Shift from planning to action so you control what travels with you and what gets packed.</p>
+              <div class="checklist-item" data-item="days-30-45-core">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="days-30-45-core-details">
+                  <label class="item-parent"><input type="checkbox" data-id="days-30-45-core" data-role="parent" disabled /><span class="item-title">Prepare records, shipments, and transition logistics</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="days-30-45-core-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-orders-review-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Read the official orders for
-                    dates, destinations, and entitlements. <strong>Why it
-                    matters:</strong> Orders unlock movers, travel booking, and
-                    school/housing timelines.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> Immediately once issued. Store a copy
-                    in a shared folder and use
-                    <a href="https://www.move.mil/">Move.mil</a>
-                    for next steps.
-                  </p>
+                <div class="item-details item-help" id="days-30-45-core-details" aria-hidden="true">
+                  <p>Confirm moving dates and shipment expectations. Start sorting what to keep, donate, store, or discard. Create a hand-carry document list and refill prescriptions to protect medical continuity.</p>
+                  <p>Request school records or other child-related paperwork, review pet requirements and lodging rules, check spouse employment or licensing issues if moving to a new state, and start utility, lease, or housing transition planning.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-orders-review-1" />
-                        <span>Verify name, rank, and gaining unit details.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-orders-review-2" />
-                        <span>Check report date, RNLTD, and any training requirements.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-orders-review-3" />
-                        <span>Confirm dependent travel authorization is listed.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-orders-review-4" />
-                        <span>Share the orders with the family so planning can begin.</span>
-                      </label>
-                    </li>
+                    <li><label><input type="checkbox" data-id="days-30-45-core-1" /><span>Confirm moving dates and shipment windows.</span></label></li>
+                    <li><label><input type="checkbox" data-id="days-30-45-core-2" /><span>Sort household goods and draft your hand-carry document list.</span></label></li>
+                    <li><label><input type="checkbox" data-id="days-30-45-core-3" /><span>Refill prescriptions and request school records.</span></label></li>
+                    <li><label><input type="checkbox" data-id="days-30-45-core-4" /><span>Review pets, work licensing, and utility or lease transitions.</span></label></li>
                   </ul>
                   <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Scheduling movers before orders are stamped as official.</li>
-                    <li><strong>Pro tip:</strong> Keep both digital and paper copies for check-ins.</li>
+                    <li><strong>Common mistake:</strong> Assuming all records can be easily retrieved later. Keep copies of the most important documents with you.</li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-required-briefings">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-required-briefings-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-required-briefings"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Attend PCS briefings and workshops
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-required-briefings-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="two-weeks" open>
+            <summary><h2>2 weeks before pack-out</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">Protect essentials now so they do not disappear into household goods.</p>
+              <div class="checklist-item" data-item="two-weeks-core">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="two-weeks-core-details">
+                  <label class="item-parent"><input type="checkbox" data-id="two-weeks-core" data-role="parent" disabled /><span class="item-title">Separate essentials and prep for arrival week</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="two-weeks-core-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-required-briefings-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Complete the relocation and
-                    transportation briefings required by your installation.
-                    <strong>Why it matters:</strong> Briefings unlock scheduling
-                    for shipments and travel entitlements.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> Within 30 days of receiving orders.
-                    Check the
-                    <a href="https://www.militaryonesource.mil/moving-pcs/">Military OneSource moving page</a>
-                    for workshop options.
-                  </p>
+                <div class="item-details item-help" id="two-weeks-core-details" aria-hidden="true">
+                  <p>Separate documents, valuables, medications, and daily essentials from household goods. Confirm temporary lodging and travel stops. Set aside items needed immediately after arrival.</p>
+                  <p>Photograph valuable or fragile items before pack-out, label priority boxes, create an open-first list, confirm school, childcare, and medical transition details, and prepare children and pets for travel-day disruptions as much as possible.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-required-briefings-1" />
-                        <span>Register for the mandatory relocation briefing.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-required-briefings-2" />
-                        <span>Ask about local move policies and required forms.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-required-briefings-3" />
-                        <span>Collect contact info for finance and transportation offices.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-required-briefings-4" />
-                        <span>Share key dates with your spouse or family lead.</span>
-                      </label>
-                    </li>
+                    <li><label><input type="checkbox" data-id="two-weeks-core-1" /><span>Pull out documents, medications, valuables, and immediate essentials.</span></label></li>
+                    <li><label><input type="checkbox" data-id="two-weeks-core-2" /><span>Confirm temporary lodging, travel stops, and arrival-day needs.</span></label></li>
+                    <li><label><input type="checkbox" data-id="two-weeks-core-3" /><span>Photograph fragile items and label priority/open-first boxes.</span></label></li>
+                    <li><label><input type="checkbox" data-id="two-weeks-core-4" /><span>Reconfirm school, childcare, medical, pet, and child travel transitions.</span></label></li>
+                  </ul>
+                  <ul class="item-tips"><li><strong>Common mistake:</strong> Letting essential items get packed because they were not clearly separated ahead of time.</li></ul>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="packout-week" open>
+            <summary><h2>Pack-out week</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">Treat this week like operations: separate critical items and document what matters.</p>
+              <div class="checklist-item" data-item="packout-week-core">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="packout-week-core-details">
+                  <label class="item-parent"><input type="checkbox" data-id="packout-week-core" data-role="parent" disabled /><span class="item-title">Control what gets packed and track sensitive items</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="packout-week-core-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="packout-week-core-details" aria-hidden="true">
+                  <p>Keep orders, IDs, records, medications, chargers, and valuables with you. Walk through the home and make sure restricted or do-not-pack items stay separate.</p>
+                  <p>Check box labels for clarity and consistency, keep notes on high-value or fragile items, save receipts and documents that may matter later, and double-check lodging, route timing, and arrival plans.</p>
+                  <ul class="sub-checklist">
+                    <li><label><input type="checkbox" data-id="packout-week-core-1" /><span>Keep all critical documents, medications, chargers, and valuables with you.</span></label></li>
+                    <li><label><input type="checkbox" data-id="packout-week-core-2" /><span>Separate restricted and do-not-pack items before movers arrive.</span></label></li>
+                    <li><label><input type="checkbox" data-id="packout-week-core-3" /><span>Check labels, save receipts, and track fragile or high-value items.</span></label></li>
+                  </ul>
+                  <ul class="item-tips"><li><strong>Do not pack:</strong> anything you will need during travel, right after arrival, or to resolve a problem quickly.</li></ul>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="travel-days" open>
+            <summary><h2>Travel days</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">Plan for delays and fatigue. Your goal is a smooth first night, not a perfect schedule.</p>
+              <div class="checklist-item" data-item="travel-days-core">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="travel-days-core-details">
+                  <label class="item-parent"><input type="checkbox" data-id="travel-days-core" data-role="parent" disabled /><span class="item-title">Keep critical items accessible and travel plans flexible</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="travel-days-core-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="travel-days-core-details" aria-hidden="true">
+                  <p>Keep all critical documents accessible, not buried in luggage. Confirm lodging reservations before arrival when possible and keep medications, snacks, chargers, and child or pet essentials easy to reach.</p>
+                  <p>Track receipts if they may matter later, reconfirm next-day route or arrival timing as needed, and keep one small bag or bin with first-night essentials.</p>
+                  <ul class="sub-checklist">
+                    <li><label><input type="checkbox" data-id="travel-days-core-1" /><span>Carry critical documents where you can reach them quickly.</span></label></li>
+                    <li><label><input type="checkbox" data-id="travel-days-core-2" /><span>Keep meds, snacks, chargers, and child/pet essentials close by.</span></label></li>
+                    <li><label><input type="checkbox" data-id="travel-days-core-3" /><span>Confirm lodging and next-day timing before you stop for the night.</span></label></li>
                   </ul>
                   <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Missing a briefing that blocks shipment scheduling.</li>
-                    <li><strong>Pro tip:</strong> Bring a notebook with questions about entitlements.</li>
+                    <li><strong>Travel tip:</strong> Assume you may arrive tired, late, or off schedule. Plan for a smoother first night, not a perfect one.</li>
+                    <li><strong>Common mistake:</strong> Assuming you can grab important documents quickly if they are buried in luggage.</li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-report-date">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-report-date-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-report-date"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Confirm report dates and authorized travelers/dependents
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-report-date-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="first-week" open>
+            <summary><h2>First week after arrival</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">Focus on reporting, housing, health, and immediate family function before anything else.</p>
+              <div class="checklist-item" data-item="first-week-core">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="first-week-core-details">
+                  <label class="item-parent"><input type="checkbox" data-id="first-week-core" data-role="parent" disabled /><span class="item-title">Stabilize family routines and critical next steps</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="first-week-core-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-report-date-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Verify your report date (RNLTD)
-                    and who is authorized to travel at government expense.
-                    <strong>Why it matters:</strong> This drives leave approvals,
-                    travel bookings, and child care timing.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 60–90 days out, then reconfirm 30 days
-                    before travel. See the
-                    <a href="https://www.defensetravel.dod.mil/site/travelreg.cfm">
-                      Joint Travel Regulations overview
-                    </a>
-                    for entitlements.
-                  </p>
+                <div class="item-details item-help" id="first-week-core-details" aria-hidden="true">
+                  <p>Confirm check-in requirements and key reporting timelines. Verify lodging and housing next steps. Locate the nearest pharmacy, grocery store, and urgent-care or medical support.</p>
+                  <p>Review expected household goods delivery timeline, begin school or childcare follow-up, update critical family records that must change after the move, and unpack essential items first while documenting claim-sensitive items.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-report-date-1" />
-                        <span>Confirm the exact report date with the gaining unit.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-report-date-2" />
-                        <span>Verify dependent names and travel authorization on orders.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-report-date-3" />
-                        <span>Coordinate leave and travel days with your chain of command.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-report-date-4" />
-                        <span>Let your spouse know any date changes immediately.</span>
-                      </label>
-                    </li>
+                    <li><label><input type="checkbox" data-id="first-week-core-1" /><span>Confirm reporting requirements and housing next steps.</span></label></li>
+                    <li><label><input type="checkbox" data-id="first-week-core-2" /><span>Find pharmacy, groceries, urgent care, school, and childcare contacts.</span></label></li>
+                    <li><label><input type="checkbox" data-id="first-week-core-3" /><span>Unpack essentials first and document claim-sensitive items.</span></label></li>
+                  </ul>
+                  <ul class="item-tips"><li><strong>Common mistake:</strong> Trying to do everything immediately. Focus first on housing, reporting, health, and basic family functionality.</li></ul>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="after-delivery" open>
+            <summary><h2>After delivery</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">Document issues while details are fresh so claims and follow-up are easier.</p>
+              <div class="checklist-item" data-item="after-delivery-core">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="after-delivery-core-details">
+                  <label class="item-parent"><input type="checkbox" data-id="after-delivery-core" data-role="parent" disabled /><span class="item-title">Inspect, document, and close out your move</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="after-delivery-core-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="after-delivery-core-details" aria-hidden="true">
+                  <p>Check items against your inventory or box list, note missing or damaged items as soon as possible, photograph any damage clearly, and keep claim-related paperwork in one place.</p>
+                  <p>Update your inventory notes as you unpack and review what worked and what you would do differently next time.</p>
+                  <ul class="sub-checklist">
+                    <li><label><input type="checkbox" data-id="after-delivery-core-1" /><span>Check deliveries against your inventory and open-first list.</span></label></li>
+                    <li><label><input type="checkbox" data-id="after-delivery-core-2" /><span>Photograph and track missing or damaged items immediately.</span></label></li>
+                    <li><label><input type="checkbox" data-id="after-delivery-core-3" /><span>Consolidate claim paperwork, notes, and receipts in one folder.</span></label></li>
                   </ul>
                   <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Assuming dependents are authorized without checking the orders.</li>
-                    <li><strong>Pro tip:</strong> Save a screenshot of any approved date change email.</li>
+                    <li><strong>Claims reminder:</strong> Good documentation matters. Photos, notes, and clear labels can make follow-up easier.</li>
+                    <li><strong>Common mistake:</strong> Not documenting damage or missing items while details are still fresh.</li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-personnel-record">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-personnel-record-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-personnel-record"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Update personal and family information in DEERS/RAPIDS
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-personnel-record-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="do-not-pack" open>
+            <summary><h2>Do not pack these in household goods</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro"><strong>If losing it would create a serious problem during travel or arrival, do not put it on the truck. Carry it with you.</strong></p>
+              <div class="checklist-item" data-item="do-not-pack-list">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="do-not-pack-list-details">
+                  <label class="item-parent"><input type="checkbox" data-id="do-not-pack-list" data-role="parent" disabled /><span class="item-title">Hand-carry essentials (print or screenshot this list)</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="do-not-pack-list-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-personnel-record-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Keep the Defense Enrollment
-                    Eligibility Reporting System (DEERS) and RAPIDS ID card system
-                    updated with correct dependents and addresses. <strong>Why it
-                    matters:</strong> Benefits, medical coverage, and ID cards
-                    depend on accurate records.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 30–60 days before moving, and again
-                    after arrival. Use the
-                    <a href="https://www.tricare.mil/DEERS">TRICARE DEERS page</a>
-                    and
-                    <a href="https://idco.dmdc.osd.mil/idco/">RAPIDS Site Locator</a>.
-                  </p>
+                <div class="item-details item-help" id="do-not-pack-list-details" aria-hidden="true">
+                  <p>Keep these items with you for travel and arrival week. This is one of the most important practical lists on the page.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-personnel-record-1" />
-                        <span>Verify each dependent’s name and birth date in DEERS.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-personnel-record-2" />
-                        <span>Update your current and future address if available.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-personnel-record-3" />
-                        <span>Schedule ID card updates for expiring cards.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-personnel-record-4" />
-                        <span>Keep copies of birth certificates or marriage certificates handy.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Not updating DEERS, leading to TRICARE enrollment issues.</li>
-                    <li><strong>Pro tip:</strong> Book RAPIDS appointments early; slots fill fast.</li>
+                    <li><label><input type="checkbox" data-id="do-not-pack-list-1" /><span>Orders, IDs, and passports (if applicable).</span></label></li>
+                    <li><label><input type="checkbox" data-id="do-not-pack-list-2" /><span>School records, medical records, prescriptions, and pet records.</span></label></li>
+                    <li><label><input type="checkbox" data-id="do-not-pack-list-3" /><span>Chargers, valuables, banking or critical financial documents, and housing documents.</span></label></li>
+                    <li><label><input type="checkbox" data-id="do-not-pack-list-4" /><span>Immediate work items or uniforms, plus travel-day essentials for children.</span></label></li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-finance-advance">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-finance-advance-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-finance-advance"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Apply for advance pay and understand financial entitlements
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-finance-advance-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="first-72-hours" open>
+            <summary><h2>First 72 hours after arrival</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">The first few days after arrival can feel scattered. Focus on the basics first: where you are sleeping, where you need to report, what your family needs immediately, and what can wait a few days.</p>
+              <div class="checklist-item" data-item="first-72-hours-list">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="first-72-hours-list-details">
+                  <label class="item-parent"><input type="checkbox" data-id="first-72-hours-list" data-role="parent" disabled /><span class="item-title">Arrival essentials checklist</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="first-72-hours-list-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-finance-advance-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Review entitlements like
-                    Dislocation Allowance (DLA), per diem, and travel advances.
-                    <strong>Why it matters:</strong> Upfront funds help cover
-                    deposits, lodging, and travel costs.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 30–45 days before travel. Start with
-                    <a href="https://www.dfas.mil/militarymembers/travelpay/relocation/">
-                      DFAS relocation pay guidance
-                    </a>.
-                  </p>
+                <div class="item-details item-help" id="first-72-hours-list-details" aria-hidden="true">
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-finance-advance-1" />
-                        <span>Ask finance about DLA eligibility and expected amounts.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-finance-advance-2" />
-                        <span>Request a travel advance if needed for lodging or fuel.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-finance-advance-3" />
-                        <span>Confirm per diem rates for dependents.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-finance-advance-4" />
-                        <span>Set aside funds for deposits and utility start-up fees.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Forgetting that advances must be paid back if travel is canceled.</li>
-                    <li><strong>Pro tip:</strong> Keep a simple receipts folder by category.</li>
+                    <li><label><input type="checkbox" data-id="first-72-hours-list-1" /><span>Confirm lodging and locate the check-in office.</span></label></li>
+                    <li><label><input type="checkbox" data-id="first-72-hours-list-2" /><span>Verify housing next steps and delivery expectations for household goods.</span></label></li>
+                    <li><label><input type="checkbox" data-id="first-72-hours-list-3" /><span>Identify the nearest grocery store, pharmacy, and urgent medical support.</span></label></li>
+                    <li><label><input type="checkbox" data-id="first-72-hours-list-4" /><span>Gather school and childcare next actions and unpack essentials first.</span></label></li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-move-type">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-move-type-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-move-type"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Decide on move type (government-managed, PPM, or partial)
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-move-type-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="family-focused-guidance" open>
+            <summary><h2>Family-focused planning guides</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">Use these quick guides for high-impact family issues that can disrupt PCS timelines.</p>
+
+              <div class="checklist-item" data-item="school-transfer-checklist">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="school-transfer-checklist-details">
+                  <label class="item-parent"><input type="checkbox" data-id="school-transfer-checklist" data-role="parent" disabled /><span class="item-title">School transfer checklist</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="school-transfer-checklist-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-move-type-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Choose whether the government
-                    manages your household goods shipment or you do a Personally
-                    Procured Move (PPM), where you move yourself for
-                    reimbursement. <strong>Why it matters:</strong> The move type
-                    affects budgets, timelines, and how much work the family does.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 60–75 days before pack-out. Review
-                    <a href="https://www.move.mil/entitlements">Move.mil entitlements</a>
-                    to compare options.
-                  </p>
+                <div class="item-details item-help" id="school-transfer-checklist-details" aria-hidden="true">
+                  <p>If you are moving with school-age children, start gathering school records early. Registration requirements vary by district and installation. Keep report cards, immunization records, enrollment forms, and any special education paperwork with you instead of packing them.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-move-type-1" />
-                        <span>Compare estimated weights and incentives for a PPM.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-move-type-2" />
-                        <span>Ask the transportation office about partial PPM rules.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-move-type-3" />
-                        <span>Price truck rentals, fuel, and packing supplies.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-move-type-4" />
-                        <span>Confirm who is responsible for insurance coverage.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Choosing a PPM without help for heavy items.</li>
-                    <li><strong>Pro tip:</strong> Use the move organizer to estimate weight early.</li>
+                    <li><label><input type="checkbox" data-id="school-transfer-checklist-1" /><span>Request school records early.</span></label></li>
+                    <li><label><input type="checkbox" data-id="school-transfer-checklist-2" /><span>Keep immunization and enrollment paperwork with you.</span></label></li>
+                    <li><label><input type="checkbox" data-id="school-transfer-checklist-3" /><span>Carry IEP, 504, or special education records if relevant.</span></label></li>
+                    <li><label><input type="checkbox" data-id="school-transfer-checklist-4" /><span>Confirm registration requirements and sports/activity transfer needs.</span></label></li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-transportation-office">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-transportation-office-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-transportation-office"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Schedule household goods (HHG) shipment with the Transportation Office
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-transportation-office-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+
+              <div class="checklist-item" data-item="childcare-planning">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="childcare-planning-details">
+                  <label class="item-parent"><input type="checkbox" data-id="childcare-planning" data-role="parent" disabled /><span class="item-title">Childcare planning</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="childcare-planning-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-transportation-office-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Book pack-out and delivery
-                    windows with the office that manages military household goods
-                    shipments. <strong>Why it matters:</strong> Confirmed dates
-                    let the family plan travel and lodging.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 45–60 days before move. Use
-                    <a href="https://www.move.mil/">Move.mil</a>
-                    to start the shipment request.
-                  </p>
+                <div class="item-details item-help" id="childcare-planning-details" aria-hidden="true">
+                  <p>Childcare can become a problem quickly during a PCS. If you expect to need care soon after arrival, research options early and get on waitlists where possible. Have a backup plan in case care is not available right away.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-transportation-office-1" />
-                        <span>Request pack-out and delivery windows as early as possible.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-transportation-office-2" />
-                        <span>Confirm if a pre-move survey is required.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-transportation-office-3" />
-                        <span>Discuss storage-in-transit options if housing is delayed.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-transportation-office-4" />
-                        <span>Share confirmed dates with the family immediately.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Waiting too long and losing your preferred dates.</li>
-                    <li><strong>Pro tip:</strong> Ask about weight limits so you can declutter early.</li>
+                    <li><label><input type="checkbox" data-id="childcare-planning-1" /><span>Research on-post and off-post options early.</span></label></li>
+                    <li><label><input type="checkbox" data-id="childcare-planning-2" /><span>Check for waitlists and sign up quickly.</span></label></li>
+                    <li><label><input type="checkbox" data-id="childcare-planning-3" /><span>Build a backup plan for arrival-week gaps in care.</span></label></li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-out-processing">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-out-processing-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-out-processing"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Complete out-processing, collect signatures, and clear issued gear
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-out-processing-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+
+              <div class="checklist-item" data-item="medical-prescription-planning">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="medical-prescription-planning-details">
+                  <label class="item-parent"><input type="checkbox" data-id="medical-prescription-planning" data-role="parent" disabled /><span class="item-title">Medical and prescription planning</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="medical-prescription-planning-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-out-processing-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Finish all installation
-                    checkout requirements, return equipment, and collect required
-                    signatures. <strong>Why it matters:</strong> You cannot depart
-                    without a cleared checklist.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 30–45 days before departure. Use your
-                    installation out-processing checklist and the
-                    <a href="https://www.militaryonesource.mil/moving-pcs/">Military OneSource moving hub</a>
-                    for reminders.
-                  </p>
+                <div class="item-details item-help" id="medical-prescription-planning-details" aria-hidden="true">
+                  <p>If a family member has ongoing medical needs, refill prescriptions before travel and keep care plans, referral paperwork, and provider contact information with you. Do not pack anything you may need during travel or shortly after arrival.</p>
+                  <p><strong>EFMP planning:</strong> If a family member has specialized medical or educational needs, start coordination early and keep all related records with you. Delays in documentation can slow access to services after arrival.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-out-processing-1" />
-                        <span>Pick up the official out-processing checklist.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-out-processing-2" />
-                        <span>Return issued gear, weapons cards, and unit property.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-out-processing-3" />
-                        <span>Complete finance, housing, and medical signatures.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-out-processing-4" />
-                        <span>Turn in your checklist early to avoid last-day delays.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Waiting until the final week to clear supply or CIF.</li>
-                    <li><strong>Pro tip:</strong> Make a copy of your signed checklist for your records.</li>
+                    <li><label><input type="checkbox" data-id="medical-prescription-planning-1" /><span>Refill prescriptions before travel and keep medications with you.</span></label></li>
+                    <li><label><input type="checkbox" data-id="medical-prescription-planning-2" /><span>Hand-carry care summaries, referral paperwork, and provider contacts.</span></label></li>
+                    <li><label><input type="checkbox" data-id="medical-prescription-planning-3" /><span>Plan for specialty care reconnection time after arrival.</span></label></li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-medical-records">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-medical-records-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-medical-records"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Handle medical and dental records, screenings, and TRICARE updates
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-medical-records-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+
+              <div class="checklist-item" data-item="work-licensing-considerations">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="work-licensing-considerations-details">
+                  <label class="item-parent"><input type="checkbox" data-id="work-licensing-considerations" data-role="parent" disabled /><span class="item-title">Work and licensing considerations</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="work-licensing-considerations-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-medical-records-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Transfer health records,
-                    schedule required screenings, and update TRICARE enrollment.
-                    <strong>Why it matters:</strong> It prevents gaps in care when
-                    you arrive.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 30–60 days before departure. Review
-                    <a href="https://www.tricare.mil/Plans/Enroll/Moving">TRICARE moving guidance</a>.
-                  </p>
+                <div class="item-details item-help" id="work-licensing-considerations-details" aria-hidden="true">
+                  <p>If you work in a licensed profession, check early whether your new state requires a transfer or temporary license. That process can take time and may affect how quickly you can return to work.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-medical-records-1" />
-                        <span>Request copies of dental and medical records for the family.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-medical-records-2" />
-                        <span>Schedule EFMP or special needs screenings if required.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-medical-records-3" />
-                        <span>Identify the new medical treatment facility and enrollment steps.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-medical-records-4" />
-                        <span>Carry essential records and prescriptions with you.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Forgetting to update TRICARE region after arrival.</li>
-                    <li><strong>Pro tip:</strong> Request extra medication refills for travel delays.</li>
+                    <li><label><input type="checkbox" data-id="work-licensing-considerations-1" /><span>Check whether your state licensure needs to transfer.</span></label></li>
+                    <li><label><input type="checkbox" data-id="work-licensing-considerations-2" /><span>Keep resumes, certifications, and employment records easy to access.</span></label></li>
+                    <li><label><input type="checkbox" data-id="work-licensing-considerations-3" /><span>Plan for possible work gaps and research regulated professions early.</span></label></li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-vehicle">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-vehicle-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-vehicle"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Manage vehicle shipping, registration, and maintenance
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-vehicle-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+
+              <div class="checklist-item" data-item="pet-move-planning">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="pet-move-planning-details">
+                  <label class="item-parent"><input type="checkbox" data-id="pet-move-planning" data-role="parent" disabled /><span class="item-title">Pet move planning</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="pet-move-planning-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-vehicle-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Decide whether to ship, drive,
-                    or store your vehicle and prepare paperwork. <strong>Why it
-                    matters:</strong> Vehicle readiness affects travel safety and
-                    arrival timelines.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> 45–60 days before travel. Use the
-                    <a href="https://www.militaryonesource.mil/transportation/vehicles/vehicle-shipping-for-your-pcs/">
-                      Military OneSource vehicle shipping guide
-                    </a>
-                    as a reference.
-                  </p>
+                <div class="item-details item-help" id="pet-move-planning-details" aria-hidden="true">
+                  <p>If you are moving with pets, confirm lodging rules early and keep vaccination records, medications, and travel supplies with you. Pet-related surprises often happen late in the process, especially with hotels and rental restrictions.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-vehicle-1" />
-                        <span>Schedule maintenance and keep receipts for claims.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-vehicle-2" />
-                        <span>Check registration rules for the new state or installation.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-vehicle-3" />
-                        <span>Inventory vehicle contents before shipping.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-vehicle-4" />
-                        <span>Plan for rental cars or alternate transport if shipping.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Leaving personal items in a vehicle before shipping.</li>
-                    <li><strong>Pro tip:</strong> Photograph the odometer and exterior before drop-off.</li>
+                    <li><label><input type="checkbox" data-id="pet-move-planning-1" /><span>Keep vaccination records with you.</span></label></li>
+                    <li><label><input type="checkbox" data-id="pet-move-planning-2" /><span>Confirm hotel and rental restrictions early.</span></label></li>
+                    <li><label><input type="checkbox" data-id="pet-move-planning-3" /><span>Pack medications, food, crate supplies, and travel essentials.</span></label></li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-travel-voucher">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-travel-voucher-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-travel-voucher"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Submit travel vouchers and claims after arrival
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-travel-voucher-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+
+              <div class="checklist-item" data-item="housing-not-ready">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="housing-not-ready-details">
+                  <label class="item-parent"><input type="checkbox" data-id="housing-not-ready" data-role="parent" disabled /><span class="item-title">If housing is not ready</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="housing-not-ready-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-travel-voucher-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> File the DD Form 1351-2 travel
-                    voucher and any additional claims for reimbursement.
-                    <strong>Why it matters:</strong> This closes out advances and
-                    pays back travel expenses.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> Within 5–10 days of arrival. Use the
-                    <a href="https://www.esd.whs.mil/Directives/forms/dd0001_0499/">
-                      DD Form 1351-2
-                    </a>
-                    and your finance office guidance.
-                  </p>
+                <div class="item-details item-help" id="housing-not-ready-details" aria-hidden="true">
+                  <p>Do not assume housing will be ready when you arrive. Build a backup plan for temporary lodging, and understand your likely commute, school options, and utility setup timeline before signing a lease.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-travel-voucher-1" />
-                        <span>Gather orders, receipts, and mileage documentation.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-travel-voucher-2" />
-                        <span>Complete DD Form 1351-2 accurately with dates and locations.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-travel-voucher-3" />
-                        <span>Attach dependent travel and lodging receipts.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-travel-voucher-4" />
-                        <span>Follow up with finance to confirm payment.</span>
-                      </label>
-                    </li>
-                  </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Missing the submission deadline, which delays reimbursement.</li>
-                    <li><strong>Pro tip:</strong> Scan receipts during travel using a phone app.</li>
+                    <li><label><input type="checkbox" data-id="housing-not-ready-1" /><span>Build a temporary lodging backup plan.</span></label></li>
+                    <li><label><input type="checkbox" data-id="housing-not-ready-2" /><span>Consider storage, commute, school, and utility setup impacts.</span></label></li>
+                    <li><label><input type="checkbox" data-id="housing-not-ready-3" /><span>Prepare for a temporary setup instead of assuming immediate move-in.</span></label></li>
                   </ul>
                 </div>
               </div>
-              <div class="checklist-item" data-item="service-in-processing">
-                <div
-                  class="item-header"
-                  role="button"
-                  tabindex="0"
-                  aria-expanded="false"
-                  aria-controls="service-in-processing-details"
-                >
-                  <label class="item-parent">
-                    <input
-                      type="checkbox"
-                      data-id="service-in-processing"
-                      data-role="parent"
-                      disabled
-                    />
-                    <span class="item-title">
-                      Complete in-processing and orientation at the new duty station
-                    </span>
-                  </label>
-                  <button
-                    class="accordion-toggle"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="service-in-processing-details"
-                    aria-label="Toggle details"
-                  >
-                    <span class="accordion-icon" aria-hidden="true">▾</span>
-                  </button>
+
+              <div class="checklist-item" data-item="claims-shipment-documentation">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="claims-shipment-documentation-details">
+                  <label class="item-parent"><input type="checkbox" data-id="claims-shipment-documentation" data-role="parent" disabled /><span class="item-title">Protect yourself before and after delivery</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="claims-shipment-documentation-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
                 </div>
-                <div
-                  class="item-details item-help"
-                  id="service-in-processing-details"
-                  aria-hidden="true"
-                >
-                  <p>
-                    <strong>What this is:</strong> Check in with the gaining unit,
-                    finish required orientation, and update local records.
-                    <strong>Why it matters:</strong> In-processing activates local
-                    access, housing, and medical services.
-                  </p>
-                  <p>
-                    <strong>Timing:</strong> Within the first week of arrival.
-                    Review the
-                    <a href="https://www.militaryonesource.mil/moving-pcs/after-the-move/">
-                      Military OneSource after-the-move checklist
-                    </a>
-                    for reminders.
-                  </p>
+                <div class="item-details item-help" id="claims-shipment-documentation-details" aria-hidden="true">
+                  <p>If an item is damaged or missing, good documentation makes a big difference. Photograph valuable items before pack-out, keep notes on condition, and review shipments carefully at delivery before signing away issues.</p>
                   <ul class="sub-checklist">
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-in-processing-1" />
-                        <span>Report to the gaining unit and complete the check-in roster.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-in-processing-2" />
-                        <span>Attend base orientation or newcomer briefings.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-in-processing-3" />
-                        <span>Update housing and finance offices with your new address.</span>
-                      </label>
-                    </li>
-                    <li>
-                      <label>
-                        <input type="checkbox" data-id="service-in-processing-4" />
-                        <span>Schedule appointments for ID cards if needed.</span>
-                      </label>
-                    </li>
+                    <li><label><input type="checkbox" data-id="claims-shipment-documentation-1" /><span>Photograph valuable items before pack-out and save serial/warranty details.</span></label></li>
+                    <li><label><input type="checkbox" data-id="claims-shipment-documentation-2" /><span>Check items carefully at delivery and track damage in one place.</span></label></li>
+                    <li><label><input type="checkbox" data-id="claims-shipment-documentation-3" /><span>Keep receipts and condition notes in your claims folder.</span></label></li>
                   </ul>
-                  <ul class="item-tips">
-                    <li><strong>Pitfall:</strong> Missing a required newcomer briefing and delaying access.</li>
-                    <li><strong>Pro tip:</strong> Ask for a local resource list for spouse employment and schools.</li>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="scenarios" open>
+            <summary><h2>Scenario guides for high-stress PCS situations</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">Use this template in each scenario: what to do now, what to keep with you, what problems to expect, and what to check or call next.</p>
+
+              <div class="checklist-item" data-item="scenario-hhg-delayed">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="scenario-hhg-delayed-details">
+                  <label class="item-parent"><input type="checkbox" data-id="scenario-hhg-delayed" data-role="parent" disabled /><span class="item-title">If your household goods are delayed</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="scenario-hhg-delayed-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="scenario-hhg-delayed-details" aria-hidden="true">
+                  <p><strong>What to do now:</strong> Confirm expected delivery window, separate immediate-need purchases from nonessential spending, keep receipts, and prioritize basic household functionality first.</p>
+                  <p><strong>What to keep with you:</strong> key documents, medications, kids' essentials, work items, basic clothing, and chargers.</p>
+                  <p><strong>What problems to expect:</strong> sleeping setup delays, kitchen setup gaps, child routine disruption, and short-notice purchase needs.</p>
+                  <p><strong>What to check or call next:</strong> delivery status, temporary living support options, and move-specific instructions tied to your setup.</p>
+                  <ul class="sub-checklist"><li><label><input type="checkbox" data-id="scenario-hhg-delayed-1" /><span>Track delivery status daily and keep essential receipts.</span></label></li></ul>
+                </div>
+              </div>
+
+              <div class="checklist-item" data-item="scenario-housing-not-ready">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="scenario-housing-not-ready-details">
+                  <label class="item-parent"><input type="checkbox" data-id="scenario-housing-not-ready" data-role="parent" disabled /><span class="item-title">If housing is not ready when you arrive</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="scenario-housing-not-ready-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="scenario-housing-not-ready-details" aria-hidden="true">
+                  <p><strong>What to do now:</strong> secure temporary lodging, map commute options, and confirm school/childcare interim plans.</p>
+                  <p><strong>What to keep with you:</strong> housing documents, IDs, financial records, child and pet essentials.</p>
+                  <p><strong>What problems to expect:</strong> storage needs, longer commute times, delayed routines, and extra short-term costs.</p>
+                  <p><strong>What to check or call next:</strong> housing office, landlord timeline, and utility setup sequence.</p>
+                  <ul class="sub-checklist"><li><label><input type="checkbox" data-id="scenario-housing-not-ready-1" /><span>Set temporary lodging backup and monitor housing status updates.</span></label></li></ul>
+                </div>
+              </div>
+
+              <div class="checklist-item" data-item="scenario-moving-with-pets">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="scenario-moving-with-pets-details">
+                  <label class="item-parent"><input type="checkbox" data-id="scenario-moving-with-pets" data-role="parent" disabled /><span class="item-title">If you are moving with pets</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="scenario-moving-with-pets-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="scenario-moving-with-pets-details" aria-hidden="true">
+                  <p><strong>What to do now:</strong> verify lodging and rental pet rules, plan rest stops, and prep crate routines.</p>
+                  <p><strong>What to keep with you:</strong> vaccination records, medications, food, leash/crate supplies, and cleanup items.</p>
+                  <p><strong>What problems to expect:</strong> hotel denials, travel stress behaviors, and limited rental options.</p>
+                  <p><strong>What to check or call next:</strong> hotels, housing office, veterinarian, and rental manager policies.</p>
+                  <ul class="sub-checklist"><li><label><input type="checkbox" data-id="scenario-moving-with-pets-1" /><span>Confirm pet rules for every lodging stop and arrival housing.</span></label></li></ul>
+                </div>
+              </div>
+
+              <div class="checklist-item" data-item="scenario-school-age-children">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="scenario-school-age-children-details">
+                  <label class="item-parent"><input type="checkbox" data-id="scenario-school-age-children" data-role="parent" disabled /><span class="item-title">If you are moving with school-age children</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="scenario-school-age-children-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="scenario-school-age-children-details" aria-hidden="true">
+                  <p><strong>What to do now:</strong> request records, confirm enrollment requirements, and plan activity transfer timing.</p>
+                  <p><strong>What to keep with you:</strong> report cards, immunization records, enrollment forms, and IEP/504 documents.</p>
+                  <p><strong>What problems to expect:</strong> schedule gaps, delayed class placement, and routine disruption.</p>
+                  <p><strong>What to check or call next:</strong> school district registrar, installation school liaison, and activity coordinators.</p>
+                  <ul class="sub-checklist"><li><label><input type="checkbox" data-id="scenario-school-age-children-1" /><span>Carry complete school packets to avoid enrollment delays.</span></label></li></ul>
+                </div>
+              </div>
+
+              <div class="checklist-item" data-item="scenario-ppm">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="scenario-ppm-details">
+                  <label class="item-parent"><input type="checkbox" data-id="scenario-ppm" data-role="parent" disabled /><span class="item-title">If you are doing a PPM</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="scenario-ppm-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="scenario-ppm-details" aria-hidden="true">
+                  <p><strong>What to do now:</strong> confirm PPM requirements, weight ticket timing, and reimbursement document checklist.</p>
+                  <p><strong>What to keep with you:</strong> orders, weight tickets, receipts, inventory notes, and finance paperwork.</p>
+                  <p><strong>What problems to expect:</strong> missing documentation, reimbursement delays, and hidden costs.</p>
+                  <p><strong>What to check or call next:</strong> transportation office, finance office, and move support contacts.</p>
+                  <ul class="sub-checklist"><li><label><input type="checkbox" data-id="scenario-ppm-1" /><span>Track every required PPM document as you move.</span></label></li></ul>
+                </div>
+              </div>
+
+              <div class="checklist-item" data-item="scenario-damaged-missing-item">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="scenario-damaged-missing-item-details">
+                  <label class="item-parent"><input type="checkbox" data-id="scenario-damaged-missing-item" data-role="parent" disabled /><span class="item-title">If an item is damaged or missing</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="scenario-damaged-missing-item-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="scenario-damaged-missing-item-details" aria-hidden="true">
+                  <p><strong>What to do now:</strong> photograph issues, list missing items, and keep notes in one claims file.</p>
+                  <p><strong>What to keep with you:</strong> inventory sheets, photos, receipts, and warranty details.</p>
+                  <p><strong>What problems to expect:</strong> disputed condition, forgotten details, and claim deadline pressure.</p>
+                  <p><strong>What to check or call next:</strong> transportation office, claims portal/help desk, and mover contacts.</p>
+                  <ul class="sub-checklist"><li><label><input type="checkbox" data-id="scenario-damaged-missing-item-1" /><span>Document every issue before details fade.</span></label></li></ul>
+                </div>
+              </div>
+
+              <div class="checklist-item" data-item="scenario-split-family-arrival">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="scenario-split-family-arrival-details">
+                  <label class="item-parent"><input type="checkbox" data-id="scenario-split-family-arrival" data-role="parent" disabled /><span class="item-title">If the service member reports before the family arrives</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="scenario-split-family-arrival-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="scenario-split-family-arrival-details" aria-hidden="true">
+                  <p><strong>What to do now:</strong> map separate timelines, clarify communication checkpoints, and define who handles housing decisions.</p>
+                  <p><strong>What to keep with you:</strong> shared document access, powers of attorney if needed, and family travel records.</p>
+                  <p><strong>What problems to expect:</strong> communication lag, duplicate tasks, and delayed decisions.</p>
+                  <p><strong>What to check or call next:</strong> gaining unit contacts, housing office, and school or childcare points of contact.</p>
+                  <ul class="sub-checklist"><li><label><input type="checkbox" data-id="scenario-split-family-arrival-1" /><span>Create a daily check-in plan until the family reunites.</span></label></li></ul>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="checklist-section" data-section="paperwork-guide" open>
+            <summary><h2>How to organize your PCS paperwork</h2></summary>
+            <div class="checklist-section-body">
+              <p class="checklist-intro">PCS moves create a lot of paperwork. Keeping it organized in one place makes it easier to solve problems quickly if something changes during travel, check-in, housing, or delivery.</p>
+              <div class="checklist-item" data-item="paperwork-guide-core">
+                <div class="item-header" role="button" tabindex="0" aria-expanded="false" aria-controls="paperwork-guide-core-details">
+                  <label class="item-parent"><input type="checkbox" data-id="paperwork-guide-core" data-role="parent" disabled /><span class="item-title">Set up your move binder, folder, or digital file system</span></label>
+                  <button class="accordion-toggle" type="button" aria-expanded="false" aria-controls="paperwork-guide-core-details" aria-label="Toggle details"><span class="accordion-icon" aria-hidden="true">▾</span></button>
+                </div>
+                <div class="item-details item-help" id="paperwork-guide-core-details" aria-hidden="true">
+                  <p>Use a binder, accordion folder, or digital folder structure that you can access quickly while traveling.</p>
+                  <ul class="sub-checklist">
+                    <li><label><input type="checkbox" data-id="paperwork-guide-core-1" /><span>Orders, IDs and personal records, medical, school, and pet documents.</span></label></li>
+                    <li><label><input type="checkbox" data-id="paperwork-guide-core-2" /><span>Housing paperwork plus travel and lodging confirmations.</span></label></li>
+                    <li><label><input type="checkbox" data-id="paperwork-guide-core-3" /><span>Household goods, claims notes, receipts, and reimbursement-related documents.</span></label></li>
                   </ul>
                 </div>
               </div>
@@ -1926,48 +503,20 @@
           </details>
         </div>
 
-        <!-- SIDEBAR: Right-side navigation and reference content -->
         <aside class="checklist-sidebar">
-          <!-- TIPS CARD: Quick reference list of common pitfalls and best practices
-               This card provides helpful hints that apply across multiple checklist items.
-          -->
           <div class="sidebar-card">
-            <h2>PCS Pitfalls and Pro Tips</h2>
+            <h2>Printable quick-use blocks</h2>
             <ul class="sidebar-list">
-              <li>Confirm medical and dental coverage transfers for the new location.</li>
-              <li>Ask early about special family needs screenings if applicable.</li>
-              <li>Review wills, powers of attorney, and family care plans if needed.</li>
-              <li>Check pay statements for changes after allowances update.</li>
-              <li>Keep digital copies of orders, receipts, and mover paperwork.</li>
-              <li>Share a calendar for mover dates, inspections, and school deadlines.</li>
-              <li>Take photos of high-value items before pack-out day.</li>
+              <li>Core timeline by phase (orders → delivery)</li>
+              <li>Do not pack these in household goods</li>
+              <li>First 72 hours after arrival checklist</li>
+              <li>How to organize your PCS paperwork</li>
+              <li>School transfer mini-checklist</li>
+              <li>Pet move mini-checklist</li>
             </ul>
           </div>
         </aside>
       </div>
     </main>
-
-    <!-- PAGE FOOTER: Contains helpful information and legal disclaimers -->
-    <footer class="site-footer">
-      <div class="container">
-        <!-- FOOTER TIP: Informs users about localStorage persistence -->
-        <p class="footer-tip">
-          Tip: Your progress is saved automatically on this device using local
-          storage.
-        </p>
-        <!-- FOOTER DISCLAIMER: Legal notice reinforcing the checklist's limitations -->
-        <p class="footer-disclaimer">
-          This checklist is for planning purposes only and does not replace
-          official guidance from your unit, transportation office, or finance
-          office.
-        </p>
-      </div>
-    </footer>
-
-    <!-- SCRIPT INCLUSION: Links to the main feature module that powers checklist interactivity
-         This script is loaded after HTML to ensure all DOM elements exist before JavaScript runs.
-    -->
-    <script src="script.js"></script>
-      <script type="module" src="auth-sync.js"></script>
   </body>
 </html>
