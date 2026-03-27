@@ -5,20 +5,20 @@ import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome"
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "Military Destination Base Research";
+const title = "Military Base Guides";
 const description =
-  "Research major Army duty stations, compare installation overviews, and open PCS arrival guides for housing, lodging, transportation, medical, and first-week planning.";
+  "Use base guides to find lodging, housing, transportation, and key office information before and after your PCS arrival.";
 
 export const metadata = buildPageMetadata({
   title,
   description,
   pathname: "/bases",
   keywords: [
-    "military base research",
-    "PCS destination bases",
-    "Army duty stations",
+    "military base guides",
+    "PCS duty stations",
+    "Army installations",
     "PCS arrival guides",
-    "military relocation research",
+    "military relocation planning",
   ],
 });
 
@@ -35,18 +35,18 @@ export default function BasesPage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="bases" />}>
-        <p className="eyebrow">U.S. Army Duty Stations</p>
+        <p className="eyebrow">Base Guides</p>
         <BasesHeading />
         <p className="subtitle">
-          Research major Army installations, compare locations, and open public arrival guides for
-          housing, lodging, transportation, and first-week PCS planning.
+          Use this page to quickly find the most important arrival information for your installation,
+          including lodging, housing, transportation, and key offices.
         </p>
       </SiteHeader>
 
       <NativeBasesPage items={baseIndexItems} />
 
       <SiteFooter>
-        <p>More duty station tools are coming soon.</p>
+        <p>More base guides are coming soon.</p>
       </SiteFooter>
     </>
   );

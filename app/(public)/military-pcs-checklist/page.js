@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { GuidedPageIntro, PageStepNav } from "@/components/site/guided-page-intro";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { GUIDE_SLUGS, getGuidePageData } from "@/lib/guides/page-data";
@@ -8,28 +9,23 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Military PCS Checklist Guide";
 const description =
-  "Use this military PCS checklist guide to organize orders, briefings, DEERS updates, advance pay decisions, travel prep, and arrival-week tasks before your next duty-station move.";
+  "Use this military PCS checklist guide to keep track of what happens before, during, and after your PCS move.";
 
 const relatedLinks = [
   {
-    href: "/how-to-plan-a-military-pcs-move",
-    title: "How to plan a military PCS move",
-    description: "Use a stage-by-stage PCS planning framework before the moving parts stack up.",
+    href: "/pcs-inventory-label-tracking",
+    title: "Inventory",
+    description: "Keep your rooms, boxes, and high-priority items organized for pack-out and delivery.",
   },
   {
-    href: "/inventory",
-    title: "Move inventory workspace",
-    description: "Build and maintain the room, box, and high-value-item record before pack-out day.",
-  },
-  {
-    href: "/logistics",
-    title: "Move logistics workspace",
-    description: "Keep movers, lodging, travel stops, and delivery dates tied to the same calendar.",
+    href: "/pcs-move-logistics-planning",
+    title: "Logistics",
+    description: "Map travel days, temporary lodging, and arrival-week timing in one place.",
   },
   {
     href: "/bases",
-    title: "Military destination base research",
-    description: "Research installation arrival resources before you reach the first reporting week.",
+    title: "Base Guides",
+    description: "Review lodging, housing, transportation, and first-stop offices before you arrive.",
   },
 ];
 
@@ -60,24 +56,22 @@ export default function MilitaryPcsChecklistPage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="pcs-checklist-guide" />}>
-        <p className="eyebrow">Military PCS Checklist</p>
-        <h1>Build a PCS checklist before the move becomes reactive</h1>
+        <p className="eyebrow">Checklist</p>
+        <h1>Keep your PCS tasks clear from orders to arrival</h1>
         <p className="subtitle">
-          A Permanent Change of Station move is easier to control when orders, briefing steps, money
-          decisions, family prep, and arrival tasks all sit in one visible sequence.
+          Use this page to keep track of what needs to happen before, during, and after your PCS. If
+          this is your first move, start here.
         </p>
       </SiteHeader>
 
       <main className="container legal-page-layout">
-        <section className="info-panel legal-page-section">
-          <h2>What a strong PCS checklist should cover</h2>
-          <ul className="legal-page-list">
-            <li>Orders review, reporting timelines, and transportation-office deadlines.</li>
-            <li>Briefings, DEERS or RAPIDS updates, and admin tasks that usually get split across offices.</li>
-            <li>Household prep, inventory planning, and travel-week coordination for spouses and families.</li>
-            <li>Arrival-week tasks such as lodging, housing, check-in, and first-stop resource links.</li>
-          </ul>
-        </section>
+        <GuidedPageIntro
+          purpose="Use this page to keep track of what needs to happen before, during, and after your PCS. If this is your first move, start here."
+          bestFor="First-time movers, families moving with kids, and anyone trying to stay organized before pack-out and arrival."
+          startBy="Adding your orders date, report date, and the documents you know you will need to keep with you."
+          nextStepLabel="Build your inventory"
+          nextStepHref="/pcs-inventory-label-tracking"
+        />
 
         <section className="info-panel legal-page-section">
           <h2>Checklist steps PCS Pal already covers in detail</h2>
@@ -93,24 +87,17 @@ export default function MilitaryPcsChecklistPage() {
         </section>
 
         <section className="info-panel legal-page-section">
-          <h2>How to use this checklist in practice</h2>
-          <ol className="legal-page-list">
-            <li>Start with the steps tied directly to orders and reporting dates.</li>
-            <li>Move next into household prep so inventory and pack-out planning start early enough.</li>
-            <li>Layer travel and arrival details only after the early admin deadlines are visible.</li>
-            <li>Keep official links close so the checklist stays useful when you are away from a desk.</li>
-          </ol>
-          <p>
-            When you want the synced version of the checklist, open the protected{" "}
-            <Link className="text-link" href="/checklist">
-              PCS checklist workspace
-            </Link>{" "}
-            after signing in.
-          </p>
+          <h2>What a strong PCS checklist should cover</h2>
+          <ul className="legal-page-list">
+            <li>Orders review, reporting timelines, and transportation-office deadlines.</li>
+            <li>Briefings, DEERS or RAPIDS updates, and admin tasks that often span multiple offices.</li>
+            <li>Household prep, inventory planning, and travel-week coordination for the whole family.</li>
+            <li>Arrival-week tasks such as lodging, housing, check-in, and first-stop office links.</li>
+          </ul>
         </section>
 
         <section className="info-panel legal-page-section">
-          <h2>Related PCS planning pages</h2>
+          <h2>Related pages</h2>
           <div className="card-grid">
             {relatedLinks.map((link) => (
               <Link className="nav-card" href={link.href} key={link.href}>
@@ -121,13 +108,17 @@ export default function MilitaryPcsChecklistPage() {
             ))}
           </div>
         </section>
+
+        <PageStepNav
+          previousLabel="Start Here"
+          previousHref="/how-to-plan-a-military-pcs-move"
+          nextLabel="Inventory"
+          nextHref="/pcs-inventory-label-tracking"
+        />
       </main>
 
       <SiteFooter>
-        <p className="footer-tip">
-          Checklist guidance is public here, while the synced planning workspace remains available
-          after sign-in.
-        </p>
+        <p className="footer-tip">When you are ready, sign in to save checklist progress across devices.</p>
       </SiteFooter>
     </>
   );

@@ -7,7 +7,7 @@ import { buildWebPageSchema } from "@/lib/structured-data";
 
 const title = "Contact PCS Pal";
 const description =
-  "Use the PCS Pal contact page for founder and reviewer feedback, product questions, and launch-readiness notes.";
+  "Use the PCS Pal contact page for questions, feedback, and bug reports.";
 
 export const metadata = buildPageMetadata({
   title,
@@ -37,8 +37,7 @@ export default function ContactPage() {
         <p className="eyebrow">Contact PCS Pal</p>
         <h1>Questions, feedback, and reviewer notes</h1>
         <p className="subtitle">
-          PCS Pal is still in an early product stage, so contact workflows are lightweight and still
-          being formalized.
+          PCS Pal is still in an early product stage, so the contact process is simple right now.
         </p>
       </SiteHeader>
 
@@ -49,7 +48,7 @@ export default function ContactPage() {
             <li>Founder or reviewer product feedback.</li>
             <li>Bug reports tied to account, sync, or tool behavior.</li>
             <li>Questions about the current draft legal or privacy pages.</li>
-            <li>Launch-readiness notes on clarity, trust, or workflow issues.</li>
+            <li>Notes on clarity, trust, or common problems.</li>
           </ul>
         </section>
 
@@ -60,10 +59,10 @@ export default function ContactPage() {
             any browser or device detail that may help reproduce the issue.
           </p>
           <p>
-            If the question is really about move planning workflow rather than a product issue, start
-            with the public <Link className="text-link" href="/how-to-plan-a-military-pcs-move">PCS planning guide</Link>,{" "}
+            If the question is really about move-planning steps rather than a site issue, start
+            with the public <Link className="text-link" href="/how-to-plan-a-military-pcs-move">Start Here guide</Link>,{" "}
             <Link className="text-link" href="/military-pcs-checklist">checklist guide</Link>, or{" "}
-            <Link className="text-link" href="/bases">destination base research</Link> pages first.
+            <Link className="text-link" href="/bases">base guides</Link> pages first.
           </p>
         </section>
 

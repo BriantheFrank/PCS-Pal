@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { PageStepNav } from "@/components/site/guided-page-intro";
 import { pcsGeneralLinks } from "@/lib/bases/pcs-community-links";
 
 const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => {
@@ -16,7 +17,7 @@ const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => 
 
   const filters = [];
   if (searchValue) {
-    filters.push(`"${searchValue}"`);
+    filters.push(`\"${searchValue}\"`);
   }
   if (stateValue) {
     filters.push(stateValue);
@@ -28,9 +29,7 @@ const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => 
 };
 
 export function BasesHeading() {
-  const heading = "Military Destination Base Research";
-
-  return <h1>{heading}</h1>;
+  return <h1>Find your next duty station faster</h1>;
 }
 
 export function NativeBasesPage({ items }) {
@@ -55,41 +54,33 @@ export function NativeBasesPage({ items }) {
 
   return (
     <main className="container">
-      <details
-        className="info-panel mobile-disclosure"
-        data-mobile-collapse="true"
-        open
-        aria-labelledby="base-guidance-title"
-      >
-        <summary className="mobile-disclosure-summary">
-          <div>
-            <h2 id="base-guidance-title">How to Use Destination Base Information</h2>
-            <p>Start with reporting, first-week resources, and the links worth saving before travel day.</p>
-          </div>
-          <span className="mobile-disclosure-hint" aria-hidden="true"></span>
-        </summary>
-        <div className="mobile-disclosure-body">
-          <p>
-            Open a base page to see where arriving Soldiers commonly start, which first-week offices
-            matter most, and which links are worth saving before travel day.
-          </p>
-          <ol>
-            <li>Start with the arrival and reporting section so you know where to check in first.</li>
-            <li>Save the official links for lodging, housing, medical, transportation, and ID card support.</li>
-            <li>Use the Google Maps shortcuts on travel day so you are not hunting for the right building from the parking lot.</li>
-          </ol>
-          <p>Tip: Save the reception location and at least one backup stop before you get on the road.</p>
-        </div>
-      </details>
+      <section className="info-panel legal-page-section" aria-label="How to use base guides">
+        <p>
+          <strong>What this page helps with:</strong> Use this page to quickly find the most important
+          arrival information for your installation, including lodging, housing, transportation, and key
+          offices.
+        </p>
+        <p>
+          <strong>Best for:</strong> Families trying to get familiar with a new duty station before
+          travel or shortly after arrival.
+        </p>
+        <p>
+          <strong>Start by:</strong> Choosing your installation and reviewing lodging, housing, and
+          first-stop offices.
+        </p>
+        <p>
+          <strong>Next likely step:</strong>{" "}
+          <Link className="text-link" href="/contact">
+            Contact us with gaps you want covered
+          </Link>
+        </p>
+      </section>
 
       <section className="info-panel base-browser-panel" aria-labelledby="base-browser-title">
         <div className="base-browser-header">
           <p className="eyebrow">Quick Find</p>
           <h2 id="base-browser-title">Search and narrow the base list</h2>
-          <p>
-            Search by installation, state, or major unit so the next base guide is easier to reach
-            on a phone.
-          </p>
+          <p>Search by installation, state, or major unit to quickly open the guide you need.</p>
         </div>
         <div className="base-browser-controls">
           <label className="base-browser-field" htmlFor="base-search">
@@ -141,15 +132,13 @@ export function NativeBasesPage({ items }) {
         ))}
       </section>
 
-
-
       <section className="info-panel base-browser-panel" aria-labelledby="base-helpful-links-title">
         <div className="base-browser-header">
           <p className="eyebrow">Helpful Links and Online Groups</p>
           <h2 id="base-helpful-links-title">Location-agnostic PCS support communities</h2>
           <p>
             Use these resources when you need broad PCS guidance. Base-specific community links are
-            listed on each destination base detail page when a vetted group is available.
+            listed on each base detail page when a vetted group is available.
           </p>
         </div>
         <div className="base-grid">
@@ -163,28 +152,12 @@ export function NativeBasesPage({ items }) {
         </div>
       </section>
 
-      <section className="info-panel base-browser-panel" aria-labelledby="base-planning-links-title">
-        <div className="base-browser-header">
-          <p className="eyebrow">Related PCS Planning</p>
-          <h2 id="base-planning-links-title">Use base research with the rest of the move plan</h2>
-          <p>
-            Installation research is most useful when it stays connected to checklist work, travel
-            planning, and arrival-week logistics.
-          </p>
-        </div>
-        <div className="card-grid">
-          <Link className="nav-card" href="/military-pcs-checklist">
-            <h3>Military PCS checklist</h3>
-            <p>Keep the administrative and family tasks visible while you research the next base.</p>
-            <span className="card-link">Open checklist guide</span>
-          </Link>
-          <Link className="nav-card" href="/pcs-move-logistics-planning">
-            <h3>PCS logistics planning</h3>
-            <p>Use arrival-day lodging, delivery, and first-stop details alongside the base guide.</p>
-            <span className="card-link">Open logistics planning</span>
-          </Link>
-        </div>
-      </section>
+      <PageStepNav
+        previousLabel="Logistics"
+        previousHref="/pcs-move-logistics-planning"
+        nextLabel="Contact"
+        nextHref="/contact"
+      />
     </main>
   );
 }
