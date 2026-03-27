@@ -113,7 +113,7 @@ values
   (
     'aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
     '11111111-1111-4111-8111-111111111111',
-    'fort-liberty',
+    'fort-bragg',
     'temporary_lodging',
     'sponsored',
     'Sponsored test placement',
@@ -248,7 +248,7 @@ insert into public.moves (
 )
 select
   auth.users.id,
-  'fort-liberty',
+  'fort-bragg',
   'southeast',
   '2026-01-01',
   'arrival',
@@ -288,7 +288,7 @@ insert into public.moves (
 )
 select
   auth.users.id,
-  'fort-cavazos',
+  'fort-hood',
   'texas',
   '2026-02-01',
   'scheduling',
@@ -366,10 +366,10 @@ select
   'e1111111-1111-4111-8111-111111111111',
   auth.users.id,
   'page_view',
-  'fort-liberty',
+  'fort-bragg',
   'arrival_support',
   '2026-01-10T15:30:00Z',
-  '{"page_kind":"base_detail","page_slug":"base-fort-liberty","content_category":"base_detail","page_move_stage":"arrival"}'::jsonb
+  '{"page_kind":"base_detail","page_slug":"base-fort-bragg","content_category":"base_detail","page_move_stage":"arrival"}'::jsonb
 from auth.users
 where auth.users.email = 'pcs-staging-family-1@example.test'
 on conflict (id) do update
@@ -394,7 +394,7 @@ select
   'e2222222-2222-4222-8222-222222222222',
   auth.users.id,
   'page_view',
-  'fort-cavazos',
+  'fort-hood',
   'travel',
   '2026-02-05T18:00:00Z',
   '{"page_kind":"tool","page_slug":"move-logistics","content_category":"logistics","page_move_stage":"travel"}'::jsonb
@@ -422,7 +422,7 @@ select
   'e3333333-3333-4333-8333-333333333333',
   auth.users.id,
   'partner_placement_viewed',
-  'fort-liberty',
+  'fort-bragg',
   'temporary_lodging',
   '2026-01-10T15:31:00Z',
   '{"content_category":"partner_placement","placement_kind":"sponsored","partner_id":"11111111-1111-4111-8111-111111111111"}'::jsonb
@@ -450,7 +450,7 @@ select
   'e4444444-4444-4444-8444-444444444444',
   auth.users.id,
   'move_profile_updated',
-  'fort-cavazos',
+  'fort-hood',
   null,
   '2026-02-01T14:00:00Z',
   '{"content_category":"account","move_stage":"scheduling","housing_intent":"off_base_rent","vehicle_shipment_needed":true}'::jsonb
@@ -477,7 +477,7 @@ insert into public.resource_clicks (
 select
   'c1111111-1111-4111-8111-111111111111',
   auth.users.id,
-  'fort-liberty',
+  'fort-bragg',
   'temporary_lodging',
   null,
   '2026-01-10T15:32:00Z',
@@ -505,7 +505,7 @@ insert into public.resource_clicks (
 select
   'c2222222-2222-4222-8222-222222222222',
   auth.users.id,
-  'fort-liberty',
+  'fort-bragg',
   'temporary_lodging',
   '11111111-1111-4111-8111-111111111111',
   '2026-01-10T15:33:00Z',
@@ -533,7 +533,7 @@ insert into public.resource_clicks (
 select
   'c3333333-3333-4333-8333-333333333333',
   auth.users.id,
-  'fort-cavazos',
+  'fort-hood',
   'moving',
   '22222222-2222-4222-8222-222222222222',
   '2026-02-05T18:05:00Z',
@@ -565,7 +565,7 @@ select
   '2026-01-10T15:35:00Z',
   jsonb_build_object(
     'contact_email', auth.users.email,
-    'destination_base_id', 'fort-liberty',
+    'destination_base_id', 'fort-bragg',
     'move_month', '2026-01-01',
     'service_category', 'temporary_lodging',
     'lodging_needed', true,

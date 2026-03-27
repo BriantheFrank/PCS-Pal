@@ -32,8 +32,8 @@ Now native in Next.js:
 - `/move-logistics.html` alias via rewrite
 - `/bases`
 - `/bases.html` alias via rewrite
-- `/bases/fort-liberty`
-- `/bases/fort-cavazos`
+- `/bases/fort-bragg`
+- `/bases/fort-hood`
 - `/bases/fort-campbell`
 - `/bases/fort-bliss`
 - `/bases/fort-stewart`
@@ -42,18 +42,18 @@ Now native in Next.js:
 - `/bases/fort-riley`
 - `/bases/fort-jackson`
 - `/bases/fort-knox`
-- `/bases/fort-johnson`
+- `/bases/fort-polk`
 - `/bases/fort-drum`
 - `/bases/fort-sill`
 - `/bases/fort-leonard-wood`
-- `/bases/fort-moore`
-- `/bases/fort-eisenhower`
-- `/bases/fort-gregg-adams`
+- `/bases/fort-benning`
+- `/bases/fort-gordon`
+- `/bases/fort-lee`
 - `/bases/fort-carson`
 - `/bases/fort-huachuca`
 - `/bases/joint-base-lewis-mcchord`
-- `/base-fort-liberty.html` alias via rewrite
-- `/base-fort-cavazos.html` alias via rewrite
+- `/base-fort-bragg.html` alias via rewrite
+- `/base-fort-hood.html` alias via rewrite
 - `/base-fort-campbell.html` alias via rewrite
 - `/base-fort-bliss.html` alias via rewrite
 - `/base-fort-stewart.html` alias via rewrite
@@ -62,13 +62,13 @@ Now native in Next.js:
 - `/base-fort-riley.html` alias via rewrite
 - `/base-fort-jackson.html` alias via rewrite
 - `/base-fort-knox.html` alias via rewrite
-- `/base-fort-johnson.html` alias via rewrite
+- `/base-fort-polk.html` alias via rewrite
 - `/base-fort-drum.html` alias via rewrite
 - `/base-fort-sill.html` alias via rewrite
 - `/base-fort-leonard-wood.html` alias via rewrite
-- `/base-fort-moore.html` alias via rewrite
-- `/base-fort-eisenhower.html` alias via rewrite
-- `/base-fort-gregg-adams.html` alias via rewrite
+- `/base-fort-benning.html` alias via rewrite
+- `/base-fort-gordon.html` alias via rewrite
+- `/base-fort-lee.html` alias via rewrite
 - `/base-fort-carson.html` alias via rewrite
 - `/base-fort-huachuca.html` alias via rewrite
 - `/base-joint-base-lewis-mcchord.html` alias via rewrite
@@ -111,7 +111,7 @@ Now native in Next.js:
   - native search/state filtering and card rendering for the base library index
   - outbound links resolving directly to native `/bases/<slug>` detail pages
 - native protected base-detail template proof with preserved:
-  - shared native detail rendering for Fort Liberty, Fort Cavazos, Fort Campbell, Fort Bliss, Fort Stewart, Fort Belvoir, Fort Meade, Fort Riley, Fort Jackson, Fort Knox, Fort Johnson, Fort Drum, Fort Sill, Fort Leonard Wood, Fort Moore, Fort Eisenhower, Fort Gregg-Adams, Fort Carson, Fort Huachuca, and Joint Base Lewis-McChord
+  - shared native detail rendering for Fort Bragg, Fort Hood, Fort Campbell, Fort Bliss, Fort Stewart, Fort Belvoir, Fort Meade, Fort Riley, Fort Jackson, Fort Knox, Fort Polk, Fort Drum, Fort Sill, Fort Leonard Wood, Fort Benning, Fort Gordon, Fort Lee, Fort Carson, Fort Huachuca, and Joint Base Lewis-McChord
   - arrival/helpful-stop section generation from `base-arrival-data.js`
   - sponsored PCS placement rendering on the native pages
   - legacy `base-*.html` detail URLs retained only as compatibility aliases for the native routes
