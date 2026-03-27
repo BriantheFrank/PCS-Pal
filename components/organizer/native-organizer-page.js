@@ -84,6 +84,11 @@ export function NativeOrganizerPage() {
   return (
     <main className="container">
       <section className="card-grid">
+        <a className="nav-card" href="/checklist">
+          <h2>PCS Checklist</h2>
+          <p>Track tasks, deadlines, and completion progress across your move timeline.</p>
+          <span className="card-link">Open checklist -&gt;</span>
+        </a>
         <a className="nav-card" href="/inventory">
           <h2>Move Inventory</h2>
           <p>Organize rooms, boxes, and household items for your move.</p>
@@ -100,8 +105,9 @@ export function NativeOrganizerPage() {
         <p className="eyebrow">Move Organizer</p>
         <h2>Choose where to continue your move plan</h2>
         <p>
-          Sign in to save your plans and return to them later. Use Inventory for room-by-room item
-          tracking and Logistics for dates, contacts, and arrival-week coordination.
+          Sign in to save your plans and return to them later. Use Checklist for milestones,
+          Inventory for room-by-room item tracking, and Logistics for dates, contacts, and
+          arrival-week coordination.
         </p>
       </section>
     </main>

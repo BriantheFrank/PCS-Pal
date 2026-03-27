@@ -875,9 +875,263 @@ export function NativeLogisticsPage() {
             Back to organizer -&gt;
           </a>
         </p>
+        <div className="inventory-item-actions">
+          <a className="label-action" href="#event-move-consult">
+            Add event
+          </a>
+          <a className="label-action secondary" href="#event-custom-events">
+            Add custom event
+          </a>
+        </div>
       </section>
 
-      <details className="info-panel mobile-disclosure" open>
+      <section className="logistics-accordion" aria-label="Move logistics events" id="event-planner">
+        {EVENT_SECTIONS.map((section) => {
+          const sectionState = logisticsState.sections?.[section.id] || {};
+          return (
+            <details
+              className="checklist-section logistics-section"
+              data-event-id={section.id}
+              key={section.id}
+              id={`event-${section.id}`}
+              open
+            >
+              <summary>
+                <h2>{section.title}</h2>
+              </summary>
+              <div className="checklist-section-body logistics-section-body">
+                <p className="checklist-intro">{section.intro}</p>
+                <div className="logistics-form">
+                  {section.groups.map((group) => (
+                    <div className="logistics-group" key={`${section.id}-${group.title}`}>
+                      <h3>{group.title}</h3>
+                      <div className="logistics-field-grid">
+                        {group.fields.map((field) => (
+                          <LogisticsField
+                            field={field}
+                            key={`${section.id}-${field.key}`}
+                            value={sectionState[field.key] || ""}
+                            onChange={(value) => updateSectionField(section.id, field.key, value)}
+                          />
+                        ))}
+                      </div>
+                      {section.id === "packers" && group.title === "Event Details" ? (
+                        <p className="logistics-summary">{buildPackersSummary(packersSection)}</p>
+                      ) : null}
+                    </div>
+                  ))}
+                  <div className="logistics-group">
+                    <h3>Calendar Integration</h3>
+                    <p className="logistics-hint">{section.calendarHint}</p>
+                    <button
+                      type="button"
+                      className="label-action secondary"
+                      onClick={() => clearSectionCalendar(section.id)}
+                    >
+                      Clear event from timeline
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </details>
+          );
+        })}
+
+        <details className="checklist-section logistics-section" data-event-id="family-itinerary" id="event-family-itinerary" open>
+          <summary>
+            <h2>Family Itinerary During the Move</h2>
+          </summary>
+          <div className="checklist-section-body logistics-section-body">
+            <p className="checklist-intro">
+              Capture the overall travel plan and log each overnight stop so the whole family knows where to be and when.
+            </p>
+            <div className="logistics-form">
+              <div className="logistics-group">
+                <h3>Start Location</h3>
+                <div className="logistics-field-grid">
+                  <LogisticsField
+                    field={{ key: "itinerary-start-location", label: "Location name", type: "text" }}
+                    value={itinerarySection["itinerary-start-location"] || ""}
+                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-start-location", value)}
+                  />
+                  <LogisticsField
+                    field={{ key: "itinerary-start-date", label: "Departure date", type: "date" }}
+                    value={itinerarySection["itinerary-start-date"] || ""}
+                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-start-date", value)}
+                  />
+                </div>
+              </div>
+
+              <div className="logistics-group">
+                <h3>End Location</h3>
+                <div className="logistics-field-grid">
+                  <LogisticsField
+                    field={{ key: "itinerary-end-location", label: "Location name", type: "text" }}
+                    value={itinerarySection["itinerary-end-location"] || ""}
+                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-end-location", value)}
+                  />
+                  <LogisticsField
+                    field={{ key: "itinerary-end-date", label: "Arrival date", type: "date" }}
+                    value={itinerarySection["itinerary-end-date"] || ""}
+                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-end-date", value)}
+                  />
+                </div>
+              </div>
+
+              <div className="logistics-group itinerary-group">
+                <h3>Itinerary Stops</h3>
+                <p className="logistics-hint">
+                  Add one stop per overnight stay. Each stop is added to the master timeline automatically.
+                </p>
+                <div className="itinerary-stops" id="itinerary-stops">
+                  {(logisticsState.itineraryStops || []).map((stop, index) => (
+                    <div className="itinerary-stop" key={stop.id || `stop-${index}`}>
+                      <div className="itinerary-stop-header">
+                        <h4>Overnight Stop {index + 1}</h4>
+                        <div className="itinerary-stop-actions">
+                          <button
+                            type="button"
+                            className="link-button"
+                            onClick={() => moveItineraryStop(index, -1)}
+                            disabled={index === 0}
+                          >
+                            Move up
+                          </button>
+                          <button
+                            type="button"
+                            className="link-button"
+                            onClick={() => moveItineraryStop(index, 1)}
+                            disabled={index === logisticsState.itineraryStops.length - 1}
+                          >
+                            Move down
+                          </button>
+                          <button type="button" className="link-button" onClick={() => removeItineraryStop(index)}>
+                            Remove stop
+                          </button>
+                        </div>
+                      </div>
+                      <div className="logistics-field-grid">
+                        <LogisticsField
+                          field={{ key: "stop-city", label: "City / Location", type: "text" }}
+                          value={stop["stop-city"] || ""}
+                          onChange={(value) => updateItineraryStop(index, "stop-city", value)}
+                        />
+                        <LogisticsField
+                          field={{ key: "stop-date", label: "Arrival date", type: "date" }}
+                          value={stop["stop-date"] || ""}
+                          onChange={(value) => updateItineraryStop(index, "stop-date", value)}
+                        />
+                      </div>
+                      <details className="logistics-details">
+                        <summary>Lodging details (optional)</summary>
+                        <div className="logistics-field-grid">
+                          <LogisticsField
+                            field={{ key: "stop-lodging", label: "Lodging name", type: "text" }}
+                            value={stop["stop-lodging"] || ""}
+                            onChange={(value) => updateItineraryStop(index, "stop-lodging", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "stop-address", label: "Street address", type: "text" }}
+                            value={stop["stop-address"] || ""}
+                            onChange={(value) => updateItineraryStop(index, "stop-address", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "stop-phone", label: "Phone number", type: "tel" }}
+                            value={stop["stop-phone"] || ""}
+                            onChange={(value) => updateItineraryStop(index, "stop-phone", value)}
+                          />
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" className="label-action" onClick={addItineraryStop}>
+                  Add overnight stop
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details className="checklist-section logistics-section" data-event-id="custom-events" id="event-custom-events" open>
+          <summary>
+            <h2>Custom Events</h2>
+          </summary>
+          <div className="checklist-section-body logistics-section-body">
+            <p className="checklist-intro">
+              Add personal move-related events that are not tied to the itinerary, such as school tours,
+              housing appointments, or temporary storage.
+            </p>
+            <div className="logistics-form">
+              <div className="logistics-group">
+                <h3>Custom Event List</h3>
+                <p className="logistics-hint">
+                  Each custom event appears on the master timeline as an all-day entry. Add an end date to show a date range.
+                </p>
+                <div className="custom-events" id="custom-events">
+                  {(logisticsState.customEvents || []).map((event, index) => (
+                    <div className="itinerary-stop custom-event" key={event.id || `custom-${index}`}>
+                      <div className="itinerary-stop-header">
+                        <h4>Custom Event {index + 1}</h4>
+                        <button type="button" className="link-button" onClick={() => removeCustomEvent(index)}>
+                          Remove event
+                        </button>
+                      </div>
+                      <div className="logistics-field-grid">
+                        <LogisticsField
+                          field={{ key: "custom-title", label: "Event title", type: "text" }}
+                          value={event["custom-title"] || ""}
+                          onChange={(value) => updateCustomEvent(index, "custom-title", value)}
+                        />
+                        <LogisticsField
+                          field={{ key: "custom-start-date", label: "Start date", type: "date" }}
+                          value={event["custom-start-date"] || ""}
+                          onChange={(value) => updateCustomEvent(index, "custom-start-date", value)}
+                        />
+                        <LogisticsField
+                          field={{ key: "custom-end-date", label: "End date (optional)", type: "date" }}
+                          value={event["custom-end-date"] || ""}
+                          onChange={(value) => updateCustomEvent(index, "custom-end-date", value)}
+                        />
+                      </div>
+                      <details className="logistics-details">
+                        <summary>Optional details</summary>
+                        <div className="logistics-field-grid">
+                          <LogisticsField
+                            field={{ key: "custom-address", label: "Address", type: "text" }}
+                            value={event["custom-address"] || ""}
+                            onChange={(value) => updateCustomEvent(index, "custom-address", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "custom-phone", label: "Phone number", type: "tel" }}
+                            value={event["custom-phone"] || ""}
+                            onChange={(value) => updateCustomEvent(index, "custom-phone", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "custom-contact", label: "Contact name", type: "text" }}
+                            value={event["custom-contact"] || ""}
+                            onChange={(value) => updateCustomEvent(index, "custom-contact", value)}
+                          />
+                          <LogisticsField
+                            field={{ key: "custom-notes", label: "Notes", type: "textarea", rows: 2 }}
+                            value={event["custom-notes"] || ""}
+                            onChange={(value) => updateCustomEvent(index, "custom-notes", value)}
+                          />
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+                <button type="button" className="label-action" onClick={addCustomEvent}>
+                  Add custom event
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <details className="info-panel mobile-disclosure">
         <summary>
           <h2>How to use Move Logistics</h2>
         </summary>
@@ -1004,245 +1258,6 @@ export function NativeLogisticsPage() {
         </div>
       </section>
 
-      <section className="logistics-accordion" aria-label="Move logistics events">
-        {EVENT_SECTIONS.map((section) => {
-          const sectionState = logisticsState.sections?.[section.id] || {};
-          return (
-            <details className="checklist-section logistics-section" data-event-id={section.id} key={section.id} open>
-              <summary>
-                <h2>{section.title}</h2>
-              </summary>
-              <div className="checklist-section-body logistics-section-body">
-                <p className="checklist-intro">{section.intro}</p>
-                <div className="logistics-form">
-                  {section.groups.map((group) => (
-                    <div className="logistics-group" key={`${section.id}-${group.title}`}>
-                      <h3>{group.title}</h3>
-                      <div className="logistics-field-grid">
-                        {group.fields.map((field) => (
-                          <LogisticsField
-                            field={field}
-                            key={`${section.id}-${field.key}`}
-                            value={sectionState[field.key] || ""}
-                            onChange={(value) => updateSectionField(section.id, field.key, value)}
-                          />
-                        ))}
-                      </div>
-                      {section.id === "packers" && group.title === "Event Details" ? (
-                        <p className="logistics-summary">{buildPackersSummary(packersSection)}</p>
-                      ) : null}
-                    </div>
-                  ))}
-                  <div className="logistics-group">
-                    <h3>Calendar Integration</h3>
-                    <p className="logistics-hint">{section.calendarHint}</p>
-                    <button
-                      type="button"
-                      className="label-action secondary"
-                      onClick={() => clearSectionCalendar(section.id)}
-                    >
-                      Clear event from timeline
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </details>
-          );
-        })}
-
-        <details className="checklist-section logistics-section" data-event-id="family-itinerary" open>
-          <summary>
-            <h2>Family Itinerary During the Move</h2>
-          </summary>
-          <div className="checklist-section-body logistics-section-body">
-            <p className="checklist-intro">
-              Capture the overall travel plan and log each overnight stop so the whole family knows where to be and when.
-            </p>
-            <div className="logistics-form">
-              <div className="logistics-group">
-                <h3>Start Location</h3>
-                <div className="logistics-field-grid">
-                  <LogisticsField
-                    field={{ key: "itinerary-start-location", label: "Location name", type: "text" }}
-                    value={itinerarySection["itinerary-start-location"] || ""}
-                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-start-location", value)}
-                  />
-                  <LogisticsField
-                    field={{ key: "itinerary-start-date", label: "Departure date", type: "date" }}
-                    value={itinerarySection["itinerary-start-date"] || ""}
-                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-start-date", value)}
-                  />
-                </div>
-              </div>
-
-              <div className="logistics-group">
-                <h3>End Location</h3>
-                <div className="logistics-field-grid">
-                  <LogisticsField
-                    field={{ key: "itinerary-end-location", label: "Location name", type: "text" }}
-                    value={itinerarySection["itinerary-end-location"] || ""}
-                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-end-location", value)}
-                  />
-                  <LogisticsField
-                    field={{ key: "itinerary-end-date", label: "Arrival date", type: "date" }}
-                    value={itinerarySection["itinerary-end-date"] || ""}
-                    onChange={(value) => updateSectionField("family-itinerary", "itinerary-end-date", value)}
-                  />
-                </div>
-              </div>
-
-              <div className="logistics-group itinerary-group">
-                <h3>Itinerary Stops</h3>
-                <p className="logistics-hint">
-                  Add one stop per overnight stay. Each stop is added to the master timeline automatically.
-                </p>
-                <div className="itinerary-stops" id="itinerary-stops">
-                  {(logisticsState.itineraryStops || []).map((stop, index) => (
-                    <div className="itinerary-stop" key={stop.id || `stop-${index}`}>
-                      <div className="itinerary-stop-header">
-                        <h4>Overnight Stop {index + 1}</h4>
-                        <div className="itinerary-stop-actions">
-                          <button
-                            type="button"
-                            className="link-button"
-                            onClick={() => moveItineraryStop(index, -1)}
-                            disabled={index === 0}
-                          >
-                            Move up
-                          </button>
-                          <button
-                            type="button"
-                            className="link-button"
-                            onClick={() => moveItineraryStop(index, 1)}
-                            disabled={index === logisticsState.itineraryStops.length - 1}
-                          >
-                            Move down
-                          </button>
-                          <button type="button" className="link-button" onClick={() => removeItineraryStop(index)}>
-                            Remove stop
-                          </button>
-                        </div>
-                      </div>
-                      <div className="logistics-field-grid">
-                        <LogisticsField
-                          field={{ key: "stop-city", label: "City / Location", type: "text" }}
-                          value={stop["stop-city"] || ""}
-                          onChange={(value) => updateItineraryStop(index, "stop-city", value)}
-                        />
-                        <LogisticsField
-                          field={{ key: "stop-date", label: "Arrival date", type: "date" }}
-                          value={stop["stop-date"] || ""}
-                          onChange={(value) => updateItineraryStop(index, "stop-date", value)}
-                        />
-                      </div>
-                      <details className="logistics-details">
-                        <summary>Lodging details (optional)</summary>
-                        <div className="logistics-field-grid">
-                          <LogisticsField
-                            field={{ key: "stop-lodging", label: "Lodging name", type: "text" }}
-                            value={stop["stop-lodging"] || ""}
-                            onChange={(value) => updateItineraryStop(index, "stop-lodging", value)}
-                          />
-                          <LogisticsField
-                            field={{ key: "stop-address", label: "Street address", type: "text" }}
-                            value={stop["stop-address"] || ""}
-                            onChange={(value) => updateItineraryStop(index, "stop-address", value)}
-                          />
-                          <LogisticsField
-                            field={{ key: "stop-phone", label: "Phone number", type: "tel" }}
-                            value={stop["stop-phone"] || ""}
-                            onChange={(value) => updateItineraryStop(index, "stop-phone", value)}
-                          />
-                        </div>
-                      </details>
-                    </div>
-                  ))}
-                </div>
-                <button type="button" className="label-action" onClick={addItineraryStop}>
-                  Add overnight stop
-                </button>
-              </div>
-            </div>
-          </div>
-        </details>
-
-        <details className="checklist-section logistics-section" data-event-id="custom-events" open>
-          <summary>
-            <h2>Custom Events</h2>
-          </summary>
-          <div className="checklist-section-body logistics-section-body">
-            <p className="checklist-intro">
-              Add personal move-related events that are not tied to the itinerary, such as school tours,
-              housing appointments, or temporary storage.
-            </p>
-            <div className="logistics-form">
-              <div className="logistics-group">
-                <h3>Custom Event List</h3>
-                <p className="logistics-hint">
-                  Each custom event appears on the master timeline as an all-day entry. Add an end date to show a date range.
-                </p>
-                <div className="custom-events" id="custom-events">
-                  {(logisticsState.customEvents || []).map((event, index) => (
-                    <div className="itinerary-stop custom-event" key={event.id || `custom-${index}`}>
-                      <div className="itinerary-stop-header">
-                        <h4>Custom Event {index + 1}</h4>
-                        <button type="button" className="link-button" onClick={() => removeCustomEvent(index)}>
-                          Remove event
-                        </button>
-                      </div>
-                      <div className="logistics-field-grid">
-                        <LogisticsField
-                          field={{ key: "custom-title", label: "Event title", type: "text" }}
-                          value={event["custom-title"] || ""}
-                          onChange={(value) => updateCustomEvent(index, "custom-title", value)}
-                        />
-                        <LogisticsField
-                          field={{ key: "custom-start-date", label: "Start date", type: "date" }}
-                          value={event["custom-start-date"] || ""}
-                          onChange={(value) => updateCustomEvent(index, "custom-start-date", value)}
-                        />
-                        <LogisticsField
-                          field={{ key: "custom-end-date", label: "End date (optional)", type: "date" }}
-                          value={event["custom-end-date"] || ""}
-                          onChange={(value) => updateCustomEvent(index, "custom-end-date", value)}
-                        />
-                      </div>
-                      <details className="logistics-details">
-                        <summary>Optional details</summary>
-                        <div className="logistics-field-grid">
-                          <LogisticsField
-                            field={{ key: "custom-address", label: "Address", type: "text" }}
-                            value={event["custom-address"] || ""}
-                            onChange={(value) => updateCustomEvent(index, "custom-address", value)}
-                          />
-                          <LogisticsField
-                            field={{ key: "custom-phone", label: "Phone number", type: "tel" }}
-                            value={event["custom-phone"] || ""}
-                            onChange={(value) => updateCustomEvent(index, "custom-phone", value)}
-                          />
-                          <LogisticsField
-                            field={{ key: "custom-contact", label: "Contact name", type: "text" }}
-                            value={event["custom-contact"] || ""}
-                            onChange={(value) => updateCustomEvent(index, "custom-contact", value)}
-                          />
-                          <LogisticsField
-                            field={{ key: "custom-notes", label: "Notes", type: "textarea", rows: 2 }}
-                            value={event["custom-notes"] || ""}
-                            onChange={(value) => updateCustomEvent(index, "custom-notes", value)}
-                          />
-                        </div>
-                      </details>
-                    </div>
-                  ))}
-                </div>
-                <button type="button" className="label-action" onClick={addCustomEvent}>
-                  Add custom event
-                </button>
-              </div>
-            </div>
-          </div>
-        </details>
-      </section>
     </main>
   );
 }
