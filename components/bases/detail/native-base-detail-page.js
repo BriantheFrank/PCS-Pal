@@ -5,8 +5,12 @@ import Link from "next/link";
 import { SponsoredPlacementsSection } from "@/components/bases/detail/sponsored-placements";
 
 function BaseCard({ card }) {
-  return (
-    <article className="base-card">
+  const links = card.links || [];
+  const isSingleLinkCard = links.length === 1;
+  const singleLink = isSingleLinkCard ? links[0] : null;
+
+  const content = (
+    <>
       <h3>{card.title}</h3>
       {(card.paragraphs || []).map((paragraph) => (
         <p key={`${card.title}-${paragraph}`}>{paragraph}</p>
@@ -18,17 +22,39 @@ function BaseCard({ card }) {
           ))}
         </ul>
       ) : null}
-      {(card.links || []).map((link) => (
-        <a
-          className="card-link"
-          href={link.href}
-          key={`${card.title}-${link.label}`}
-          target={link.openInNewTab ? "_blank" : undefined}
-          rel={link.openInNewTab ? "noopener noreferrer" : undefined}
-        >
-          {link.label}
-        </a>
-      ))}
+      {isSingleLinkCard ? <span className="card-link">{singleLink.label}</span> : null}
+      {!isSingleLinkCard
+        ? links.map((link) => (
+            <a
+              className="card-link"
+              href={link.href}
+              key={`${card.title}-${link.label}`}
+              target={link.openInNewTab ? "_blank" : undefined}
+              rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+            >
+              {link.label}
+            </a>
+          ))
+        : null}
+    </>
+  );
+
+  if (isSingleLinkCard) {
+    return (
+      <a
+        className="base-card"
+        href={singleLink.href}
+        target={singleLink.openInNewTab ? "_blank" : undefined}
+        rel={singleLink.openInNewTab ? "noopener noreferrer" : undefined}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <article className="base-card">
+      {content}
     </article>
   );
 }
