@@ -97,7 +97,7 @@ export function NativeBasesPage({ items }) {
             <input
               id="base-search"
               type="search"
-              placeholder="Fort Liberty, Texas, 82nd Airborne"
+              placeholder="Fort Bragg, Texas, 82nd Airborne"
               autoComplete="off"
               enterKeyHint="search"
               value={searchValue}

@@ -33,9 +33,9 @@ const withCommonLinks = (supportSlug, installationName, lodgingQuery = installat
 });
 
 const baseArrivalData = {
-  "fort-liberty": {
-    ...withCommonLinks("fort-bragg", "Fort Liberty", "Airborne Inn Fort Liberty NC"),
-    installationName: "Fort Liberty",
+  "fort-bragg": {
+    ...withCommonLinks("fort-bragg", "Fort Bragg", "Airborne Inn Fort Bragg NC"),
+    installationName: "Fort Bragg",
     state: "North Carolina",
     receptionTitle: "XVIII Airborne Corps Reception Company",
     receptionDescription:
@@ -43,11 +43,11 @@ const baseArrivalData = {
     receptionOfficialLink:
       "https://home.army.mil/bragg/units-tenants/xviii-airborne-co/xviii-airborne-corps-reception-company",
     receptionGoogleMapsLink: mapSearch(
-      "XVIII Airborne Corps Reception Company Building 4-1437 Normandy Drive Fort Liberty NC 28310"
+      "XVIII Airborne Corps Reception Company Building 4-1437 Normandy Drive Fort Bragg NC 28310"
     ),
     visitorCenterTitle: "All American Visitor Control Center",
     visitorCenterLink: militaryInstallations("fort-bragg"),
-    visitorCenterGoogleMapsLink: mapSearch("All American Visitor Control Center Fort Liberty NC"),
+    visitorCenterGoogleMapsLink: mapSearch("All American Visitor Control Center Fort Bragg NC"),
   },
   "fort-campbell": {
     ...withCommonLinks("fort-campbell", "Fort Campbell", "Fort Campbell Army Lodging"),
@@ -63,9 +63,9 @@ const baseArrivalData = {
     visitorCenterLink: militaryInstallations("fort-campbell"),
     visitorCenterGoogleMapsLink: mapSearch("Gate 4 Visitor Control Center Fort Campbell KY"),
   },
-  "fort-cavazos": {
-    ...withCommonLinks("fort-cavazos", "Fort Cavazos", "Fort Cavazos IHG Army Hotels"),
-    installationName: "Fort Cavazos",
+  "fort-hood": {
+    ...withCommonLinks("fort-hood", "Fort Hood", "Fort Hood IHG Army Hotels"),
+    installationName: "Fort Hood",
     state: "Texas",
     receptionTitle: "Installation Reception Center",
     receptionDescription:
@@ -73,12 +73,12 @@ const baseArrivalData = {
     receptionOfficialLink:
       "https://installations.militaryonesource.mil/military-installation/fort-hood/base-essentials/check-in-procedures",
     receptionGoogleMapsLink: mapSearch(
-      "Installation Reception Center Building 16008 42nd Street Fort Cavazos TX 76544"
+      "Installation Reception Center Building 16008 42nd Street Fort Hood TX 76544"
     ),
     visitorCenterTitle: "Marvin Leath Visitors Center",
     visitorCenterLink: "https://home.army.mil/hood/index.php/my-fort/visitor-information",
     visitorCenterGoogleMapsLink: mapSearch(
-      "Marvin Leath Visitors Center T.J. Mills Boulevard Fort Cavazos TX 76544"
+      "Marvin Leath Visitors Center T.J. Mills Boulevard Fort Hood TX 76544"
     ),
   },
   "joint-base-lewis-mcchord": {
@@ -104,16 +104,16 @@ const baseArrivalData = {
       "McChord Field Main Gate I-5 Exit 125 Bridgeport Way Joint Base Lewis-McChord WA 98438"
     ),
   },
-  "fort-moore": {
-    ...withCommonLinks("fort-benning", "Fort Moore", "Fort Moore Army Lodging"),
-    installationName: "Fort Moore",
+  "fort-benning": {
+    ...withCommonLinks("fort-benning", "Fort Benning", "Fort Benning Army Lodging"),
+    installationName: "Fort Benning",
     state: "Georgia",
     receptionTitle: "Ridgway Hall / Installation Reception Center",
     receptionDescription:
       "During duty hours, permanent-party Soldiers usually start at Ridgway Hall, Building 35, Room 239, to begin installation reception. After hours, arrivals shift to McGinnis-Wickam Hall, Building 4, for staff-duty accountability.",
     receptionOfficialLink: "https://home.army.mil/benning/my-fort/newcomers/reception",
     receptionGoogleMapsLink: mapSearch(
-      "Ridgway Hall Building 35 Room 239 Ridgway Loop Fort Moore GA"
+      "Ridgway Hall Building 35 Room 239 Ridgway Loop Fort Benning GA"
     ),
     newcomerLink: "https://home.army.mil/benning/my-fort/newcomers",
     deersIdCardLink: "https://home.army.mil/benning/About/garrison/DHR/id-cards/schedule-cac",
@@ -185,9 +185,9 @@ const baseArrivalData = {
       "Visitor Control Center 885 Henry Drive Marshall Air Field Fort Riley KS 66442"
     ),
   },
-  "fort-johnson": {
-    ...withCommonLinks("fort-johnson", "Fort Johnson", "Warriors Keep Fort Johnson LA"),
-    installationName: "Fort Johnson",
+  "fort-polk": {
+    ...withCommonLinks("fort-polk", "Fort Polk", "Warriors Keep Fort Polk LA"),
+    installationName: "Fort Polk",
     state: "Louisiana",
     receptionTitle: "In/Out Processing Center",
     receptionDescription:
@@ -195,11 +195,11 @@ const baseArrivalData = {
     receptionOfficialLink:
       "https://installations.militaryonesource.mil/military-installation/fort-polk/base-essentials/check-in-procedures",
     receptionGoogleMapsLink: mapSearch(
-      "In Out Processing Center Building 250 1716 3rd Street Fort Johnson LA 71459"
+      "In Out Processing Center Building 250 1716 3rd Street Fort Polk LA 71459"
     ),
     visitorCenterTitle: "Main Gate / Visitor Information",
     visitorCenterLink: "https://home.army.mil/johnson/Johnson/about/visitor-information",
-    visitorCenterGoogleMapsLink: mapSearch("Main Gate Visitor Center Fort Johnson LA"),
+    visitorCenterGoogleMapsLink: mapSearch("Main Gate Visitor Center Fort Polk LA"),
   },
   "fort-sill": {
     ...withCommonLinks("fort-sill", "Fort Sill", "Fort Sill Army Lodging"),
@@ -254,18 +254,18 @@ const baseArrivalData = {
     visitorCenterLink: "https://www.ihg.com/armyhotels/hotels/us/en/reservation",
     visitorCenterGoogleMapsLink: mapSearch("Fort Jackson Inn 7550 Benning Road Fort Jackson SC"),
   },
-  "fort-eisenhower": {
-    ...withCommonLinks("fort-gordon", "Fort Eisenhower", "Fort Eisenhower IHG Army Hotels"),
-    installationName: "Fort Eisenhower",
+  "fort-gordon": {
+    ...withCommonLinks("fort-gordon", "Fort Gordon", "Fort Gordon IHG Army Hotels"),
+    installationName: "Fort Gordon",
     state: "Georgia",
     receptionTitle: "Darling Hall / unit-directed reporting",
     receptionDescription:
-      "Reporting steps vary by command at Fort Eisenhower, but most permanent-party arrivals use Darling Hall after any approved PTDY and then work through a seven-day in-processing flow. Review the unit-specific reporting list before you drive through the gate.",
+      "Reporting steps vary by command at Fort Gordon, but most permanent-party arrivals use Darling Hall after any approved PTDY and then work through a seven-day in-processing flow. Review the unit-specific reporting list before you drive through the gate.",
     receptionOfficialLink:
       "https://installations.militaryonesource.mil/military-installation/fort-gordon/base-essentials/check-in-procedures",
-    receptionGoogleMapsLink: mapSearch("Darling Hall Fort Eisenhower GA"),
+    receptionGoogleMapsLink: mapSearch("Darling Hall Fort Gordon GA"),
     visitorCenterTitle: "Gate 6 Visitor Control Center",
-    visitorCenterGoogleMapsLink: mapSearch("Gate 6 Visitor Control Center Fort Eisenhower GA"),
+    visitorCenterGoogleMapsLink: mapSearch("Gate 6 Visitor Control Center Fort Gordon GA"),
     deersIdCardLink: "https://home.army.mil/gordon/id-cards",
   },
   "fort-belvoir": {
@@ -334,9 +334,9 @@ const baseArrivalData = {
     visitorCenterTitle: "Van Deman Gate Welcome Center",
     visitorCenterGoogleMapsLink: mapSearch("Van Deman Gate Welcome Center Fort Huachuca AZ"),
   },
-  "fort-gregg-adams": {
-    ...withCommonLinks("fort-lee", "Fort Gregg-Adams", "Fort Gregg-Adams Army Lodging"),
-    installationName: "Fort Gregg-Adams",
+  "fort-lee": {
+    ...withCommonLinks("fort-lee", "Fort Lee", "Fort Lee Army Lodging"),
+    installationName: "Fort Lee",
     state: "Virginia",
     receptionTitle: "Soldier Support Center",
     receptionDescription:
@@ -344,12 +344,12 @@ const baseArrivalData = {
     receptionOfficialLink:
       "https://installations.militaryonesource.mil/military-installation/fort-lee/base-essentials/check-in-procedures",
     receptionGoogleMapsLink: mapSearch(
-      "Soldier Support Center Building 3400 1401 Barefoot Avenue Fort Gregg-Adams VA 23801"
+      "Soldier Support Center Building 3400 1401 Barefoot Avenue Fort Lee VA 23801"
     ),
     visitorCenterTitle: "Visitor Control Center",
     visitorCenterLink: "https://home.army.mil/lee/index.php/about/visitor-information",
     visitorCenterGoogleMapsLink: mapSearch(
-      "Visitor Control Center 500 Gregg Avenue Building 5228 Fort Gregg-Adams VA 23801"
+      "Visitor Control Center 500 Gregg Avenue Building 5228 Fort Lee VA 23801"
     ),
   },
 };

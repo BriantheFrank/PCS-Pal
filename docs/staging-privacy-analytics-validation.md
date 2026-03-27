@@ -67,12 +67,12 @@ Expected seeded state:
   - analytics enabled
   - marketing disabled
   - data sale opt-out enabled
-  - destination base `Fort Liberty`
+  - destination base `Fort Bragg`
 - `pcs-staging-family-2@example.test`
   - analytics enabled
   - marketing enabled
   - data sale opt-out enabled
-  - destination base `Fort Cavazos`
+  - destination base `Fort Hood`
 - `pcs-staging-family-3@example.test`
   - analytics disabled
   - marketing disabled
@@ -89,12 +89,12 @@ Manual UI checks:
 ## 5. Validate Sponsored and Referral Behavior
 Use the seeded base pages for narrow partner-flow validation:
 
-- `base-fort-liberty.html`
+- `base-fort-bragg.html`
   - should show the base-specific `Liberty Lodge Demo` sponsored placement
   - should also show the global `Steady Move Demo` affiliate placement
-- `base-fort-cavazos.html`
+- `base-fort-hood.html`
   - should show the global `Steady Move Demo` affiliate placement
-  - should not show the Fort Liberty-specific lodging placement
+  - should not show the Fort Bragg-specific lodging placement
 
 Behavior checks:
 - Sponsored partner cards stay visually distinct from neutral base resources.
@@ -108,7 +108,7 @@ Use the app plus targeted staging queries.
 
 Recommended sequence:
 1. Sign in as `pcs-staging-family-1@example.test`.
-2. Visit `base-fort-liberty.html`.
+2. Visit `base-fort-bragg.html`.
 3. Click one official resource and one partner placement link.
 4. Save the privacy form once.
 5. Save the move profile once.
@@ -175,9 +175,9 @@ Run:
 ```
 
 Seed sanity expectations:
-- `Fort Liberty`, `Fort Cavazos`, and `Joint Base Lewis-McChord` appear in monthly demand
-- `Fort Liberty` shows temporary lodging interest and lodging demand
-- `Fort Cavazos` shows moving interest and off-base rent interest
+- `Fort Bragg`, `Fort Hood`, and `Joint Base Lewis-McChord` appear in monthly demand
+- `Fort Bragg` shows temporary lodging interest and lodging demand
+- `Fort Hood` shows moving interest and off-base rent interest
 - `Liberty Lodge Demo` shows 1 seeded click and 1 seeded explicit lead
 - `Steady Move Demo` shows 1 seeded click and 0 seeded explicit leads
 

@@ -126,26 +126,26 @@ create table if not exists public.base_catalog (
 
 insert into public.base_catalog (id, installation_name, state_or_region)
 values
-  ('fort-liberty', 'Fort Liberty', 'North Carolina'),
+  ('fort-bragg', 'Fort Bragg', 'North Carolina'),
   ('fort-campbell', 'Fort Campbell', 'Kentucky / Tennessee'),
-  ('fort-cavazos', 'Fort Cavazos', 'Texas'),
+  ('fort-hood', 'Fort Hood', 'Texas'),
   ('joint-base-lewis-mcchord', 'Joint Base Lewis-McChord', 'Washington'),
-  ('fort-moore', 'Fort Moore', 'Georgia'),
+  ('fort-benning', 'Fort Benning', 'Georgia'),
   ('fort-bliss', 'Fort Bliss', 'Texas'),
   ('fort-carson', 'Fort Carson', 'Colorado'),
   ('fort-stewart', 'Fort Stewart', 'Georgia'),
   ('fort-drum', 'Fort Drum', 'New York'),
   ('fort-riley', 'Fort Riley', 'Kansas'),
-  ('fort-johnson', 'Fort Johnson', 'Louisiana'),
+  ('fort-polk', 'Fort Polk', 'Louisiana'),
   ('fort-sill', 'Fort Sill', 'Oklahoma'),
   ('fort-leonard-wood', 'Fort Leonard Wood', 'Missouri'),
   ('fort-jackson', 'Fort Jackson', 'South Carolina'),
-  ('fort-eisenhower', 'Fort Eisenhower', 'Georgia'),
+  ('fort-gordon', 'Fort Gordon', 'Georgia'),
   ('fort-belvoir', 'Fort Belvoir', 'Virginia'),
   ('fort-meade', 'Fort Meade', 'Maryland'),
   ('fort-knox', 'Fort Knox', 'Kentucky'),
   ('fort-huachuca', 'Fort Huachuca', 'Arizona'),
-  ('fort-gregg-adams', 'Fort Gregg-Adams', 'Virginia')
+  ('fort-lee', 'Fort Lee', 'Virginia')
 on conflict (id) do update
 set
   installation_name = excluded.installation_name,
