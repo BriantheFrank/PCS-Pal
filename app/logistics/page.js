@@ -33,6 +33,12 @@ export default function LogisticsPage() {
           Use this page to map out your travel, lodging, arrival timing, and the first tasks you
           need to handle at your new duty station.
         </p>
+      </SiteHeader>
+
+      <NativeLogisticsPage />
+
+      <section className="container info-panel">
+        <h2>How to use this logistics workspace</h2>
         <p>
           Best for: Families coordinating travel days, temporary lodging, check-in timing, and
           arrival-week planning.
@@ -41,9 +47,13 @@ export default function LogisticsPage() {
           Start by: Adding your expected travel window, temporary lodging plan, and first-day
           arrival priorities.
         </p>
-      </SiteHeader>
-
-      <NativeLogisticsPage />
+        <p>
+          Need a broader workflow view?{" "}
+          <a className="card-link" href="/organizer">
+            Go back to organizer -&gt;
+          </a>
+        </p>
+      </section>
 
       <SiteFooter>
         <p className="footer-tip">
