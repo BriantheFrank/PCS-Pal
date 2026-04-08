@@ -127,7 +127,7 @@ button:focus-visible {
   border-bottom: 1px solid var(--border);
   padding: clamp(1.25rem, 3vw, 2.5rem) 0 clamp(1.15rem, 2.75vw, 2rem);
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
-  overflow: clip;
+  overflow: visible;
 }
 
 .site-header::after {
@@ -135,6 +135,8 @@ button:focus-visible {
 }
 
 .top-bar {
+  position: relative;
+  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -3562,4 +3564,3 @@ main {
     width: auto;
   }
 }
-

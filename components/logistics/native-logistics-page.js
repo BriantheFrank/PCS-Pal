@@ -791,6 +791,17 @@ export function NativeLogisticsPage() {
         <p className="eyebrow">Master Calendar</p>
         <h2>Move logistics monthly view</h2>
         <p>Every dated move-plan item appears here. Calendar cells only show event type names to reduce clutter.</p>
+        <p className="signup-page-status" data-tone={syncStatus.tone} aria-live="polite">
+          {syncStatus.message || "Changes save automatically so you can pick up planning later."}
+        </p>
+        <div className="inventory-item-actions">
+          <a className="label-action" href="#event-move-consult">
+            Add event
+          </a>
+          <a className="label-action secondary" href="#event-custom-events">
+            Add custom event
+          </a>
+        </div>
         <div className="calendar-toolbar">
           <div className="calendar-meta">
             <h3>{visibleMonthLabel}</h3>
@@ -857,31 +868,6 @@ export function NativeLogisticsPage() {
               </article>
             );
           })}
-        </div>
-      </section>
-
-      <section className="info-panel organizer-native-note">
-        <p className="eyebrow">Move Logistics</p>
-        <h2>Centralize dates, contacts, and travel plans</h2>
-        <p>
-          This workspace is built for real move coordination: travel windows, temporary lodging,
-          arrival timing, and first-week priorities that affect your family immediately.
-        </p>
-        <p className="signup-page-status" data-tone={syncStatus.tone} aria-live="polite">
-          {syncStatus.message || "Changes save automatically so you can pick up planning later."}
-        </p>
-        <p>
-          <a className="card-link" href="/organizer">
-            Back to organizer -&gt;
-          </a>
-        </p>
-        <div className="inventory-item-actions">
-          <a className="label-action" href="#event-move-consult">
-            Add event
-          </a>
-          <a className="label-action secondary" href="#event-custom-events">
-            Add custom event
-          </a>
         </div>
       </section>
 
@@ -1129,6 +1115,20 @@ export function NativeLogisticsPage() {
             </div>
           </div>
         </details>
+      </section>
+
+      <section className="info-panel organizer-native-note">
+        <p className="eyebrow">Move Logistics</p>
+        <h2>Centralize dates, contacts, and travel plans</h2>
+        <p>
+          This workspace is built for real move coordination: travel windows, temporary lodging,
+          arrival timing, and first-week priorities that affect your family immediately.
+        </p>
+        <p>
+          <a className="card-link" href="/organizer">
+            Back to organizer -&gt;
+          </a>
+        </p>
       </section>
 
       <details className="info-panel mobile-disclosure">
