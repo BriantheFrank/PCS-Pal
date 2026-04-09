@@ -4,6 +4,7 @@ import { GuidedPageIntro, PageStepNav } from "@/components/site/guided-page-intr
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { CardLink } from "@/components/site/card-link";
+import { PublicInventoryWorkspace } from "@/components/tools/public-planning-tools";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
@@ -74,6 +75,8 @@ export default function InventoryLandingPage() {
           nextStepLabel="Plan travel and arrival"
           nextStepHref="/pcs-move-logistics-planning"
         />
+
+        <PublicInventoryWorkspace />
 
         <section className="info-panel legal-page-section">
           <h2>What to capture in a PCS inventory</h2>

@@ -1,5 +1,6 @@
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { CardLink } from "@/components/site/card-link";
+import { DashboardSnapshotCards } from "@/components/site/dashboard-snapshot";
 import { buildPageMetadata } from "@/lib/metadata";
 
 export const metadata = buildPageMetadata({
@@ -8,12 +9,6 @@ export const metadata = buildPageMetadata({
   pathname: "/dashboard",
   noindex: true,
 });
-
-const summaryCards = [
-  { title: "Checklist progress", value: "0 of 34 complete", note: "Start with your next required task." },
-  { title: "Inventory rooms", value: "0 rooms tracked", note: "Add one room to begin your inventory." },
-  { title: "Upcoming logistics", value: "0 events scheduled", note: "Add travel and arrival milestones." },
-];
 
 const quickLinks = [
   { href: "/military-pcs-checklist", title: "Checklist", description: "Track required tasks by phase.", cta: "Open checklist" },
@@ -33,15 +28,7 @@ export default function DashboardPage() {
       <main className="container legal-page-layout" id="main-content">
         <section className="info-panel">
           <h2>Move snapshot</h2>
-          <div className="card-grid dashboard-summary-grid">
-            {summaryCards.map((card) => (
-              <article className="nav-card dashboard-stat-card" key={card.title}>
-                <p className="eyebrow">{card.title}</p>
-                <h3>{card.value}</h3>
-                <p>{card.note}</p>
-              </article>
-            ))}
-          </div>
+          <DashboardSnapshotCards />
         </section>
 
         <section className="info-panel legal-page-section">
