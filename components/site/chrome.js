@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { NativeAccountShell } from "@/components/auth/native-account-shell";
 import { primaryPublicNavLinks } from "@/lib/site-config";
@@ -20,7 +20,9 @@ function ThemeToggle() {
     }
 
     const darkPreferred = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setTheme(darkPreferred ? "dark" : "light");
+    const preferredTheme = darkPreferred ? "dark" : "light";
+    setTheme(preferredTheme);
+    document.documentElement.dataset.theme = preferredTheme;
   }, []);
 
   const toggleTheme = () => {
@@ -31,50 +33,106 @@ function ThemeToggle() {
   };
 
   return (
-    <button type="button" className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-      {theme === "dark" ? "☀️" : "🌙"}
+    <button
+      type="button"
+      className="theme-toggle"
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+    >
+      <span aria-hidden="true">{theme === "dark" ? "☀️" : "🌙"}</span>
     </button>
+  );
+}
+
+function PrimaryNav({ pathname, onNavigate }) {
+  const navItems = useMemo(() => primaryPublicNavLinks.filter((item) => item.href !== pathname), [pathname]);
+
+  return (
+    <nav className="primary-nav" aria-label="Primary">
+      {navItems.map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={pathname === item.href ? "is-active" : undefined}
+          onClick={onNavigate}
+        >
+          {item.label}
+        </Link>
+      ))}
+    </nav>
   );
 }
 
 function SiteTopBar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navItems = primaryPublicNavLinks;
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      return undefined;
+    }
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [mobileOpen]);
 
   return (
-    <div className="top-bar">
+    <div className="top-bar" data-mobile-open={mobileOpen}>
       <Link className="skip-link" href="#main-content">
         Skip to content
       </Link>
-      <Link className="brand" href="/" aria-label="PCS Pal home">
-        <svg viewBox="0 0 180 28" className="brand-mark" role="img" aria-label="PCS Pal">
-          <text x="0" y="20" fill="currentColor" fontSize="22" fontWeight="700">
-            PCS Pal
-          </text>
-        </svg>
-      </Link>
+
+      <div className="top-bar-left">
+        <Link className="brand" href="/" aria-label="PCS Pal home">
+          <svg viewBox="0 0 180 28" className="brand-mark" role="img" aria-label="PCS Pal">
+            <text x="0" y="20" fill="currentColor" fontSize="22" fontWeight="700">
+              PCS Pal
+            </text>
+          </svg>
+        </Link>
+      </div>
+
+      <div className="top-bar-center desktop-only">
+        <PrimaryNav pathname={pathname} />
+      </div>
+
+      <div className="top-bar-right desktop-only">
+        <ThemeToggle />
+        <NativeAccountShell pathname={pathname} />
+      </div>
+
       <button
         type="button"
         className="site-nav-toggle"
         aria-expanded={mobileOpen}
-        onClick={() => setMobileOpen((v) => !v)}
+        aria-controls="mobile-site-nav"
+        aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+        onClick={() => setMobileOpen((value) => !value)}
       >
-        ☰
+        {mobileOpen ? "Close" : "Menu"}
       </button>
-      <nav className="site-nav" data-mobile-open={mobileOpen}>
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={pathname === item.href ? "is-active" : undefined}
-            onClick={() => setMobileOpen(false)}
-          >
-            {item.label}
-          </Link>
-        ))}
-        <ThemeToggle />
-        <NativeAccountShell mobile onNavigate={() => setMobileOpen(false)} />
+
+      <nav
+        id="mobile-site-nav"
+        className="site-nav"
+        data-mobile-open={mobileOpen}
+        aria-label="Mobile navigation"
+      >
+        <PrimaryNav pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+        <div className="mobile-nav-controls">
+          <ThemeToggle />
+          <NativeAccountShell mobile pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+        </div>
       </nav>
     </div>
   );
@@ -103,7 +161,7 @@ export function SiteFooter({ children }) {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
-        <div>
+        <section>
           <p className="eyebrow">PCS Pal</p>
           <p>Military move planning that keeps your family one step ahead.</p>
           <Link
@@ -112,30 +170,36 @@ export function SiteFooter({ children }) {
           >
             Share Feedback
           </Link>
-        </div>
-        <div>
+        </section>
+        <nav aria-label="Plan your move">
           <h3>Plan Your Move</h3>
-          <Link href="/how-to-plan-a-military-pcs-move">Start Here</Link>
-          <Link href="/military-pcs-checklist">Checklist</Link>
-          <Link href="/pcs-inventory-label-tracking">Inventory</Link>
-          <Link href="/pcs-move-logistics-planning">Logistics</Link>
-        </div>
-        <div>
+          <ul className="footer-link-list">
+            <li><Link href="/how-to-plan-a-military-pcs-move">Start Here</Link></li>
+            <li><Link href="/military-pcs-checklist">Checklist</Link></li>
+            <li><Link href="/pcs-inventory-label-tracking">Inventory</Link></li>
+            <li><Link href="/pcs-move-logistics-planning">Logistics</Link></li>
+          </ul>
+        </nav>
+        <nav aria-label="Resources">
           <h3>Resources</h3>
-          <Link href="/bases">Base Guides</Link>
-          <Link href="/pcs-glossary">PCS Glossary</Link>
-          <Link href="/military-pcs-checklist">Guides & Articles</Link>
-        </div>
-        <div>
+          <ul className="footer-link-list">
+            <li><Link href="/bases">Base Guides</Link></li>
+            <li><Link href="/pcs-glossary">PCS Glossary</Link></li>
+            <li><Link href="/military-pcs-checklist">Guides & Articles</Link></li>
+          </ul>
+        </nav>
+        <nav aria-label="Account and company links">
           <h3>Account & About</h3>
-          <Link href="/sign-in">Sign In</Link>
-          <Link href="/create-account">Create Account</Link>
-          <Link href="/dashboard">My Move</Link>
-          <Link href="/about">About</Link>
-          <Link href="/contact">Contact</Link>
-          <Link href="/terms">Terms of Use</Link>
-          <Link href="/privacy">Privacy Policy</Link>
-        </div>
+          <ul className="footer-link-list">
+            <li><Link href="/sign-in">Sign In</Link></li>
+            <li><Link href="/create-account">Create Account</Link></li>
+            <li><Link href="/dashboard">My Move</Link></li>
+            <li><Link href="/about">About</Link></li>
+            <li><Link href="/contact">Contact</Link></li>
+            <li><Link href="/terms">Terms of Use</Link></li>
+            <li><Link href="/privacy">Privacy Policy</Link></li>
+          </ul>
+        </nav>
       </div>
       {children}
       <div className="footer-legal-links">

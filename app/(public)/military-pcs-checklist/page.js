@@ -3,6 +3,7 @@ import Link from "next/link";
 import { GuidedPageIntro, PageStepNav } from "@/components/site/guided-page-intro";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
+import { CardLink } from "@/components/site/card-link";
 import { GUIDE_SLUGS, getGuidePageData } from "@/lib/guides/page-data";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
@@ -63,7 +64,7 @@ export default function MilitaryPcsChecklistPage() {
         </p>
       </SiteHeader>
 
-      <main className="container legal-page-layout">
+      <main className="container legal-page-layout" id="main-content">
         <GuidedPageIntro
           purpose="Track 34 core PCS tasks by phase so your move plan stays complete and organized."
           bestFor="First-time movers, families moving with kids, and anyone trying to stay organized before pack-out and arrival."
@@ -76,11 +77,13 @@ export default function MilitaryPcsChecklistPage() {
           <h2>Checklist steps PCS Pal already covers in detail</h2>
           <div className="card-grid">
             {guideCards.map((guide) => (
-              <Link className="nav-card" href={guide.routePath} key={guide.slug}>
-                <h3>{guide.title}</h3>
-                <p>{guide.description}</p>
-                <span className="card-link">Read this checklist step</span>
-              </Link>
+              <CardLink
+                key={guide.slug}
+                href={guide.routePath}
+                title={guide.title}
+                description={guide.description}
+                cta="Read this checklist step"
+              />
             ))}
           </div>
         </section>
@@ -99,11 +102,13 @@ export default function MilitaryPcsChecklistPage() {
           <h2>Related pages</h2>
           <div className="card-grid">
             {relatedLinks.map((link) => (
-              <Link className="nav-card" href={link.href} key={link.href}>
-                <h3>{link.title}</h3>
-                <p>{link.description}</p>
-                <span className="card-link">Open page</span>
-              </Link>
+              <CardLink
+                key={link.href}
+                href={link.href}
+                title={link.title}
+                description={link.description}
+                cta="Open page"
+              />
             ))}
           </div>
         </section>

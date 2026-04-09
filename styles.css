@@ -3631,3 +3631,288 @@ main {
     width: auto;
   }
 }
+
+/* --- 2026-04 UI stabilization pass --- */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  z-index: 1200;
+  padding: 0.65rem 0.9rem;
+  border-radius: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--focus-ring);
+}
+
+.top-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 1rem;
+  row-gap: 0.75rem;
+}
+
+.top-bar-left,
+.top-bar-center,
+.top-bar-right {
+  min-width: 0;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.primary-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+}
+
+.primary-nav a {
+  white-space: nowrap;
+}
+
+.desktop-only {
+  display: flex;
+}
+
+.theme-toggle,
+.account-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle:focus-visible,
+.account-trigger:focus-visible,
+.account-menu a:focus-visible,
+.account-menu button:focus-visible,
+.site-nav-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.account-shell {
+  position: relative;
+}
+
+.account-menu {
+  top: calc(100% + 0.45rem);
+  right: 0;
+  left: auto;
+  z-index: 300;
+  min-width: 230px;
+}
+
+.account-menu[hidden] {
+  display: none !important;
+}
+
+.site-nav-toggle {
+  display: none;
+}
+
+.footer-grid {
+  align-items: start;
+}
+
+.footer-link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.footer-link-list a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.meta-summary dl {
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.meta-summary dt {
+  font-weight: 700;
+  font-size: 0.94rem;
+  margin-bottom: 0.15rem;
+}
+
+.meta-summary dd {
+  margin: 0;
+  color: var(--text);
+}
+
+.step-card {
+  min-height: 180px;
+}
+
+.filter-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.85rem;
+}
+
+.filter-bar-fields {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.filter-clear {
+  min-height: 44px;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0.5rem 0.8rem;
+}
+
+.dashboard-summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dashboard-stat-card {
+  min-height: 170px;
+}
+
+@media (max-width: 1100px) {
+  .top-bar {
+    grid-template-columns: auto auto;
+  }
+
+  .top-bar-center,
+  .top-bar-right {
+    display: none;
+  }
+
+  .site-nav-toggle {
+    display: inline-flex;
+    justify-self: end;
+  }
+
+  .site-nav {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    left: 0;
+    right: 0;
+    width: auto;
+    border: 1px solid var(--border);
+    border-radius: 0.95rem;
+    background: var(--surface);
+    padding: 0.75rem;
+    box-shadow: var(--shadow-soft);
+    display: none;
+    z-index: 250;
+  }
+
+  .site-nav[data-mobile-open="true"] {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .site-nav .primary-nav {
+    display: grid;
+    justify-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .site-nav .primary-nav a {
+    justify-content: center;
+  }
+
+  .mobile-nav-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .account-shell.is-mobile .account-menu {
+    position: static;
+    min-width: 0;
+    margin-top: 0.5rem;
+  }
+
+  .filter-bar,
+  .filter-bar-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .meta-summary dl > div {
+    display: grid;
+    grid-template-columns: minmax(180px, 230px) 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .page-step-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .base-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .base-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.signup-page-layout-single {
+  max-width: 560px;
+  margin-inline: auto;
+}
+
+.signup-page-inline-link {
+  text-align: center;
+  margin: 0.25rem 0 0;
+}
+
+.base-units {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.base-card {
+  align-content: start;
+}
+
+.base-card-cta {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}

@@ -63,7 +63,7 @@ export default function PcsPlanningGuidePage() {
         <p className="subtitle">You do not need to solve everything today. Start with one step, then move to the next.</p>
       </SiteHeader>
 
-      <main className="container legal-page-layout">
+      <main className="container legal-page-layout" id="main-content">
         <GuidedPageIntro
           purpose="Give you a clear PCS sequence from orders to arrival so nothing critical is missed."
           bestFor="First-time movers and experienced families who want a calm reset plan."

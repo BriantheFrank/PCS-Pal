@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { PageStepNav } from "@/components/site/guided-page-intro";
+import { FilterBar } from "@/components/site/filter-bar";
 import { pcsGeneralLinks } from "@/lib/bases/pcs-community-links";
 
 const getResultsMessage = ({ items, searchValue, stateValue, branchValue, visibleCount }) => {
@@ -63,8 +64,10 @@ export function NativeBasesPage({ items }) {
     visibleCount: visibleItems.length,
   });
 
+  const hasActiveFilters = Boolean(searchValue.trim() || stateValue || branchValue);
+
   return (
-    <main className="container">
+    <div className="container">
       <details
         className="info-panel mobile-disclosure"
         data-mobile-collapse="true"
@@ -106,7 +109,14 @@ export function NativeBasesPage({ items }) {
             base guide is easier to reach on a phone.
           </p>
         </div>
-        <div className="base-browser-controls">
+        <FilterBar
+          onClear={() => {
+            setSearchValue("");
+            setStateValue("");
+            setBranchValue("");
+          }}
+          clearDisabled={!hasActiveFilters}
+        >
           <label className="base-browser-field" htmlFor="base-search">
             Search bases
             <input
@@ -149,7 +159,7 @@ export function NativeBasesPage({ items }) {
               ))}
             </select>
           </label>
-        </div>
+        </FilterBar>
         <p className="base-browser-results" aria-live="polite">
           {resultsMessage}
         </p>
@@ -166,15 +176,19 @@ export function NativeBasesPage({ items }) {
             ) : null}
             <p className="base-label">Major units</p>
             <ul className="base-units">
-              {item.units.map((unit) => (
+              {item.units.slice(0, 3).map((unit) => (
                 <li key={unit}>{unit}</li>
               ))}
+              {item.units.length > 3 ? <li>+{item.units.length - 3} more</li> : null}
             </ul>
             <p className="base-label">Guide preview</p>
             <ul className="base-units">
-              {(item.previewSections || []).map((section) => (
+              {(item.previewSections || []).slice(0, 3).map((section) => (
                 <li key={`${item.slug}-${section}`}>{section}</li>
               ))}
+              {(item.previewSections || []).length > 3 ? (
+                <li>+{(item.previewSections || []).length - 3} more</li>
+              ) : null}
             </ul>
             <span className="card-link base-card-cta">View base details</span>
           </Link>
@@ -218,6 +232,6 @@ export function NativeBasesPage({ items }) {
         nextLabel="Review Your Full Plan"
         nextHref="/how-to-plan-a-military-pcs-move"
       />
-    </main>
+    </div>
   );
 }

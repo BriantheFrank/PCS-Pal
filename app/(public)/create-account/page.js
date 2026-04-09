@@ -35,41 +35,18 @@ export default function CreateAccountPage() {
           Create an account to save your checklist, inventory, and move plans so you can return to
           them later.
         </p>
-        <p className="subtitle">
-          You can explore the public guides without an account, but sign-in is helpful if you want
-          to save your progress.
-        </p>
       </SiteHeader>
 
-      <main className="container">
-        <section className="landing-hero signup-page-layout">
+      <main className="container" id="main-content">
+        <section className="landing-hero signup-page-layout signup-page-layout-single">
           <CreateAccountForm />
-
-          <div className="info-panel signup-page-card signup-page-side">
-            <p className="eyebrow">What Comes Next</p>
-            <h2>Why create an account</h2>
-            <p>
-              After you sign in, your checklist, inventory, and move plans stay connected to your account.
-            </p>
-            <ul className="signup-page-list">
-              <li>Keep checklist progress synced across browsers and devices</li>
-              <li>Hold onto your move inventory in one account-linked workspace</li>
-              <li>Track logistics details without scattering them across notes and tabs</li>
-              <li>
-                Review the public <Link href="/terms">Terms of Use</Link> and{" "}
-                <Link href="/privacy">Privacy Policy</Link> before account creation
-              </li>
-            </ul>
-          </div>
+          <p className="signup-page-inline-link">
+            Already have an account? <Link href="/sign-in">Sign in</Link>.
+          </p>
         </section>
       </main>
 
-      <SiteFooter>
-        <p className="footer-tip">
-          Tip: After account creation, confirm your email, then use the sign-in page to return to
-          your workspace.
-        </p>
-      </SiteFooter>
+      <SiteFooter />
     </>
   );
 }
