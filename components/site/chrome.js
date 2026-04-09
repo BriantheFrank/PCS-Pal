@@ -45,7 +45,7 @@ function ThemeToggle() {
 }
 
 function PrimaryNav({ pathname, onNavigate }) {
-  const navItems = useMemo(() => primaryPublicNavLinks.filter((item) => item.href !== pathname), [pathname]);
+  const navItems = useMemo(() => primaryPublicNavLinks, []);
 
   return (
     <nav className="primary-nav" aria-label="Primary">
