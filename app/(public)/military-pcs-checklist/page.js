@@ -59,14 +59,13 @@ export default function MilitaryPcsChecklistPage() {
         <p className="eyebrow">Checklist</p>
         <h1>Keep your PCS tasks clear from orders to arrival</h1>
         <p className="subtitle">
-          Use this page to keep track of what needs to happen before, during, and after your PCS. If
-          this is your first move, start here.
+          PCS moves add tasks fast. This checklist keeps critical actions visible from orders through your first week after arrival.
         </p>
       </SiteHeader>
 
       <main className="container legal-page-layout">
         <GuidedPageIntro
-          purpose="Use this page to keep track of what needs to happen before, during, and after your PCS. If this is your first move, start here."
+          purpose="Track 34 core PCS tasks by phase so your move plan stays complete and organized."
           bestFor="First-time movers, families moving with kids, and anyone trying to stay organized before pack-out and arrival."
           startBy="Adding your orders date, report date, and the documents you know you will need to keep with you."
           nextStepLabel="Build your inventory"

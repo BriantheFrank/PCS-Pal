@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { GuidedPageIntro } from "@/components/site/guided-page-intro";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
@@ -99,6 +100,13 @@ export default function PcsGlossaryPage() {
       </SiteHeader>
 
       <main className="container legal-page-layout">
+        <GuidedPageIntro
+          purpose="Translate common PCS acronyms and terms into plain English."
+          bestFor="First-time movers and families working through new installation processes."
+          startBy="Looking up unfamiliar terms in your orders, checklists, and base guidance."
+          nextStepLabel="Back to Start Here"
+          nextStepHref="/how-to-plan-a-military-pcs-move"
+        />
         <section className="info-panel legal-page-section">
           <h2>Common terms in plain English</h2>
           <p>

@@ -19,7 +19,7 @@ export function SignInForm() {
     isSubmitting: false,
   });
   const nextPath = useMemo(
-    () => resolveSafeNextPath(searchParams.get("next"), "/"),
+    () => resolveSafeNextPath(searchParams.get("next"), "/military-pcs-checklist"),
     [searchParams]
   );
 
@@ -107,6 +107,9 @@ export function SignInForm() {
           Password
           <input type="password" name="password" autoComplete="current-password" required />
         </label>
+        <Link className="text-link" href="/forgot-password">
+          Forgot password?
+        </Link>
         <button type="submit" disabled={submitState.isSubmitting || status === "error"}>
           {submitState.isSubmitting ? "Opening your account..." : "Sign in"}
         </button>

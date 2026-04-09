@@ -6,9 +6,9 @@ import { useState } from "react";
 import { PageStepNav } from "@/components/site/guided-page-intro";
 import { pcsGeneralLinks } from "@/lib/bases/pcs-community-links";
 
-const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => {
-  if (visibleCount === items.length && !searchValue && !stateValue) {
-    return `${items.length} base guides available.`;
+const getResultsMessage = ({ items, searchValue, stateValue, branchValue, visibleCount }) => {
+  if (visibleCount === items.length && !searchValue && !stateValue && !branchValue) {
+    return `Showing ${items.length} of ${items.length} installations.`;
   }
 
   if (visibleCount === 0) {
@@ -22,8 +22,11 @@ const getResultsMessage = ({ items, searchValue, stateValue, visibleCount }) => 
   if (stateValue) {
     filters.push(stateValue);
   }
+  if (branchValue) {
+    filters.push(branchValue);
+  }
 
-  return `${visibleCount} base guide${visibleCount === 1 ? "" : "s"} shown${
+  return `Showing ${visibleCount} of ${items.length} installations${
     filters.length ? ` for ${filters.join(" and ")}` : ""
   }.`;
 };
@@ -37,20 +40,26 @@ export function BasesHeading() {
 export function NativeBasesPage({ items }) {
   const [searchValue, setSearchValue] = useState("");
   const [stateValue, setStateValue] = useState("");
+  const [branchValue, setBranchValue] = useState("");
 
   const normalizedQuery = searchValue.trim().toLowerCase();
   const uniqueStates = Array.from(new Set(items.map((item) => item.state).filter(Boolean))).sort(
     (left, right) => left.localeCompare(right)
   );
+  const uniqueBranches = Array.from(new Set(items.map((item) => item.branch).filter(Boolean))).sort(
+    (left, right) => left.localeCompare(right)
+  );
   const visibleItems = items.filter((item) => {
     const matchesQuery = !normalizedQuery || item.searchText.includes(normalizedQuery);
     const matchesState = !stateValue || item.state === stateValue;
-    return matchesQuery && matchesState;
+    const matchesBranch = !branchValue || item.branch === branchValue;
+    return matchesQuery && matchesState && matchesBranch;
   });
   const resultsMessage = getResultsMessage({
     items,
     searchValue: searchValue.trim(),
     stateValue,
+    branchValue,
     visibleCount: visibleItems.length,
   });
 
@@ -125,6 +134,21 @@ export function NativeBasesPage({ items }) {
               ))}
             </select>
           </label>
+          <label className="base-browser-field" htmlFor="base-branch-filter">
+            Filter by branch
+            <select
+              id="base-branch-filter"
+              value={branchValue}
+              onChange={(event) => setBranchValue(event.target.value)}
+            >
+              <option value="">All branches</option>
+              {uniqueBranches.map((branch) => (
+                <option key={branch} value={branch}>
+                  {branch}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <p className="base-browser-results" aria-live="polite">
           {resultsMessage}
@@ -136,6 +160,7 @@ export function NativeBasesPage({ items }) {
           <Link className="base-card" href={item.href} key={item.slug}>
             <h2>{item.title}</h2>
             <p className="base-state">{item.state}</p>
+            <p className="base-state">{item.branch}</p>
             {item.aliases?.length ? (
               <p className="inventory-notes">Also commonly known as {item.aliases.join(", ")}</p>
             ) : null}
@@ -175,12 +200,23 @@ export function NativeBasesPage({ items }) {
           ))}
         </div>
       </section>
+      <section className="info-panel base-browser-panel">
+        <p>
+          Don&apos;t see your installation?{" "}
+          <Link
+            className="text-link"
+            href="/contact?topic=suggest_feature&message=I%27d%20like%20to%20request%20a%20base%20guide%20for%3A%20"
+          >
+            Request a base guide →
+          </Link>
+        </p>
+      </section>
 
       <PageStepNav
         previousLabel="Logistics"
         previousHref="/pcs-move-logistics-planning"
-        nextLabel="Contact"
-        nextHref="/contact"
+        nextLabel="Review Your Full Plan"
+        nextHref="/how-to-plan-a-military-pcs-move"
       />
     </main>
   );

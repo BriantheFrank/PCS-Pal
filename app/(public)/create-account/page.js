@@ -6,7 +6,7 @@ import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome"
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "Create an account";
+const title = "Create Account";
 const description =
   "Create your PCS Pal account to keep your checklist, move inventory, and logistics details tied to you across devices.";
 

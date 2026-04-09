@@ -9,7 +9,7 @@ import {
   buildWebSiteSchema,
 } from "@/lib/structured-data";
 
-const title = "Military PCS Move Planning Guide | PCS Pal";
+const title = "Military PCS Move Planning Guide";
 const description =
   "PCS Pal helps military families plan a PCS with a clear checklist, inventory tracker, travel and arrival planning, and base guides.";
 
@@ -41,11 +41,26 @@ const START_HERE_CARDS = [
 ];
 
 const COMMON_QUESTIONS = [
-  "What should I hand-carry instead of packing?",
-  "What documents do I need for housing, medical, and school?",
-  "What happens if household goods are delayed?",
-  "How do I prepare for a move with kids or pets?",
-  "What should I do in the first week after arrival?",
+  {
+    label: "What should I hand-carry instead of packing?",
+    href: "/guides/hand-carry-essentials",
+  },
+  {
+    label: "What documents do I need for housing, medical, and school?",
+    href: "/guides/pcs-documents-checklist",
+  },
+  {
+    label: "What happens if household goods are delayed?",
+    href: "/pcs-move-logistics-planning",
+  },
+  {
+    label: "How do I prepare for a move with kids or pets?",
+    href: "/guides/moving-with-kids-and-pets",
+  },
+  {
+    label: "What should I do in the first week after arrival?",
+    href: "/bases",
+  },
 ];
 
 export const metadata = buildPageMetadata({
@@ -121,9 +136,9 @@ export default function HomePage() {
           <h2 id="common-questions-title">Common PCS questions, answered</h2>
           <ul className="home-question-list">
             {COMMON_QUESTIONS.map((question) => (
-              <li key={question}>
-                <Link className="text-link" href="/military-pcs-checklist">
-                  {question}
+              <li key={question.label}>
+                <Link className="text-link" href={question.href}>
+                  {question.label}
                 </Link>
               </li>
             ))}

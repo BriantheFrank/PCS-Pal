@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const CONTACT_REASON_OPTIONS = [
   { id: "ask_question", feedbackType: "general_feedback", label: "Ask a question" },
@@ -27,6 +27,22 @@ const initialStatus = {
 export function ContactPageForm() {
   const [formState, setFormState] = useState(initialState);
   const [status, setStatus] = useState(initialStatus);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    const topic = params.get("topic");
+    const message = params.get("message");
+    if (topic || message) {
+      setFormState((current) => ({
+        ...current,
+        contactReason: topic || current.contactReason,
+        message: message || current.message,
+      }));
+    }
+  }, []);
 
   const selectedReason =
     CONTACT_REASON_OPTIONS.find((option) => option.id === formState.contactReason) ||

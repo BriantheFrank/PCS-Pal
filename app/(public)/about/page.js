@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { GuidedPageIntro } from "@/components/site/guided-page-intro";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
@@ -36,45 +35,45 @@ export default function AboutPage() {
 
       <SiteHeader topBar={<LandingTopBar active="about" />}>
         <p className="eyebrow">About PCS Pal</p>
-        <h1>Built to help military families stay organized during a PCS</h1>
+        <h1>Built from real PCS stress, not generic move templates</h1>
         <p className="subtitle">
-          PCS Pal is built to help military families stay organized during a PCS move. The goal is
-          simple: make it easier to keep track of tasks, documents, travel plans, and arrival
-          information in one place.
+          PCS Pal was built to reduce the overwhelm that hits when orders drop and every task feels urgent at once.
         </p>
       </SiteHeader>
 
       <main className="container legal-page-layout">
-        <GuidedPageIntro
-          purpose="Understand what PCS Pal is built to help with and how to use the core pages."
-          bestFor="Military families who want a practical, step-by-step way to plan a move without juggling multiple apps and notes."
-          startBy="Opening the checklist page, then move to inventory, logistics, and base guides as your move details become clearer."
-          nextStepLabel="Go to Checklist"
-          nextStepHref="/military-pcs-checklist"
-        />
+        <section className="info-panel legal-page-section">
+          <h2>Why PCS Pal exists</h2>
+          <p>
+            Too many military families are forced to juggle paper checklists, social posts, and scattered bookmarks during a PCS. PCS Pal brings that workflow into one planning space designed for real move timelines and family pressure.
+          </p>
+        </section>
 
         <section className="info-panel legal-page-section">
-          <h2>What is included right now</h2>
+          <h2>What makes this different</h2>
           <ul className="legal-page-list">
-            <li>A checklist for before, during, and after your move.</li>
-            <li>An inventory tool for rooms, labels, and important items.</li>
-            <li>A logistics page for travel, lodging, and arrival-week planning.</li>
-            <li>Base guides focused on the first information families usually need.</li>
+            <li>Built around PCS-specific decisions, not generic household moves.</li>
+            <li>Combines checklist, inventory, logistics, and base research in one flow.</li>
+            <li>Designed to supplement official guidance, not replace it.</li>
           </ul>
         </section>
 
         <section className="info-panel legal-page-section">
-          <h2>How to start</h2>
+          <h2>We&apos;re working on next</h2>
+          <ul className="legal-page-list">
+            <li>More multi-branch and OCONUS base guides.</li>
+            <li>Expanded dashboard progress tracking and reminders.</li>
+            <li>Better account-level sync and planning exports.</li>
+          </ul>
+        </section>
+
+        <section className="info-panel legal-page-section">
+          <h2>Trust and data</h2>
           <p>
-            Start with the public <Link className="text-link" href="/military-pcs-checklist">checklist</Link>, then
-            use <Link className="text-link" href="/pcs-inventory-label-tracking"> inventory</Link>,{" "}
-            <Link className="text-link" href="/pcs-move-logistics-planning">logistics</Link>, and{" "}
-            <Link className="text-link" href="/bases">base guides</Link> as your plan takes shape.
+            Questions? Use the <Link className="text-link" href="/contact">contact page</Link>. Review data handling in the{" "}
+            <Link className="text-link" href="/privacy">Privacy Policy</Link>. PCS Pal is a planning companion and does not replace official command, transportation, or finance guidance.
           </p>
-          <p>
-            You can sign in to save your move plan across devices. Public guides stay available even
-            without an account.
-          </p>
+          <Link className="landing-primary-action" href="/create-account">Create account</Link>
         </section>
       </main>
 

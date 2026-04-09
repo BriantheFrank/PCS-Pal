@@ -22,7 +22,7 @@ const LEGAL_REGISTRY_UNAVAILABLE_MESSAGE =
 const LEGAL_VERSION_UNAVAILABLE_MESSAGE =
   "Current legal document versions are unavailable right now. Please try again in a moment.";
 const LOADING_SIGNUP_MESSAGE = "Getting account setup ready";
-const REDIRECT_TARGET = "/";
+const REDIRECT_TARGET = "/military-pcs-checklist";
 
 export function CreateAccountForm() {
   const { status: sessionStatus, user, legalDocs, legalDocsAuthoritative, errorMessage } =
@@ -111,6 +111,7 @@ export function CreateAccountForm() {
     const fullName = normalizeFullName(String(formData.get("full_name") || ""));
     const email = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "");
+    const confirmPassword = String(formData.get("confirm_password") || "");
     const marketingConsent = formData.get("marketing_consent") === "on";
     const legalAcknowledged = formData.get("required_legal_acknowledgment") === "on";
 
@@ -248,6 +249,10 @@ export function CreateAccountForm() {
             minLength={8}
             required
           />
+        </label>
+        <label>
+          Confirm password
+          <input type="password" name="confirm_password" autoComplete="new-password" minLength={8} required />
         </label>
         <div className="signup-legal-block">
           <label className="account-checkbox signup-consent-checkbox">

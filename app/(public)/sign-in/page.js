@@ -7,7 +7,7 @@ import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome"
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
-const title = "Sign in";
+const title = "Sign In";
 const description =
   "Sign in to PCS Pal to pick up your checklist, move organizer, and planning details from any device.";
 

@@ -40,10 +40,10 @@ export default function ContactPage() {
         <section className="info-panel legal-page-section">
           <h2>What can we help with?</h2>
           <ul className="legal-page-list">
-            <li>Founder or reviewer product feedback.</li>
-            <li>Bug reports tied to account, sync, or tool behavior.</li>
-            <li>Questions about the current draft legal or privacy pages.</li>
-            <li>Notes on clarity, trust, or common problems.</li>
+            <li>Questions about how the tool works or what&apos;s included.</li>
+            <li>Suggestions for new features, base guides, or content.</li>
+            <li>Reports of broken links, missing content, or incorrect base information.</li>
+            <li>Privacy, account, or data-related questions.</li>
           </ul>
         </section>
 
