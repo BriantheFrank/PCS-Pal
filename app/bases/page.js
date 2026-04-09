@@ -1,6 +1,7 @@
 import { baseIndexItems } from "@/lib/bases/base-index-data";
 import { BasesHeading, NativeBasesPage } from "@/components/bases/native-bases-page";
 import { JsonLd } from "@/components/seo/json-ld";
+import { MetaSummary } from "@/components/site/meta-summary";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
@@ -41,17 +42,20 @@ export default function BasesPage() {
           Use this section to quickly find the most important arrival information for your
           installation, including lodging, housing, transportation, and key offices.
         </p>
-        <p>
-          Best for: Families getting familiar with a new duty station before travel or shortly after
-          arrival.
-        </p>
-        <p>
-          Start by: Choose your installation, then review lodging, housing, and the first offices or
-          resources you expect to need.
-        </p>
       </SiteHeader>
 
-      <NativeBasesPage items={baseIndexItems} />
+      <main id="main-content">
+        <section className="container legal-page-layout">
+          <MetaSummary
+            purpose="Help you choose the right installation guide and surface first-week resources quickly."
+            bestFor="Families getting familiar with a new duty station before travel or shortly after arrival."
+            startBy="Choose your installation, then review lodging, housing, and first offices you expect to need."
+            nextStepLabel="Open your dashboard"
+            nextStepHref="/dashboard"
+          />
+        </section>
+        <NativeBasesPage items={baseIndexItems} />
+      </main>
 
       <SiteFooter>
         <p>

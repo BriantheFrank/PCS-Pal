@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
+import { CardLink } from "@/components/site/card-link";
 import { buildPageMetadata } from "@/lib/metadata";
 import {
   buildOrganizationSchema,
@@ -98,7 +99,7 @@ export default function HomePage() {
         </p>
       </SiteHeader>
 
-      <main className="container">
+      <main className="container" id="main-content">
         <section className="landing-hero info-panel">
           <div className="landing-hero-copy">
             <div className="landing-workspace-actions">
@@ -123,11 +124,13 @@ export default function HomePage() {
           </div>
           <div className="card-grid">
             {START_HERE_CARDS.map((card) => (
-              <Link className="nav-card" href={card.href} key={card.href}>
-                <h3>{card.title}</h3>
-                <p>{card.body}</p>
-                <span className="card-link">{card.cta}</span>
-              </Link>
+              <CardLink
+                key={card.href}
+                href={card.href}
+                title={card.title}
+                description={card.body}
+                cta={card.cta}
+              />
             ))}
           </div>
         </section>

@@ -1,18 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
 
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+const AUTH_ENTRY_PATHS = new Set(["/sign-in", "/create-account", "/forgot-password"]);
 
-export function NativeAccountShell({ mobile = false, onNavigate }) {
-  const { user, signOut } = useNativeAuth();
+export function NativeAccountShell({
+  mobile = false,
+  onNavigate,
+  pathname = "",
+  forcePublicActions = false,
+}) {
+  const { user, status, signOut } = useNativeAuth();
   const [open, setOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const shellRef = useRef(null);
+  const menuId = useId();
+
+  const isAuthEntry = AUTH_ENTRY_PATHS.has(pathname);
+  const shouldUsePublicMenu = forcePublicActions || isAuthEntry || status !== "ready" || !user;
+
+  const menuItems = useMemo(
+    () =>
+      shouldUsePublicMenu
+        ? [
+            { href: "/sign-in", label: "Sign In" },
+            { href: "/create-account", label: "Create Account" },
+          ]
+        : [
+            { href: "/dashboard", label: "My Move Dashboard" },
+            { href: "/account", label: "Settings" },
+          ],
+    [shouldUsePublicMenu]
+  );
 
   useEffect(() => {
     if (!open) {
@@ -25,36 +47,20 @@ export function NativeAccountShell({ mobile = false, onNavigate }) {
       }
     };
 
-    const handleKey = (event) => {
+    const closeOnEscape = (event) => {
       if (event.key === "Escape") {
         setOpen(false);
-      }
-
-      if (event.key !== "Tab") {
-        return;
-      }
-
-      const focusables = shellRef.current?.querySelectorAll(FOCUSABLE_SELECTOR);
-      if (!focusables?.length) {
-        return;
-      }
-
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
       }
     };
 
     document.addEventListener("mousedown", closeOnOutside);
-    document.addEventListener("keydown", handleKey);
+    document.addEventListener("focusin", closeOnOutside);
+    document.addEventListener("keydown", closeOnEscape);
+
     return () => {
       document.removeEventListener("mousedown", closeOnOutside);
-      document.removeEventListener("keydown", handleKey);
+      document.removeEventListener("focusin", closeOnOutside);
+      document.removeEventListener("keydown", closeOnEscape);
     };
   }, [open]);
 
@@ -70,32 +76,36 @@ export function NativeAccountShell({ mobile = false, onNavigate }) {
     onNavigate?.();
   };
 
-  const menuItems = user
-    ? [
-        { href: "/dashboard", label: "My Move Dashboard" },
-        { href: "/account", label: "Settings" },
-      ]
-    : [
-        { href: "/sign-in", label: "Sign In" },
-        { href: "/create-account", label: "Create Account" },
-      ];
-
   return (
-    <div className={`account-shell${mobile ? " is-mobile" : ""}`} ref={shellRef}>
+    <div
+      className={`account-shell${mobile ? " is-mobile" : ""}`}
+      ref={shellRef}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setOpen(false);
+        }
+      }}
+    >
       <button
+        id={`${menuId}-trigger`}
         type="button"
         className="account-trigger"
         aria-expanded={open}
         aria-haspopup="menu"
+        aria-controls={`${menuId}-menu`}
         onClick={() => setOpen((value) => !value)}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             setOpen((value) => !value);
           }
+          if (event.key === "ArrowDown" && !open) {
+            event.preventDefault();
+            setOpen(true);
+          }
         }}
       >
-        Account
+        <span>Account</span>
         <svg
           className="account-chevron"
           viewBox="0 0 24 24"
@@ -106,7 +116,13 @@ export function NativeAccountShell({ mobile = false, onNavigate }) {
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" />
         </svg>
       </button>
-      <div className="account-menu" role="menu" hidden={!open}>
+      <div
+        id={`${menuId}-menu`}
+        className="account-menu"
+        role="menu"
+        aria-hidden={!open}
+        hidden={!open}
+      >
         {menuItems.map((item) => (
           <Link
             role="menuitem"
@@ -120,8 +136,14 @@ export function NativeAccountShell({ mobile = false, onNavigate }) {
             {item.label}
           </Link>
         ))}
-        {user ? (
-          <button type="button" role="menuitem" onClick={handleSignOut}>
+        {!shouldUsePublicMenu ? (
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              void handleSignOut();
+            }}
+          >
             Sign Out
           </button>
         ) : null}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { GuidedPageIntro, PageStepNav } from "@/components/site/guided-page-intro";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
+import { CardLink } from "@/components/site/card-link";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildWebPageSchema } from "@/lib/structured-data";
 
@@ -65,7 +66,7 @@ export default function InventoryLandingPage() {
         </p>
       </SiteHeader>
 
-      <main className="container legal-page-layout">
+      <main className="container legal-page-layout" id="main-content">
         <GuidedPageIntro
           purpose="Capture room-level inventory details, labels, and high-value documentation before pack-out."
           bestFor="Families trying to stay organized during pack-out, unpacking, and household goods delivery."
@@ -88,11 +89,13 @@ export default function InventoryLandingPage() {
           <h2>Related pages</h2>
           <div className="card-grid">
             {relatedLinks.map((link) => (
-              <Link className="nav-card" href={link.href} key={link.href}>
-                <h3>{link.title}</h3>
-                <p>{link.description}</p>
-                <span className="card-link">Open page</span>
-              </Link>
+              <CardLink
+                key={link.href}
+                href={link.href}
+                title={link.title}
+                description={link.description}
+                cta="Open page"
+              />
             ))}
           </div>
         </section>

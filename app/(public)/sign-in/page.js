@@ -45,45 +45,21 @@ export default function SignInPage() {
       <SiteHeader topBar={<LandingTopBar />}>
         <p className="eyebrow">PCS Pal Account Access</p>
         <h1>Sign in</h1>
-        <p className="subtitle">
-          Sign in to access your saved checklist, inventory, and move plans.
-        </p>
-        <p className="subtitle">You can still browse public guides without an account.</p>
-        <p className="subtitle">An account helps keep your move information available across devices.</p>
+        <p className="subtitle">Sign in to access your saved checklist, inventory, and move plans.</p>
       </SiteHeader>
 
-      <main className="container">
-        <section className="landing-hero signup-page-layout">
+      <main className="container" id="main-content">
+        <section className="landing-hero signup-page-layout signup-page-layout-single">
           <Suspense fallback={<SignInFormFallback />}>
             <SignInForm />
           </Suspense>
-
-          <div className="info-panel signup-page-card signup-page-side">
-            <p className="eyebrow">Need an account first?</p>
-            <h2>Create an account</h2>
-            <p>
-              A PCS Pal account helps you save your move information and return to it later from any device.
-            </p>
-            <ul className="signup-page-list">
-              <li>Use the same email account you created during setup</li>
-              <li>
-                Need a new account? <Link href="/create-account">Create one here</Link>
-              </li>
-              <li>
-                Review the public <Link href="/terms">Terms of Use</Link> and{" "}
-                <Link href="/privacy">Privacy Policy</Link> any time
-              </li>
-            </ul>
-          </div>
+          <p className="signup-page-inline-link">
+            Need an account? <Link href="/create-account">Create one</Link>.
+          </p>
         </section>
       </main>
 
-      <SiteFooter>
-        <p className="footer-tip">
-          Tip: Sign in from the same email you used during account creation so PCS Pal can reconnect
-          your planning details.
-        </p>
-      </SiteFooter>
+      <SiteFooter />
     </>
   );
 }
