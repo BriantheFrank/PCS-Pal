@@ -61,14 +61,13 @@ export default function InventoryLandingPage() {
         <p className="eyebrow">Inventory</p>
         <h1>Track packed items and labels so unpacking is easier</h1>
         <p className="subtitle">
-          Use this page to keep track of what is being packed, how boxes are labeled, and which items
-          may need better documentation for claims.
+          Movers load quickly. A room-by-room inventory helps you unpack faster and protects claim documentation if anything is missing or damaged.
         </p>
       </SiteHeader>
 
       <main className="container legal-page-layout">
         <GuidedPageIntro
-          purpose="Use this page to keep track of what is being packed, how boxes are labeled, and which items may need better documentation for claims."
+          purpose="Capture room-level inventory details, labels, and high-value documentation before pack-out."
           bestFor="Families trying to stay organized during pack-out, unpacking, and household goods delivery."
           startBy="Adding one room, then list the items you would struggle most to replace first."
           nextStepLabel="Plan travel and arrival"

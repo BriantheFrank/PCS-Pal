@@ -354,4 +354,68 @@ const baseArrivalData = {
   },
 };
 
+const buildSupplementalBase = ({ slug, installationName, state, receptionTitle }) => ({
+  ...withCommonLinks(slug, installationName, `${installationName} temporary lodging`),
+  installationName,
+  state,
+  receptionTitle,
+  receptionDescription:
+    "Confirm reporting and in-processing procedures with your gaining unit before travel day. Keep orders, IDs, and contact details handy on arrival.",
+  receptionOfficialLink: militaryInstallations(slug),
+  receptionGoogleMapsLink: mapSearch(`${installationName} reception`),
+});
+
+Object.assign(baseArrivalData, {
+  "naval-station-norfolk": buildSupplementalBase({
+    slug: "naval-station-norfolk",
+    installationName: "Naval Station Norfolk",
+    state: "Virginia",
+    receptionTitle: "Command-sponsored newcomer center",
+  }),
+  "naval-base-san-diego": buildSupplementalBase({
+    slug: "naval-base-san-diego",
+    installationName: "Naval Base San Diego",
+    state: "California",
+    receptionTitle: "Fleet and Family support check-in",
+  }),
+  "nas-pensacola": buildSupplementalBase({
+    slug: "naval-air-station-pensacola",
+    installationName: "Naval Air Station Pensacola",
+    state: "Florida",
+    receptionTitle: "Installation newcomer support",
+  }),
+  "naval-base-kitsap": buildSupplementalBase({
+    slug: "naval-base-kitsap",
+    installationName: "Naval Base Kitsap",
+    state: "Washington",
+    receptionTitle: "Fleet and Family support check-in",
+  }),
+  "naval-station-pearl-harbor": buildSupplementalBase({
+    slug: "joint-base-pearl-harbor-hickam",
+    installationName: "Naval Station Pearl Harbor",
+    state: "Hawaii",
+    receptionTitle: "Installation newcomer support",
+  }),
+  "nas-jacksonville": buildSupplementalBase({
+    slug: "nas-jacksonville",
+    installationName: "NAS Jacksonville",
+    state: "Florida",
+    receptionTitle: "Fleet and Family support check-in",
+  }),
+  "camp-lejeune": buildSupplementalBase({ slug: "camp-lejeune", installationName: "Camp Lejeune", state: "North Carolina", receptionTitle: "Installation reception center" }),
+  "camp-pendleton": buildSupplementalBase({ slug: "camp-pendleton", installationName: "Camp Pendleton", state: "California", receptionTitle: "Installation reception center" }),
+  "mcb-quantico": buildSupplementalBase({ slug: "marine-corps-base-quantico", installationName: "MCB Quantico", state: "Virginia", receptionTitle: "Installation reception center" }),
+  "mcas-miramar": buildSupplementalBase({ slug: "mcas-miramar", installationName: "MCAS Miramar", state: "California", receptionTitle: "Installation reception center" }),
+  "camp-butler": buildSupplementalBase({ slug: "camp-butler", installationName: "Camp Butler", state: "Okinawa (OCONUS)", receptionTitle: "Installation reception center" }),
+  "eglin-afb": buildSupplementalBase({ slug: "eglin-afb", installationName: "Eglin AFB", state: "Florida", receptionTitle: "Military Personnel Flight check-in" }),
+  "lackland-afb-jbsa": buildSupplementalBase({ slug: "joint-base-san-antonio-lackland", installationName: "Lackland AFB / JBSA", state: "Texas", receptionTitle: "Military Personnel Flight check-in" }),
+  "travis-afb": buildSupplementalBase({ slug: "travis-afb", installationName: "Travis AFB", state: "California", receptionTitle: "Military Personnel Flight check-in" }),
+  "ramstein-ab": buildSupplementalBase({ slug: "ramstein-ab", installationName: "Ramstein AB", state: "Germany (OCONUS)", receptionTitle: "Military Personnel Flight check-in" }),
+  "kadena-ab": buildSupplementalBase({ slug: "kadena-ab", installationName: "Kadena AB", state: "Japan (OCONUS)", receptionTitle: "Military Personnel Flight check-in" }),
+  "peterson-schriever-sfb": buildSupplementalBase({ slug: "peterson-schriever-sfb", installationName: "Peterson SFB / Schriever SFB", state: "Colorado", receptionTitle: "Military Personnel Flight check-in" }),
+  "andrews-afb-jba": buildSupplementalBase({ slug: "joint-base-andrews", installationName: "Andrews AFB / JBA", state: "Maryland", receptionTitle: "Military Personnel Flight check-in" }),
+  "base-cape-cod": buildSupplementalBase({ slug: "base-cape-cod", installationName: "Base Cape Cod", state: "Massachusetts", receptionTitle: "Command support check-in" }),
+  "sector-san-francisco": buildSupplementalBase({ slug: "sector-san-francisco", installationName: "Sector San Francisco", state: "California", receptionTitle: "Command support check-in" }),
+});
+
 export { baseArrivalData, ID_CARD_OFFICE_LOCATOR, REPORTING_NOTE, mapSearch };

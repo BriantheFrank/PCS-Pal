@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { GuidedPageIntro } from "@/components/site/guided-page-intro";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { buildPageMetadata } from "@/lib/metadata";
@@ -63,6 +64,26 @@ export default function PcsPlanningGuidePage() {
       </SiteHeader>
 
       <main className="container legal-page-layout">
+        <GuidedPageIntro
+          purpose="Give you a clear PCS sequence from orders to arrival so nothing critical is missed."
+          bestFor="First-time movers and experienced families who want a calm reset plan."
+          startBy="Completing the first 24-48 hour actions, then moving through checklist, inventory, logistics, and base research."
+          nextStepLabel="Open Checklist"
+          nextStepHref="/military-pcs-checklist"
+        />
+        <section className="info-panel legal-page-section">
+          <h2>How long do I have?</h2>
+          <p>Many CONUS PCS moves run roughly 30-90 days from orders to report date, but timelines can move faster.</p>
+          <p>Start immediately with orders review, transportation scheduling, and document prep.</p>
+        </section>
+        <section className="info-panel legal-page-section">
+          <h2>What to do right now (first 24-48 hours)</h2>
+          <ul className="legal-page-list">
+            <li>Review report date, gaining unit, and transportation instructions.</li>
+            <li>Notify your household and begin collecting must-carry documents.</li>
+            <li>Set your next planning checkpoint on the checklist page.</li>
+          </ul>
+        </section>
         <section className="info-panel legal-page-section">
           <h2>Your four-step PCS plan</h2>
           <div className="card-grid">
@@ -74,6 +95,18 @@ export default function PcsPlanningGuidePage() {
               </Link>
             ))}
           </div>
+        </section>
+        <section className="info-panel legal-page-section">
+          <h2>PCS timeline at a glance</h2>
+          <ol className="legal-page-list">
+            <li>Orders received</li>
+            <li>Pre-pack-out prep</li>
+            <li>Travel week</li>
+            <li>In-processing at new station</li>
+          </ol>
+          <p>
+            New to acronyms? Open the <Link className="text-link" href="/pcs-glossary">PCS Glossary</Link>.
+          </p>
         </section>
       </main>
 

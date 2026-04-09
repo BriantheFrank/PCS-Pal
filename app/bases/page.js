@@ -54,7 +54,15 @@ export default function BasesPage() {
       <NativeBasesPage items={baseIndexItems} />
 
       <SiteFooter>
-        <p>More base guides are coming soon.</p>
+        <p>
+          Don&apos;t see your installation?{" "}
+          <a
+            className="text-link"
+            href="/contact?topic=suggest_feature&message=I%27d%20like%20to%20request%20a%20base%20guide%20for%3A%20"
+          >
+            Request a base guide →
+          </a>
+        </p>
       </SiteFooter>
     </>
   );

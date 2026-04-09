@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { NativeGuidePage } from "@/components/guides/native-guide-page";
 import { JsonLd } from "@/components/seo/json-ld";
+import { GuidedPageIntro } from "@/components/site/guided-page-intro";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { GUIDE_SLUGS, getGuidePageData } from "@/lib/guides/page-data";
 import { buildPageMetadata } from "@/lib/metadata";
@@ -62,6 +63,15 @@ export default function GuideArticlePage({ params }) {
         </Link>
       </SiteHeader>
 
+      <main className="container legal-page-layout" id="main-content">
+        <GuidedPageIntro
+          purpose={pageData.description}
+          bestFor="Families completing this checklist step and planning next actions."
+          startBy="Reviewing the checklist and marking completed items."
+          nextStepLabel="Back to Checklist"
+          nextStepHref="/military-pcs-checklist"
+        />
+      </main>
       <NativeGuidePage pageData={pageData} />
 
       <SiteFooter>

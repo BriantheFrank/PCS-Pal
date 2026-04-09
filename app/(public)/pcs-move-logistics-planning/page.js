@@ -61,14 +61,13 @@ export default function LogisticsLandingPage() {
         <p className="eyebrow">Logistics</p>
         <h1>Plan travel and arrival details in one place</h1>
         <p className="subtitle">
-          Use this page to map out your travel, lodging, arrival timing, and the first tasks you need
-          to handle at your new duty station.
+          Travel dates, lodging, HHG timing, and first-week appointments are easier to manage when they are planned together in one timeline.
         </p>
       </SiteHeader>
 
       <main className="container legal-page-layout">
         <GuidedPageIntro
-          purpose="Use this page to map out your travel, lodging, arrival timing, and the first tasks you need to handle at your new duty station."
+          purpose="Coordinate travel windows, temporary lodging, and early in-processing tasks in one logistics plan."
           bestFor="Families coordinating travel days, temporary lodging, check-in timing, and arrival-week planning."
           startBy="Adding your expected travel window, temporary lodging plan, and first-day arrival priorities."
           nextStepLabel="Review base guides"
