@@ -23,6 +23,16 @@ import { RoomPhotoExtractionPanel } from "@/components/inventory/room-photo-extr
 import { RoomPhotoGrid } from "@/components/inventory/room-photo-grid";
 import { RoomPhotoUploader } from "@/components/inventory/room-photo-uploader";
 import { useRoomPhotos } from "@/components/inventory/use-room-photos";
+import { ExtractionReviewCardList } from "@/components/inventory/extraction-review-card-list";
+import { ExtractionReviewTable } from "@/components/inventory/extraction-review-table";
+import {
+  createReviewItemId,
+  loadReviewDrafts,
+  mapExtractedItemToReviewDraft,
+  normalizeReviewDraftPayload,
+  saveReviewDrafts,
+  toInventoryItemsFromReviewDraft,
+} from "@/lib/inventory-review-mapper";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser-client";
 
 const SYNC_DELAY_MS = 600;
@@ -561,6 +571,8 @@ export function NativeInventoryPage() {
   const [labelSettings, setLabelSettings] = useState(null);
   const [labelActionStatus, setLabelActionStatus] = useState(initialStatus);
   const [roomPhotoAction, setRoomPhotoAction] = useState({});
+  const [reviewDraftsByRoomId, setReviewDraftsByRoomId] = useState({});
+  const [reviewSaveStatusByRoomId, setReviewSaveStatusByRoomId] = useState({});
   const inventoryRef = useRef(inventory);
   const syncTimerRef = useRef(null);
   const labelPanelRef = useRef(null);
@@ -643,6 +655,7 @@ export function NativeInventoryPage() {
     let active = true;
     const storage = window.localStorage;
     const localInventory = loadInventoryState(storage);
+    setReviewDraftsByRoomId(loadReviewDrafts(storage));
     inventoryRef.current = localInventory;
     setInventory(localInventory);
     setInventoryReady(false);
@@ -688,6 +701,36 @@ export function NativeInventoryPage() {
       }
     };
   }, [status, user]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handleExtractionDraftReady = (event) => {
+      const normalized = normalizeReviewDraftPayload(event?.detail);
+      if (!normalized) {
+        return;
+      }
+
+      setReviewDraftsByRoomId((current) => {
+        const next = {
+          ...current,
+          [normalized.roomId]: normalized,
+        };
+        saveReviewDrafts(window.localStorage, next);
+        return next;
+      });
+    };
+
+    window.addEventListener("pcs-pal:inventory-extraction-draft-ready", handleExtractionDraftReady);
+    return () => {
+      window.removeEventListener(
+        "pcs-pal:inventory-extraction-draft-ready",
+        handleExtractionDraftReady
+      );
+    };
+  }, []);
 
   const syncActiveLabelSelection = (nextInventory, nextActiveLabelItem = activeLabelItem) => {
     if (!nextActiveLabelItem) {
@@ -869,6 +912,12 @@ export function NativeInventoryPage() {
     }
     if (field === "high-value") {
       item.isHighValue = Boolean(value);
+    }
+    if (field === "quantity") {
+      item.quantity = Math.max(1, Number(value) || 1);
+    }
+    if (field === "fragile") {
+      item.isFragile = Boolean(value);
     }
 
     commitInventory(draft);
@@ -1289,53 +1338,166 @@ export function NativeInventoryPage() {
     event.target.value = "";
   };
 
-  const handleSaveSuggestedItems = async (roomId, items) => {
-    if (!roomId || !Array.isArray(items) || !items.length) {
-      throw new Error("No suggested items were selected.");
+  const updateReviewDraft = (roomId, updater) => {
+    if (!roomId || typeof window === "undefined") {
+      return;
     }
 
-    const roomIndex = inventoryRef.current.rooms.findIndex((room) => room.id === roomId);
-    if (roomIndex < 0) {
-      throw new Error("This room no longer exists. Reload and try again.");
-    }
-
-    const draft = cloneInventoryState(inventoryRef.current);
-    const room = draft.rooms[roomIndex];
-    if (!room) {
-      throw new Error("Could not load this room. Try again.");
-    }
-
-    const existingNames = new Set(room.items.map((item) => normalizeSearchValue(item.label)));
-    let addedCount = 0;
-
-    items.forEach((suggestion) => {
-      const label = String(suggestion?.label || "").trim();
-      if (!label) {
-        return;
+    setReviewDraftsByRoomId((current) => {
+      const existing = current[roomId];
+      if (!existing) {
+        return current;
       }
 
-      const dedupeKey = normalizeSearchValue(label);
-      if (existingNames.has(dedupeKey)) {
-        return;
-      }
-
-      existingNames.add(dedupeKey);
-      room.items.push(
-        buildNewInventoryItem({
-          label,
-          category: suggestion.category,
-          notes: suggestion.notes,
-          includeInEstimate: true,
-        })
-      );
-      addedCount += 1;
+      const nextDraft = updater(existing);
+      const next = {
+        ...current,
+        [roomId]: nextDraft,
+      };
+      saveReviewDrafts(window.localStorage, next);
+      return next;
     });
+  };
 
-    if (!addedCount) {
-      throw new Error("No new items were saved. Suggestions may already exist in this room.");
+  const handleReviewItemChange = (roomId, reviewId, field, value) => {
+    updateReviewDraft(roomId, (draft) => ({
+      ...draft,
+      items: draft.items.map((item) => {
+        if (item.reviewId !== reviewId) {
+          return item;
+        }
+
+        if (field === "quantity" || field === "weight") {
+          return { ...item, [field]: Math.max(1, Number(value) || 1) };
+        }
+
+        return { ...item, [field]: value };
+      }),
+    }));
+  };
+
+  const handleReviewDeleteItem = (roomId, reviewId) => {
+    updateReviewDraft(roomId, (draft) => ({
+      ...draft,
+      items: draft.items.filter((item) => item.reviewId !== reviewId),
+    }));
+  };
+
+  const handleReviewAddItem = (roomId) => {
+    updateReviewDraft(roomId, (draft) => ({
+      ...draft,
+      items: [
+        ...draft.items,
+        mapExtractedItemToReviewDraft(
+          {
+            reviewId: createReviewItemId(),
+            label: "",
+            category: "Miscellaneous",
+            quantity: 1,
+            weight: 20,
+          },
+          draft.items.length
+        ),
+      ],
+    }));
+  };
+
+  const clearReviewStatus = (roomId) => {
+    setReviewSaveStatusByRoomId((current) => ({
+      ...current,
+      [roomId]: null,
+    }));
+  };
+
+  const handleDiscardReviewDraft = (roomId) => {
+    if (typeof window === "undefined") {
+      return;
     }
 
-    commitInventory(draft);
+    setReviewDraftsByRoomId((current) => {
+      const next = { ...current };
+      delete next[roomId];
+      saveReviewDrafts(window.localStorage, next);
+      return next;
+    });
+    clearReviewStatus(roomId);
+  };
+
+  const handleSaveReviewedItems = async (roomId, roomIndex) => {
+    const reviewDraft = reviewDraftsByRoomId[roomId];
+    if (!reviewDraft) {
+      return;
+    }
+
+    setReviewSaveStatusByRoomId((current) => ({
+      ...current,
+      [roomId]: { tone: "neutral", message: "Saving reviewed items..." },
+    }));
+
+    try {
+      const itemsToAdd = toInventoryItemsFromReviewDraft(reviewDraft).filter((item) =>
+        String(item.label || "").trim()
+      );
+      if (!itemsToAdd.length) {
+        throw new Error("Add at least one valid item name before saving.");
+      }
+
+      const draftInventory = cloneInventoryState(inventoryRef.current);
+      const room = draftInventory.rooms[roomIndex];
+      if (!room) {
+        throw new Error("This room no longer exists. Reload and try again.");
+      }
+
+      const existingSignatures = new Set(
+        room.items.map((item) =>
+          JSON.stringify({
+            source: item.source,
+            extractionJobId: item.sourceContext?.extractionJobId || "",
+            label: String(item.label || "").trim().toLowerCase(),
+            quantity: Number(item.quantity || 1),
+            weight: Number(item.weight || 0),
+          })
+        )
+      );
+
+      let addedCount = 0;
+      itemsToAdd.forEach((item) => {
+        const signature = JSON.stringify({
+          source: item.source,
+          extractionJobId: item.sourceContext?.extractionJobId || "",
+          label: String(item.label || "").trim().toLowerCase(),
+          quantity: Number(item.quantity || 1),
+          weight: Number(item.weight || 0),
+        });
+        if (existingSignatures.has(signature)) {
+          return;
+        }
+        room.items.push(item);
+        existingSignatures.add(signature);
+        addedCount += 1;
+      });
+
+      commitInventory(draftInventory);
+      handleDiscardReviewDraft(roomId);
+      setReviewSaveStatusByRoomId((current) => ({
+        ...current,
+        [roomId]: {
+          tone: "success",
+          message:
+            addedCount === 0
+              ? "No new items were added because matching reviewed items already exist."
+              : `${addedCount} reviewed ${addedCount === 1 ? "item" : "items"} saved to room inventory.`,
+        },
+      }));
+    } catch (error) {
+      setReviewSaveStatusByRoomId((current) => ({
+        ...current,
+        [roomId]: {
+          tone: "error",
+          message: error?.message || "Unable to save reviewed inventory items right now.",
+        },
+      }));
+    }
   };
   return (
     <main className="container inventory-grid">
@@ -1533,6 +1695,57 @@ export function NativeInventoryPage() {
                   handleRoomPhotoSelection(eventOrFiles, room.id);
                 }}
               />
+              {reviewDraftsByRoomId[room.id] ? (
+                <section className="extraction-review-panel">
+                  <div className="extraction-review-header">
+                    <div>
+                      <p className="eyebrow">AI extraction review</p>
+                      <h4>Review AI-estimated items before final save</h4>
+                    </div>
+                    <p className="inventory-room-meta">
+                      {reviewDraftsByRoomId[room.id].items.length} items detected
+                    </p>
+                  </div>
+                  <p className="extraction-review-note">
+                    AI extraction results are estimates. Please review, edit, delete false
+                    positives, and add missed items before saving to your inventory.
+                  </p>
+                  <ExtractionReviewTable
+                    items={reviewDraftsByRoomId[room.id].items}
+                    onItemChange={(reviewId, field, value) =>
+                      handleReviewItemChange(room.id, reviewId, field, value)
+                    }
+                    onDelete={(reviewId) => handleReviewDeleteItem(room.id, reviewId)}
+                  />
+                  <ExtractionReviewCardList
+                    items={reviewDraftsByRoomId[room.id].items}
+                    onItemChange={(reviewId, field, value) =>
+                      handleReviewItemChange(room.id, reviewId, field, value)
+                    }
+                    onDelete={(reviewId) => handleReviewDeleteItem(room.id, reviewId)}
+                  />
+                  {reviewSaveStatusByRoomId[room.id]?.message ? (
+                    <p
+                      className="auth-status"
+                      data-tone={reviewSaveStatusByRoomId[room.id].tone}
+                      aria-live="polite"
+                    >
+                      {reviewSaveStatusByRoomId[room.id].message}
+                    </p>
+                  ) : null}
+                  <div className="inventory-item-panel-actions">
+                    <button type="button" className="label-action secondary" onClick={() => handleReviewAddItem(room.id)}>
+                      Add missed item
+                    </button>
+                    <button type="button" className="label-action secondary" onClick={() => handleDiscardReviewDraft(room.id)}>
+                      Discard draft
+                    </button>
+                    <button type="button" className="label-action" onClick={() => handleSaveReviewedItems(room.id, roomIndex)}>
+                      Save reviewed items
+                    </button>
+                  </div>
+                </section>
+              ) : null}
               {filteredItems.length === 0 ? (
                 <p className="inventory-empty">No matching items yet.</p>
               ) : (
@@ -1592,6 +1805,19 @@ export function NativeInventoryPage() {
                               </select>
                             </label>
                             <label className="inventory-item-field">
+                              Quantity
+                              <input
+                                type="number"
+                                min="1"
+                                step="1"
+                                value={item.quantity || 1}
+                                data-field="quantity"
+                                data-room-index={roomIndex}
+                                data-item-index={itemIndex}
+                                onChange={(event) => handleItemFieldChange(roomIndex, itemIndex, "quantity", event.target.value)}
+                              />
+                            </label>
+                            <label className="inventory-item-field">
                               Estimated weight (lbs)
                               <input
                                 type="number"
@@ -1603,6 +1829,17 @@ export function NativeInventoryPage() {
                                 data-item-index={itemIndex}
                                 onChange={(event) => handleItemFieldChange(roomIndex, itemIndex, "weight", event.target.value)}
                               />
+                            </label>
+                            <label className="inventory-item-field inventory-item-checkbox">
+                              <input
+                                type="checkbox"
+                                data-field="fragile"
+                                data-room-index={roomIndex}
+                                data-item-index={itemIndex}
+                                checked={Boolean(item.isFragile)}
+                                onChange={(event) => handleItemFieldChange(roomIndex, itemIndex, "fragile", event.target.checked)}
+                              />
+                              <span>Fragile</span>
                             </label>
                             <label className="inventory-item-field inventory-item-checkbox">
                               <input
@@ -1628,6 +1865,14 @@ export function NativeInventoryPage() {
                             </label>
                           </div>
                           {item.notes ? <p className="inventory-notes">{item.notes}</p> : null}
+                          {item.source === "ai_photo_extraction" ? (
+                            <p className="inventory-notes inventory-notes-provenance">
+                              Source: AI photo extraction
+                              {item.sourceContext?.extractionJobId
+                                ? ` · Job ${item.sourceContext.extractionJobId}`
+                                : ""}
+                            </p>
+                          ) : null}
                           <div className="inventory-item-panel" data-panel="move" hidden={item.editMode !== "move"}>
                             <label className="inventory-item-field">
                               Move to room
