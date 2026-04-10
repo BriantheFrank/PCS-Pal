@@ -6,6 +6,7 @@ import {
   deleteRoomPhoto,
   getMoveScopeKey,
   listRoomPhotos,
+  MAX_ROOM_PHOTOS,
   saveRoomPhotos,
 } from "@/lib/local-room-photo-storage";
 
@@ -43,7 +44,14 @@ export const useRoomPhotos = ({ userId, moveProfile, roomId, roomName }) => {
 
   const addPhotos = useCallback(
     async (fileList) => {
-      if (!fileList?.length || !userId || !roomId || typeof window === "undefined") {
+      if (!fileList?.length) {
+        return;
+      }
+      if (!userId || !roomId || typeof window === "undefined") {
+        setStatus({
+          message: "Missing room or account context. Refresh and try again.",
+          tone: "error",
+        });
         return;
       }
 
@@ -75,6 +83,20 @@ export const useRoomPhotos = ({ userId, moveProfile, roomId, roomName }) => {
               : `${result.addedCount} photos saved locally to this room.`,
           tone: "success",
         });
+
+        if (result.skippedOversized || result.reachedRoomLimit) {
+          const details = [];
+          if (result.skippedOversized) {
+            details.push(`${result.skippedOversized} large photo${result.skippedOversized === 1 ? " was" : "s were"} skipped`);
+          }
+          if (result.reachedRoomLimit) {
+            details.push(`room limit is ${MAX_ROOM_PHOTOS} photos`);
+          }
+          setStatus({
+            message: `${result.addedCount} saved locally. ${details.join("; ")}.`,
+            tone: "neutral",
+          });
+        }
       } catch (error) {
         setStatus({
           message: error?.message || "Unable to save room photos on this device right now.",
