@@ -40,10 +40,6 @@ export default function LogisticsPage() {
         <p className="footer-tip">
           Tip: Your logistics updates save automatically so you can come back to them later.
         </p>
-        <p className="footer-disclaimer">
-          This logistics planner is for coordination purposes only and does not replace official
-          guidance from your transportation, housing, or command channels.
-        </p>
       </SiteFooter>
     </>
   );

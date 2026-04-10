@@ -35,13 +35,14 @@ export function ContactPageForm() {
     const params = new URLSearchParams(window.location.search);
     const topic = params.get("topic");
     const message = params.get("message");
-    if (topic || message) {
-      setFormState((current) => ({
-        ...current,
-        contactReason: topic || current.contactReason,
-        message: message || current.message,
-      }));
-    }
+    const issueFromQuery = params.get("page") || "";
+    const referrerPath = document.referrer ? new URL(document.referrer).pathname : "";
+    setFormState((current) => ({
+      ...current,
+      contactReason: String(topic || current.contactReason).trim(),
+      message: String(message || current.message).trim(),
+      issuePage: String(issueFromQuery || referrerPath || current.issuePage).trim(),
+    }));
   }, []);
 
   const selectedReason =
@@ -88,7 +89,7 @@ export function ContactPageForm() {
 
       setFormState(initialState);
       setStatus({
-        message: "Thanks for reaching out. We received your message and will review it.",
+        message: `Thanks, your message was sent. We’ll follow up at ${formState.email}.`,
         tone: "success",
         submitted: true,
       });

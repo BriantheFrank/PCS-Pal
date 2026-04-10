@@ -4435,3 +4435,59 @@ main.container {
   .room-photo-suggestion-header { flex-direction: column; align-items: flex-start; }
   .room-photo-suggestion-list li label { grid-template-columns: auto 1fr; }
 }
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 120;
+}
+.top-bar[data-compressed="true"] {
+  margin-bottom: 0.5rem;
+  padding: 0.55rem 0.8rem;
+}
+.brand-subtext {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  z-index: 70;
+}
+.footer-link-list { list-style: disc; padding-left: 1.25rem; }
+.footer-signout-link {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--text);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.feedback-pill-link {
+  border-radius: 999px;
+  padding-inline: 0.9rem;
+  border: 1px solid var(--border);
+}
+.skeleton-card {
+  min-height: 140px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(148,163,184,.16), rgba(148,163,184,.28), rgba(148,163,184,.16));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-card { animation: none; }
+}
+.back-to-top-button {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 90;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0.6rem 0.9rem;
+}
