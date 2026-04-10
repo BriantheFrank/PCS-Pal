@@ -4,11 +4,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   deleteRoomPhoto,
-  getMoveScopeKey,
   listRoomPhotos,
   MAX_ROOM_PHOTOS,
   saveRoomPhotos,
-} from "@/lib/local-room-photo-storage";
+} from "@/lib/room-photo-storage";
 
 const initialStatus = { message: "", tone: "neutral" };
 
@@ -18,8 +17,9 @@ export const useRoomPhotos = ({ userId, moveProfile, roomId, roomName }) => {
   const [status, setStatus] = useState(initialStatus);
 
   const moveScopeKey = useMemo(
-    () => getMoveScopeKey({ userId, moveProfile }),
-    [userId, moveProfile]
+    () =>
+      `${String(userId || "")}:${String(moveProfile?.destination_base_id || "")}:${String(moveProfile?.move_month || "")}:${String(moveProfile?.move_stage || "")}`,
+    [userId, moveProfile?.destination_base_id, moveProfile?.move_month, moveProfile?.move_stage]
   );
 
   const refresh = useCallback(() => {
@@ -28,15 +28,12 @@ export const useRoomPhotos = ({ userId, moveProfile, roomId, roomName }) => {
       return;
     }
 
-    setPhotos(
-      listRoomPhotos({
-        storage: window.localStorage,
+    void listRoomPhotos({
         userId,
-        moveScopeKey,
+        moveProfile,
         roomId,
-      })
-    );
-  }, [moveScopeKey, roomId, userId]);
+      }).then((nextPhotos) => setPhotos(nextPhotos || []));
+  }, [moveScopeKey, moveProfile, roomId, userId]);
 
   useEffect(() => {
     refresh();
@@ -59,10 +56,9 @@ export const useRoomPhotos = ({ userId, moveProfile, roomId, roomName }) => {
       setStatus(initialStatus);
       try {
         const result = await saveRoomPhotos({
-          storage: window.localStorage,
           files: Array.from(fileList),
           userId,
-          moveScopeKey,
+          moveProfile,
           roomId,
           roomName,
         });
@@ -110,16 +106,15 @@ export const useRoomPhotos = ({ userId, moveProfile, roomId, roomName }) => {
   );
 
   const removePhoto = useCallback(
-    (photoId) => {
+    async (photoId) => {
       if (!userId || !roomId || typeof window === "undefined") {
         return;
       }
 
       try {
-        deleteRoomPhoto({
-          storage: window.localStorage,
+        await deleteRoomPhoto({
           userId,
-          moveScopeKey,
+          moveProfile,
           roomId,
           photoId,
         });

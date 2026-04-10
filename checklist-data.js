@@ -1,3 +1,5 @@
+import { reconcileLocalAndRemoteState } from "./lib/sync/reconcile-local-remote.js";
+
 export const CHECKLIST_STORAGE_KEY = "pcs-checklist";
 export const INVENTORY_STORAGE_KEY = "pcs-move-inventory";
 export const LOGISTICS_STORAGE_KEY = "pcs-move-logistics";
@@ -110,43 +112,24 @@ export const saveChecklistCompatibilityBackup = ({ storage, userId, snapshot }) 
 };
 
 export const reconcileChecklistWithRemote = async ({ supabase, storage, userId }) => {
-  const localChecklist = loadChecklistState(storage);
-  const remoteChecklist = await fetchRemoteChecklist({ supabase, userId });
-  const localHas = hasChecklistData(localChecklist);
-  const remoteHas = hasChecklistData(remoteChecklist);
-
-  let source = "local";
-  let checklistState = localChecklist;
-  let backedUpLocal = false;
-
-  if (!remoteHas && localHas) {
-    await pushChecklist({ supabase, userId, checklistState: localChecklist });
-    source = "local-pushed";
-  } else if (remoteHas) {
-    if (JSON.stringify(localChecklist) !== JSON.stringify(remoteChecklist)) {
-      if (localHas) {
-        saveChecklistCompatibilityBackup({
-          storage,
-          userId,
-          snapshot: collectChecklistCompatibilitySnapshot(storage),
-        });
-        backedUpLocal = true;
-      }
-
-      saveChecklistState(storage, remoteChecklist);
-    }
-
-    checklistState = remoteChecklist;
-    source = "remote";
-  }
-
-  if (storage) {
-    storage.setItem(getChecklistInitialSyncKey(userId), "1");
-  }
+  const reconciliation = await reconcileLocalAndRemoteState({
+    loadLocal: () => loadChecklistState(storage),
+    fetchRemote: () => fetchRemoteChecklist({ supabase, userId }),
+    hasData: hasChecklistData,
+    pushLocal: (localState) => pushChecklist({ supabase, userId, checklistState: localState }),
+    saveLocal: (remoteState) => saveChecklistState(storage, remoteState),
+    markInitialSync: () => storage?.setItem(getChecklistInitialSyncKey(userId), "1"),
+    backupLocal: () =>
+      saveChecklistCompatibilityBackup({
+        storage,
+        userId,
+        snapshot: collectChecklistCompatibilitySnapshot(storage),
+      }),
+  });
 
   return {
-    backedUpLocal,
-    checklistState,
-    source,
+    backedUpLocal: reconciliation.backedUpLocal,
+    checklistState: reconciliation.state,
+    source: reconciliation.source,
   };
 };

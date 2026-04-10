@@ -6,7 +6,10 @@
     "prebuild": "node scripts/verify-critical-files.mjs",
     "build": "next build",
     "start": "next start",
-    "verify:critical": "node scripts/verify-critical-files.mjs"
+    "verify:critical": "node scripts/verify-critical-files.mjs",
+    "lint": "next lint",
+    "check:static": "node scripts/static-checks.mjs",
+    "validate": "npm run verify:critical && npm run check:static && npm run lint"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",

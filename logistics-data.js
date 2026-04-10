@@ -4,6 +4,7 @@ import {
   collectChecklistCompatibilitySnapshot,
   saveChecklistCompatibilityBackup,
 } from "./checklist-data.js";
+import { reconcileLocalAndRemoteState } from "./lib/sync/reconcile-local-remote.js";
 
 export { LOGISTICS_STORAGE_KEY };
 
@@ -166,47 +167,30 @@ const getLogisticsInitialSyncKey = (userId) =>
   `${CHECKLIST_SYNC_MARKERS.initialSyncPrefix}${userId}`;
 
 export const reconcileLogisticsWithRemote = async ({ supabase, storage, userId }) => {
-  const localLogistics = readJson(storage, LOGISTICS_STORAGE_KEY, null);
-  const remoteLogistics = await fetchRemoteLogistics({ supabase, userId });
-  const localHas = hasLogisticsData(localLogistics);
-  const remoteHas = hasLogisticsData(remoteLogistics);
-
-  let source = "local";
-  let logisticsState = normalizeLogisticsState(localLogistics);
-  let backedUpLocal = false;
-
-  if (!remoteHas && localHas) {
-    await pushLogistics({
-      supabase,
-      userId,
-      logisticsState: localLogistics,
-    });
-    source = "local-pushed";
-  } else if (remoteHas) {
-    if (JSON.stringify(localLogistics) !== JSON.stringify(remoteLogistics)) {
-      if (localHas) {
-        saveChecklistCompatibilityBackup({
-          storage,
-          userId,
-          snapshot: collectChecklistCompatibilitySnapshot(storage),
-        });
-        backedUpLocal = true;
-      }
-
-      saveLogisticsState(storage, remoteLogistics);
-    }
-
-    logisticsState = normalizeLogisticsState(remoteLogistics);
-    source = "remote";
-  }
-
-  if (storage) {
-    storage.setItem(getLogisticsInitialSyncKey(userId), "1");
-  }
+  const reconciliation = await reconcileLocalAndRemoteState({
+    loadLocal: () => readJson(storage, LOGISTICS_STORAGE_KEY, null),
+    fetchRemote: () => fetchRemoteLogistics({ supabase, userId }),
+    hasData: hasLogisticsData,
+    normalize: normalizeLogisticsState,
+    pushLocal: (localState) =>
+      pushLogistics({
+        supabase,
+        userId,
+        logisticsState: localState,
+      }),
+    saveLocal: (remoteState) => saveLogisticsState(storage, remoteState),
+    markInitialSync: () => storage?.setItem(getLogisticsInitialSyncKey(userId), "1"),
+    backupLocal: () =>
+      saveChecklistCompatibilityBackup({
+        storage,
+        userId,
+        snapshot: collectChecklistCompatibilitySnapshot(storage),
+      }),
+  });
 
   return {
-    backedUpLocal,
-    logisticsState,
-    source,
+    backedUpLocal: reconciliation.backedUpLocal,
+    logisticsState: reconciliation.state,
+    source: reconciliation.source,
   };
 };

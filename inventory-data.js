@@ -4,6 +4,7 @@ import {
   collectChecklistCompatibilitySnapshot,
   saveChecklistCompatibilityBackup,
 } from "./checklist-data.js";
+import { reconcileLocalAndRemoteState } from "./lib/sync/reconcile-local-remote.js";
 
 export { INVENTORY_STORAGE_KEY };
 
@@ -294,47 +295,30 @@ const getInventoryInitialSyncKey = (userId) =>
   `${CHECKLIST_SYNC_MARKERS.initialSyncPrefix}${userId}`;
 
 export const reconcileInventoryWithRemote = async ({ supabase, storage, userId }) => {
-  const localInventory = readJson(storage, INVENTORY_STORAGE_KEY, EMPTY_INVENTORY);
-  const remoteInventory = await fetchRemoteInventory({ supabase, userId });
-  const localHas = hasInventoryData(localInventory);
-  const remoteHas = hasInventoryData(remoteInventory);
-
-  let source = "local";
-  let inventoryState = normalizeInventoryState(localInventory);
-  let backedUpLocal = false;
-
-  if (!remoteHas && localHas) {
-    await pushInventory({
-      supabase,
-      userId,
-      inventoryState: localInventory,
-    });
-    source = "local-pushed";
-  } else if (remoteHas) {
-    if (JSON.stringify(localInventory) !== JSON.stringify(remoteInventory)) {
-      if (localHas) {
-        saveChecklistCompatibilityBackup({
-          storage,
-          userId,
-          snapshot: collectChecklistCompatibilitySnapshot(storage),
-        });
-        backedUpLocal = true;
-      }
-
-      saveInventoryState(storage, remoteInventory);
-    }
-
-    inventoryState = normalizeInventoryState(remoteInventory);
-    source = "remote";
-  }
-
-  if (storage) {
-    storage.setItem(getInventoryInitialSyncKey(userId), "1");
-  }
+  const reconciliation = await reconcileLocalAndRemoteState({
+    loadLocal: () => readJson(storage, INVENTORY_STORAGE_KEY, EMPTY_INVENTORY),
+    fetchRemote: () => fetchRemoteInventory({ supabase, userId }),
+    hasData: hasInventoryData,
+    normalize: normalizeInventoryState,
+    pushLocal: (localState) =>
+      pushInventory({
+        supabase,
+        userId,
+        inventoryState: localState,
+      }),
+    saveLocal: (remoteState) => saveInventoryState(storage, remoteState),
+    markInitialSync: () => storage?.setItem(getInventoryInitialSyncKey(userId), "1"),
+    backupLocal: () =>
+      saveChecklistCompatibilityBackup({
+        storage,
+        userId,
+        snapshot: collectChecklistCompatibilitySnapshot(storage),
+      }),
+  });
 
   return {
-    backedUpLocal,
-    inventoryState,
-    source,
+    backedUpLocal: reconciliation.backedUpLocal,
+    inventoryState: reconciliation.state,
+    source: reconciliation.source,
   };
 };
