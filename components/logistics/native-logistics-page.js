@@ -1124,11 +1124,6 @@ export function NativeLogisticsPage() {
           This workspace is built for real move coordination: travel windows, temporary lodging,
           arrival timing, and first-week priorities that affect your family immediately.
         </p>
-        <p>
-          <a className="card-link" href="/organizer">
-            Back to organizer -&gt;
-          </a>
-        </p>
       </section>
 
       <details className="info-panel mobile-disclosure">

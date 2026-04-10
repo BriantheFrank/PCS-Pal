@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
@@ -14,6 +15,7 @@ export function NativeAccountShell({
   forcePublicActions = false,
 }) {
   const { user, status, signOut } = useNativeAuth();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const shellRef = useRef(null);
@@ -74,6 +76,7 @@ export function NativeAccountShell({
     setStatusMessage("Signed out.");
     setOpen(false);
     onNavigate?.();
+    router.push("/?signed_out=1");
   };
 
   return (

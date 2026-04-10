@@ -40,10 +40,6 @@ export default function InventoryPage() {
         <p className="footer-tip">
           Tip: Your inventory updates save automatically so you can keep planning across sessions.
         </p>
-        <p className="footer-disclaimer">
-          This tool is for planning purposes only and does not replace official guidance from your
-          transportation, housing, or command channels.
-        </p>
       </SiteFooter>
     </>
   );

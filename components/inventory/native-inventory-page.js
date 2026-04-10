@@ -125,6 +125,11 @@ const shiftActiveLabelAfterItemRemoval = (activeLabelItem, roomIndex, itemIndex)
 };
 
 const normalizeLabelText = (value) => String(value ?? "").trim();
+const toTitleCase = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/\b([a-z])/g, (match) => match.toUpperCase())
+    .trim();
 
 const getPreviewLabelValues = (settings) => ({
   title: normalizeLabelText(settings?.title),
@@ -857,7 +862,7 @@ export function NativeInventoryPage() {
   const handleRoomSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const name = String(formData.get("room-name") || "").trim();
+    const name = toTitleCase(formData.get("room-name"));
     if (!name) {
       return;
     }
@@ -975,7 +980,7 @@ export function NativeInventoryPage() {
   const handleConfirmRoomRename = (event, roomIndex) => {
     const roomCard = event.currentTarget.closest(".inventory-room");
     const input = roomCard?.querySelector("[data-room-rename-input]");
-    const newName = input?.value.trim();
+    const newName = toTitleCase(input?.value);
     if (!newName) {
       return;
     }
@@ -1549,7 +1554,7 @@ export function NativeInventoryPage() {
                 <li className="inventory-high-value-item" key={`${roomName}-${item.label}-${index}`}>
                   <div className="inventory-high-value-details">
                     <strong>{item.label}</strong>
-                    <span className="inventory-high-value-room">{roomName}</span>
+                    <span className="inventory-high-value-room">{toTitleCase(roomName)}</span>
                   </div>
                   {Number.isFinite(item.weight) ? (
                     <span className="inventory-high-value-weight">{item.weight} lbs</span>
@@ -1592,7 +1597,7 @@ export function NativeInventoryPage() {
               <summary>
                 <div className="inventory-room-summary">
                   <div className="inventory-room-heading">
-                    <h3>{room.name}</h3>
+                    <h3>{toTitleCase(room.name)}</h3>
                     <span className="inventory-room-meta">{room.items.length} items</span>
                   </div>
                   <div className="inventory-room-menu">
@@ -1677,7 +1682,7 @@ export function NativeInventoryPage() {
                 <button type="submit">Add Item</button>
               </form>
               <p className="inventory-room-weight">
-                Estimated Weight for {room.name}: {room.roomWeight} lbs
+                Estimated Weight for {toTitleCase(room.name)}: {room.roomWeight} lbs
               </p>
               <RoomPhotoManager
                 room={room}

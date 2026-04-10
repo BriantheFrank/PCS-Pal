@@ -6,9 +6,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
 import { resolveLegalDocumentHref } from "@/lib/auth/create-account";
+import { BASE_OPTIONS } from "@/lib/bases/base-options";
 import { LEGAL_DOC_TYPES } from "@/legal-documents";
 import {
-  BASE_OPTIONS,
   HOUSEHOLD_SIZE_OPTIONS,
   HOUSING_INTENT_OPTIONS,
   MOVE_STAGE_OPTIONS,
@@ -43,12 +43,12 @@ export function AccountSettingsPage() {
     moveProfile,
     legalStatus,
     legalDocs,
-    legalDocsAuthoritative,
     displayName,
     providerLabel,
     profileFullName,
     householdProfile,
     errorMessage,
+    signOut,
     saveProfile,
     savePrivacySettings,
     saveMoveProfile,
@@ -362,9 +362,7 @@ export function AccountSettingsPage() {
           </div>
           <p className="legal-settings-status" data-tone={legalUiStatus.tone} aria-live="polite">
             {legalUiStatus.message ||
-              (!legalDocsAuthoritative
-                ? "Current legal versions are not fully configured right now."
-                : !hasLegalStatusRows
+              (!hasLegalStatusRows
                   ? "Current legal versions are available above. Acceptance history will appear after the legal migration is applied and data is available."
                   : needsReacceptance
                     ? "This account does not yet have a recorded acknowledgment for the current legal versions."
@@ -541,34 +539,19 @@ export function AccountSettingsPage() {
       </section>
 
       <aside className="info-panel signup-page-card account-page-side">
-        <p className="eyebrow">Native Account Ownership</p>
-        <h2>These settings now live on the Next side of the migration</h2>
-        <p>
-          Sign-in, logout, account settings, privacy controls, move profile, and legal acknowledgment
-          now render natively on migrated pages. The checklist, organizer, inventory, logistics, and
-          destination bases all run through the native Next.js side of the migration.
-        </p>
+        <p className="eyebrow">Quick actions</p>
+        <h2>Continue your move planning</h2>
         <ul className="signup-page-list">
-          <li>
-            Continue to the native <a href="/checklist">PCS Checklist</a> with your current session
-          </li>
-          <li>
-            Open the native <a href="/inventory">Move Inventory</a>,{" "}
-            <a href="/logistics">Move Logistics</a>, or <a href="/organizer">Move Organizer</a> to continue planning
-          </li>
-          <li>
-            Review <a href="/bases">Destination Bases</a> after saving coarse move preferences here
-          </li>
-          <li>
-            Internal team only: open <Link href="/account/feedback">Feedback review</Link> to triage
-            submitted product notes by status
-          </li>
+          <li><a href="/checklist">Open checklist</a></li>
+          <li><a href="/inventory">Open inventory</a></li>
+          <li><a href="/logistics">Open logistics</a></li>
         </ul>
+        <button type="button" onClick={async () => { await signOut(); router.push("/?signed_out=1"); }}>
+          Sign Out
+        </button>
       </aside>
     </div>
   );
 }
-
-
 
 

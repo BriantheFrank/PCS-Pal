@@ -41,10 +41,6 @@ export default function ChecklistPage() {
         <p className="footer-tip">
           Tip: Your checklist progress saves automatically to this device and your account when sync is available.
         </p>
-        <p className="footer-disclaimer">
-          This checklist is for planning purposes only and does not replace official guidance from
-          your unit, transportation office, or finance office.
-        </p>
       </SiteFooter>
     </>
   );

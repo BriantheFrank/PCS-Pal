@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PageStepNav } from "@/components/site/guided-page-intro";
 import { FilterBar } from "@/components/site/filter-bar";
@@ -42,6 +42,14 @@ export function NativeBasesPage({ items }) {
   const [searchValue, setSearchValue] = useState("");
   const [stateValue, setStateValue] = useState("");
   const [branchValue, setBranchValue] = useState("");
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > 480);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const normalizedQuery = searchValue.trim().toLowerCase();
   const uniqueStates = Array.from(new Set(items.map((item) => item.state).filter(Boolean))).sort(
@@ -232,6 +240,15 @@ export function NativeBasesPage({ items }) {
         nextLabel="Review Your Full Plan"
         nextHref="/how-to-plan-a-military-pcs-move"
       />
+      {showBackToTop ? (
+        <button
+          type="button"
+          className="back-to-top-button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          Back to top
+        </button>
+      ) : null}
     </div>
   );
 }

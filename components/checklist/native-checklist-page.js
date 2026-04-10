@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -15,7 +14,7 @@ import { getBrowserSupabaseClient } from "@/lib/supabase/browser-client";
 const SYNC_DELAY_MS = 600;
 
 const LOADING_MESSAGE = "Opening your checklist";
-const REDIRECT_MESSAGE = "Opening sign-in";
+const REDIRECT_MESSAGE = "Sign in to track your progress.";
 const LOCAL_ONLY_MESSAGE =
   "We could not load your saved move information right now. Please refresh and try again.";
 
@@ -45,7 +44,7 @@ const isChecklistItemComplete = (item, checklistState) =>
   item.subtasks.length > 0 &&
   item.subtasks.every((subtask) => Boolean(checklistState[subtask.id]));
 
-function ChecklistItem({ item, isOpen, checklistState, onToggleOpen, onToggleSubtask }) {
+function ChecklistItem({ item, isOpen, checklistState, onToggleOpen, onToggleSubtask, canEdit }) {
   const isComplete = isChecklistItemComplete(item, checklistState);
 
   return (
@@ -114,6 +113,7 @@ function ChecklistItem({ item, isOpen, checklistState, onToggleOpen, onToggleSub
                   type="checkbox"
                   data-id={subtask.id}
                   checked={Boolean(checklistState[subtask.id])}
+                  disabled={!canEdit}
                   onChange={(event) => onToggleSubtask(subtask.id, event.target.checked)}
                 />
                 <span>{subtask.label}</span>
@@ -135,7 +135,6 @@ function ChecklistItem({ item, isOpen, checklistState, onToggleOpen, onToggleSub
 }
 
 export function NativeChecklistPage({ pageData }) {
-  const router = useRouter();
   const { status, user, errorMessage } = useNativeAuth();
   const checklistStateRef = useRef({});
   const syncTimerRef = useRef(null);
@@ -143,12 +142,6 @@ export function NativeChecklistPage({ pageData }) {
   const [checklistReady, setChecklistReady] = useState(false);
   const [syncStatus, setSyncStatus] = useState(initialStatus);
   const [openItems, setOpenItems] = useState(() => buildInitialOpenState(pageData.sections));
-
-  useEffect(() => {
-    if (status === "ready" && !user) {
-      router.replace("/sign-in?next=/checklist");
-    }
-  }, [router, status, user]);
 
   useEffect(() => {
     checklistStateRef.current = checklistState;
@@ -298,27 +291,14 @@ export function NativeChecklistPage({ pageData }) {
     );
   }
 
-  if (!user) {
-    return (
-      <main className="container">
-        <div className="info-panel signup-page-card">
-          <p className="eyebrow">PCS Checklist</p>
-          <h2>Redirecting to sign in</h2>
-          <p className="signup-page-status" aria-live="polite">
-            {REDIRECT_MESSAGE}
-          </p>
-        </div>
-      </main>
-    );
-  }
+  const canEdit = Boolean(user);
 
   return (
     <main className="container">
-      {pageData.disclaimerHtml ? (
-        <div className="disclaimer-banner" dangerouslySetInnerHTML={{ __html: pageData.disclaimerHtml }} />
-      ) : null}
-
       <div className="native-checklist-shell">
+        {!canEdit ? (
+          <p className="auth-status native-checklist-status" aria-live="polite">{REDIRECT_MESSAGE}</p>
+        ) : null}
         {syncStatus.message ? (
           <p className="auth-status native-checklist-status" data-tone={syncStatus.tone} aria-live="polite">
             {syncStatus.message}
@@ -340,6 +320,7 @@ export function NativeChecklistPage({ pageData }) {
                       isOpen={Boolean(openItems[item.id])}
                       checklistState={checklistState}
                       key={item.id}
+                      canEdit={canEdit}
                       onToggleOpen={toggleChecklistItem}
                       onToggleSubtask={updateChecklistValue}
                     />
@@ -353,6 +334,9 @@ export function NativeChecklistPage({ pageData }) {
             <aside className="checklist-sidebar">
               <div className="sidebar-card">
                 <h2>{pageData.sidebar.title}</h2>
+                <button type="button" className="label-action secondary" onClick={() => window.print()}>
+                  Print this block
+                </button>
                 <ul className="sidebar-list">
                   {pageData.sidebar.items.map((item, index) => (
                     <li key={`sidebar-${index}`}>{item}</li>

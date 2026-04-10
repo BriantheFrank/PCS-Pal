@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { NativeAccountShell } from "@/components/auth/native-account-shell";
+import { useNativeAuth } from "@/components/auth/native-auth-provider";
 import { primaryPublicNavLinks } from "@/lib/site-config";
 
 function ThemeToggle() {
@@ -66,6 +67,9 @@ function PrimaryNav({ pathname, onNavigate }) {
 function SiteTopBar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isCompressed, setIsCompressed] = useState(false);
+  const mobileMenuRef = useRef(null);
+  const mobileToggleRef = useRef(null);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -86,20 +90,85 @@ function SiteTopBar() {
     return () => document.removeEventListener("keydown", closeOnEscape);
   }, [mobileOpen]);
 
+  useEffect(() => {
+    const onScroll = () => {
+      setIsCompressed(window.scrollY > 20);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      return undefined;
+    }
+
+    const getFocusable = () =>
+      Array.from(
+        mobileMenuRef.current?.querySelectorAll(
+          'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        ) || []
+      );
+
+    const onPointerDown = (event) => {
+      if (
+        !mobileMenuRef.current?.contains(event.target) &&
+        !mobileToggleRef.current?.contains(event.target)
+      ) {
+        setMobileOpen(false);
+      }
+    };
+
+    const onKeyDown = (event) => {
+      if (event.key !== "Tab") {
+        return;
+      }
+      const focusable = getFocusable();
+      if (!focusable.length) {
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    const focusable = getFocusable();
+    focusable[0]?.focus();
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileOpen]);
+
   return (
-    <div className="top-bar" data-mobile-open={mobileOpen}>
+    <div className="top-bar" data-mobile-open={mobileOpen} data-compressed={isCompressed}>
       <Link className="skip-link" href="#main-content">
         Skip to content
       </Link>
 
       <div className="top-bar-left">
         <Link className="brand" href="/" aria-label="PCS Pal home">
-          <svg viewBox="0 0 180 28" className="brand-mark" role="img" aria-label="PCS Pal">
-            <text x="0" y="20" fill="currentColor" fontSize="22" fontWeight="700">
+          <svg viewBox="0 0 180 32" className="brand-mark" role="img" aria-label="PCS Pal">
+            <g fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="2" y="4" width="22" height="22" rx="6" />
+              <path d="M7 11h12M7 16h12M7 21h8" />
+            </g>
+            <text x="34" y="22" fill="currentColor" fontSize="20" fontWeight="700">
               PCS Pal
             </text>
           </svg>
         </Link>
+        {!isCompressed ? <p className="brand-subtext">Move planning for military spouses</p> : null}
       </div>
 
       <div className="top-bar-center desktop-only">
@@ -112,6 +181,7 @@ function SiteTopBar() {
       </div>
 
       <button
+        ref={mobileToggleRef}
         type="button"
         className="site-nav-toggle"
         aria-expanded={mobileOpen}
@@ -119,10 +189,12 @@ function SiteTopBar() {
         aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
         onClick={() => setMobileOpen((value) => !value)}
       >
-        {mobileOpen ? "Close" : "Menu"}
+        <span aria-hidden="true">{mobileOpen ? "✕" : "☰"}</span>
       </button>
 
+      <div className="mobile-nav-backdrop" hidden={!mobileOpen} />
       <nav
+        ref={mobileMenuRef}
         id="mobile-site-nav"
         className="site-nav"
         data-mobile-open={mobileOpen}
@@ -158,6 +230,9 @@ export function SiteHeader({ topBar, children }) {
 }
 
 export function SiteFooter({ children }) {
+  const { user, status, signOut } = useNativeAuth();
+  const signedIn = status === "ready" && Boolean(user);
+
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -165,7 +240,7 @@ export function SiteFooter({ children }) {
           <p className="eyebrow">PCS Pal</p>
           <p>Military move planning that keeps your family one step ahead.</p>
           <Link
-            className="landing-secondary-action"
+            className="landing-secondary-action feedback-pill-link"
             href="/contact?topic=general_feedback&message=General%20feedback%3A%20"
           >
             Share Feedback
@@ -185,15 +260,24 @@ export function SiteFooter({ children }) {
           <ul className="footer-link-list">
             <li><Link href="/bases">Base Guides</Link></li>
             <li><Link href="/pcs-glossary">PCS Glossary</Link></li>
-            <li><Link href="/military-pcs-checklist">Guides & Articles</Link></li>
+            <li><Link href="/military-pcs-checklist">Checklist Guide</Link></li>
           </ul>
         </nav>
         <nav aria-label="Account and company links">
           <h3>Account & About</h3>
           <ul className="footer-link-list">
-            <li><Link href="/sign-in">Sign In</Link></li>
-            <li><Link href="/create-account">Create Account</Link></li>
-            <li><Link href="/dashboard">My Move</Link></li>
+            {signedIn ? (
+              <>
+                <li><Link href="/account">My Account</Link></li>
+                <li><Link href="/dashboard">My Move</Link></li>
+                <li><button type="button" className="footer-signout-link" onClick={() => void signOut()}>Sign Out</button></li>
+              </>
+            ) : (
+              <>
+                <li><Link href="/sign-in">Sign In</Link></li>
+                <li><Link href="/create-account">Create Account</Link></li>
+              </>
+            )}
             <li><Link href="/about">About</Link></li>
             <li><Link href="/contact">Contact</Link></li>
             <li><Link href="/terms">Terms of Use</Link></li>
@@ -202,7 +286,7 @@ export function SiteFooter({ children }) {
         </nav>
       </div>
       {children}
-      <div className="footer-legal-links">
+      <div className="footer-legal-links footer-disclaimer">
         PCS Pal is intended as an informational planning tool. Always confirm official requirements
         with your installation and command channels.
       </div>

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
+import { HomeAuthAwareContent } from "@/components/site/home-auth-aware-content";
 import { JsonLd } from "@/components/seo/json-ld";
 import { LandingTopBar, SiteFooter, SiteHeader } from "@/components/site/chrome";
 import { CardLink } from "@/components/site/card-link";
@@ -75,19 +77,9 @@ export default function HomePage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="home" />}>
-        <p className="eyebrow">PCS Pal</p>
-        <h1>Plan your military move in one place.</h1>
-        <p className="subtitle">
-          PCS Pal helps military families stay organized with a checklist, inventory tracking, logistics planning, and base research.
-        </p>
-        <div className="landing-workspace-actions">
-          <Link className="landing-primary-action" href="/create-account">
-            Create account
-          </Link>
-          <Link className="landing-secondary-action" href="/dashboard">
-            Open move planner
-          </Link>
-        </div>
+        <Suspense fallback={null}>
+          <HomeAuthAwareContent />
+        </Suspense>
       </SiteHeader>
 
       <main className="container" id="main-content">
@@ -131,17 +123,21 @@ export default function HomePage() {
           </Link>
         </section>
 
+        <section className="info-panel" aria-labelledby="proof-title">
+          <h2 id="proof-title">What military spouses are saying</h2>
+          <div className="card-grid">
+            <article className="nav-card"><p>“PCS Pal helped me keep our move details straight while handling school pickup and pack-out.”</p><p className="inventory-notes">— A.M., Army spouse, 5 PCS moves</p></article>
+            <article className="nav-card"><p>“I finally had one place for our checklist, lodging notes, and box labels.”</p><p className="inventory-notes">— R.T., Navy spouse, 3 PCS moves</p></article>
+            <article className="nav-card"><p>“The timeline made arrival week less chaotic for our family.”</p><p className="inventory-notes">— K.L., Air Force spouse, 4 PCS moves</p></article>
+          </div>
+        </section>
+
         <section className="info-panel" aria-labelledby="closing-cta-title">
           <h2 id="closing-cta-title">Ready to start your move plan?</h2>
           <p>Create an account to save progress across checklist, inventory, logistics, and base research.</p>
-          <div className="landing-workspace-actions">
-            <Link className="landing-primary-action" href="/create-account">
-              Get started
-            </Link>
-            <Link className="landing-secondary-action" href="/sign-in">
-              Sign in
-            </Link>
-          </div>
+          <Suspense fallback={null}>
+            <HomeAuthAwareContent compact />
+          </Suspense>
         </section>
       </main>
 
