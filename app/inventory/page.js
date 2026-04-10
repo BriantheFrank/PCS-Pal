@@ -27,27 +27,14 @@ export default function InventoryPage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="organizer" />}>
-        <p className="eyebrow">Move Organizer</p>
+        <p className="eyebrow">Inventory</p>
         <InventoryHeading />
-        <p className="subtitle">
-          Use this page to keep track of what is being packed, how boxes are labeled, and which items
-          may need better documentation for claims.
-        </p>
+        <p className="subtitle">Keep rooms, boxes, and labels organized so packing and claims are easier to manage.</p>
       </SiteHeader>
 
       <NativeInventoryPage />
 
-      <section className="container info-panel">
-        <h2>How to use this inventory workspace</h2>
-        <p>Best for: Families trying to stay organized during pack-out, delivery, and unpacking.</p>
-        <p>Start by: Adding one room, then list the items you would struggle most to replace first.</p>
-        <p>
-          Need a broader workflow view?{" "}
-          <a className="card-link" href="/organizer">
-            Go back to organizer -&gt;
-          </a>
-        </p>
-      </section>
+
 
       <SiteFooter>
         <p className="footer-tip">
