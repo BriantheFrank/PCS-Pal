@@ -10,11 +10,16 @@ export const metadata = buildPageMetadata({
   noindex: true,
 });
 
-const quickLinks = [
-  { href: "/military-pcs-checklist", title: "Checklist", description: "Track required tasks by phase.", cta: "Open checklist" },
-  { href: "/pcs-inventory-label-tracking", title: "Inventory", description: "Capture rooms, labels, and high-value items.", cta: "Open inventory" },
-  { href: "/pcs-move-logistics-planning", title: "Logistics", description: "Plan travel, lodging, and first-week tasks.", cta: "Open logistics" },
-  { href: "/bases", title: "Base Guides", description: "Research your destination installation.", cta: "View base guides" },
+const primaryTools = [
+  { href: "/checklist", title: "Checklist", description: "Track what needs to be done next.", cta: "Open checklist" },
+  { href: "/inventory", title: "Inventory", description: "Manage rooms, boxes, and labels.", cta: "Open inventory" },
+  { href: "/logistics", title: "Logistics", description: "Track travel dates and key appointments.", cta: "Open logistics" },
+];
+
+const secondaryTools = [
+  { href: "/bases", title: "Base Guides", description: "Research your duty station quickly.", cta: "View guides" },
+  { href: "/account", title: "Account", description: "Update profile and saved move settings.", cta: "Open account" },
+  { href: "/organizer", title: "Organizer Hub", description: "Use the legacy organizer workspace.", cta: "Open organizer" },
 ];
 
 export default function DashboardPage() {
@@ -22,33 +27,31 @@ export default function DashboardPage() {
     <>
       <SiteHeader topBar={<LandingTopBar />}>
         <p className="eyebrow">My Move</p>
-        <h1>Your PCS Move Dashboard</h1>
-        <p className="subtitle">Track progress, dates, and jump back into your next planning step.</p>
+        <h1>Your PCS operations hub</h1>
+        <p className="subtitle">Pick up your checklist, inventory, or logistics plan in one tap.</p>
       </SiteHeader>
-      <main className="container legal-page-layout" id="main-content">
-        <section className="info-panel">
-          <h2>Move snapshot</h2>
-          <DashboardSnapshotCards />
-        </section>
-
-        <section className="info-panel legal-page-section">
-          <h2>Quick access</h2>
+      <main className="container" id="main-content">
+        <section className="info-panel" aria-labelledby="primary-tools-title">
+          <h2 id="primary-tools-title">Primary move tools</h2>
           <div className="card-grid">
-            {quickLinks.map((link) => (
-              <CardLink
-                key={link.href}
-                href={link.href}
-                title={link.title}
-                description={link.description}
-                cta={link.cta}
-              />
+            {primaryTools.map((link) => (
+              <CardLink key={link.href} href={link.href} title={link.title} description={link.description} cta={link.cta} />
             ))}
           </div>
         </section>
 
-        <section className="info-panel legal-page-section">
-          <h2>Recent activity</h2>
-          <p>No recent updates yet. Once you start checking off tasks and adding plans, activity will appear here.</p>
+        <section className="info-panel" aria-labelledby="snapshot-title">
+          <h2 id="snapshot-title">Current move snapshot</h2>
+          <DashboardSnapshotCards />
+        </section>
+
+        <section className="info-panel" aria-labelledby="secondary-tools-title">
+          <h2 id="secondary-tools-title">Supporting tools</h2>
+          <div className="card-grid">
+            {secondaryTools.map((link) => (
+              <CardLink key={link.href} href={link.href} title={link.title} description={link.description} cta={link.cta} />
+            ))}
+          </div>
         </section>
       </main>
       <SiteFooter />
