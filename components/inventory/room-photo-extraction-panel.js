@@ -63,6 +63,7 @@ export function RoomPhotoExtractionPanel({
   onSaveSuggestedItems,
   hasUserContext,
 }) {
+  const extractionEnabled = false;
   const storageKey = `pcs-pal-room-extract-review:${room.id}`;
   const [isExtracting, setIsExtracting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -70,7 +71,7 @@ export function RoomPhotoExtractionPanel({
   const [suggestedItems, setSuggestedItems] = useState([]);
   const [selectedItemIds, setSelectedItemIds] = useState(() => new Set());
 
-  const canExtract = photos.length > 0 && !disabled && !isExtracting && hasUserContext;
+  const canExtract = extractionEnabled && photos.length > 0 && !disabled && !isExtracting && hasUserContext;
   const selectedCount = selectedItemIds.size;
 
   const toggleSelection = (itemId) => {
@@ -134,6 +135,14 @@ export function RoomPhotoExtractionPanel({
   }, [selectedItemIds, storageKey, suggestedItems]);
 
   const handleExtract = async () => {
+    if (!extractionEnabled) {
+      setExtractionStatus({
+        message:
+          "AI photo extraction is currently dormant. You can still save room photos and add inventory items manually.",
+        tone: "neutral",
+      });
+      return;
+    }
     if (!hasUserContext) {
       setExtractionStatus({
         message: "Missing account or room context. Refresh and try again.",
@@ -280,9 +289,12 @@ export function RoomPhotoExtractionPanel({
       <p className="room-photo-extract-copy">{EXTRACTION_COPY.localOnly}</p>
       <p className="room-photo-extract-copy">{EXTRACTION_COPY.reviewRequired}</p>
       <p className="room-photo-extract-copy">{EXTRACTION_COPY.syncedItems}</p>
+      <p className="room-photo-extract-copy">
+        AI extraction is not active yet in PCS Pal. This section is intentionally staged for a later backend rollout.
+      </p>
       <div className="room-photo-extract-actions">
         <button type="button" className="label-action" onClick={handleExtract} disabled={!canExtract}>
-          {isExtracting ? "Extracting…" : "Run AI extraction"}
+          {isExtracting ? "Extracting…" : "AI extraction coming soon"}
         </button>
       </div>
       {extractionStatus.message ? (
