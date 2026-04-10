@@ -46,6 +46,14 @@ const readJson = (storage, key, fallback) => {
 
 const normalizeText = (value) => String(value ?? "").trim();
 
+const createInventoryRoomId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `room-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
+
 export const getCategoryDefinition = (categoryLabel) =>
   CATEGORY_DEFINITIONS.find((category) => category.label === categoryLabel) ||
   CATEGORY_DEFINITIONS[CATEGORY_DEFINITIONS.length - 1];
@@ -163,6 +171,7 @@ const normalizeInventoryRoom = (room) => {
   );
 
   const normalizedRoom = {
+    id: normalizeText(room?.id) || createInventoryRoomId(),
     name,
     items,
     roomWeight,
@@ -210,6 +219,12 @@ export const hasInventoryData = (payload) =>
   typeof payload === "object" &&
   Array.isArray(payload.rooms) &&
   payload.rooms.length > 0;
+
+export const buildNewInventoryRoom = ({ name }) => ({
+  id: createInventoryRoomId(),
+  name: normalizeText(name),
+  items: [],
+});
 
 export const buildNewInventoryItem = ({ label, category, notes }) => {
   const normalizedLabel = normalizeText(label);
