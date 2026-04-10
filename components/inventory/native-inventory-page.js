@@ -19,6 +19,7 @@ import {
 } from "@/inventory-data";
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
 import { LocalOnlyNotice } from "@/components/inventory/local-only-notice";
+import { RoomPhotoExtractionPanel } from "@/components/inventory/room-photo-extraction-panel";
 import { RoomPhotoGrid } from "@/components/inventory/room-photo-grid";
 import { RoomPhotoUploader } from "@/components/inventory/room-photo-uploader";
 import { useRoomPhotos } from "@/components/inventory/use-room-photos";
@@ -482,7 +483,15 @@ export function InventoryHeading() {
   return <h1>{heading}</h1>;
 }
 
-function RoomPhotoManager({ room, userId, moveProfile, pendingFiles, onFileSelection }) {
+function RoomPhotoManager({
+  room,
+  userId,
+  moveProfile,
+  pendingFiles,
+  onFileSelection,
+  onSaveSuggestedItems,
+  hasUserContext,
+}) {
   const { photos, photoCount, status, isSaving, addPhotos, removePhoto } = useRoomPhotos({
     userId,
     moveProfile,
@@ -537,6 +546,13 @@ function RoomPhotoManager({ room, userId, moveProfile, pendingFiles, onFileSelec
         </p>
       ) : null}
       <RoomPhotoGrid photos={photos} roomName={room.name} onDelete={handleDelete} />
+      <RoomPhotoExtractionPanel
+        room={room}
+        photos={photos}
+        disabled={isSaving}
+        onSaveSuggestedItems={onSaveSuggestedItems}
+        hasUserContext={hasUserContext}
+      />
     </section>
   );
 }
@@ -1668,6 +1684,8 @@ export function NativeInventoryPage() {
                 userId={user.id}
                 moveProfile={currentMoveProfile}
                 pendingFiles={roomPhotoAction[room.id]}
+                hasUserContext={Boolean(user?.id && currentMoveProfile?.id)}
+                onSaveSuggestedItems={(items) => handleSaveSuggestedItems(room.id, items)}
                 onFileSelection={(eventOrFiles) => {
                   if (Array.isArray(eventOrFiles)) {
                     setRoomPhotoAction((current) => ({ ...current, [room.id]: eventOrFiles }));

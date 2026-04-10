@@ -18,7 +18,7 @@ export function RoomPhotoUploader({ roomName, disabled, onCapture, onUpload }) {
         Upload saved photos
       </label>
       <p className="room-photo-guidance" id={`room-photo-guidance-${roomName}`}>
-        Stand in corners and take 3–6 wide shots. Include closets or shelves if visible.
+        Stand in corners and take 3–6 wide shots. Include closets or shelves if visible. JPEG/HEIC/PNG up to 8MB.
       </p>
     </div>
   );

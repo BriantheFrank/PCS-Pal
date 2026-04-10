@@ -4401,3 +4401,37 @@ main.container {
     padding: var(--space-4);
   }
 }
+
+.room-photo-section {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border: 1px solid var(--color-border-muted, #dbe4ef);
+  border-radius: 12px;
+  background: var(--color-surface-1, #f8fbff);
+}
+.room-photo-header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.room-photo-actions { display: grid; gap: 0.65rem; margin-top: 0.7rem; }
+.room-photo-button { width: 100%; text-align: center; }
+.room-photo-guidance { margin: 0; font-size: 0.9rem; color: var(--color-text-muted, #4b5563); }
+.room-photo-local-notice { margin-top: 0.6rem; padding: 0.65rem; border-left: 3px solid var(--color-primary, #2563eb); background: #eef5ff; }
+.room-photo-local-notice p { margin: 0.2rem 0; font-size: 0.9rem; }
+.room-photo-grid { list-style: none; padding: 0; margin: 0.8rem 0; display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.room-photo-card { background: #fff; border: 1px solid #dde4ee; border-radius: 10px; padding: 0.55rem; display: grid; gap: 0.45rem; }
+.room-photo-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; }
+.room-photo-card-meta { display: flex; justify-content: space-between; gap: 0.4rem; font-size: 0.78rem; color: var(--color-text-muted, #64748b); }
+.room-photo-delete { font-size: 0.85rem; text-align: left; }
+.room-photo-extract-panel { display: grid; gap: 0.5rem; margin-top: 0.4rem; }
+.room-photo-extract-copy { margin: 0; font-size: 0.88rem; color: var(--color-text-muted, #475569); }
+.room-photo-extract-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.room-photo-suggestion-list { margin-top: 0.4rem; border: 1px solid #d9e2ef; border-radius: 10px; background: #fff; padding: 0.6rem; }
+.room-photo-suggestion-header { display: flex; justify-content: space-between; gap: 0.5rem; align-items: center; }
+.room-photo-suggestion-controls { display: flex; gap: 0.5rem; }
+.room-photo-suggestion-list ul { list-style: none; margin: 0.55rem 0; padding: 0; display: grid; gap: 0.45rem; }
+.room-photo-suggestion-list li label { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.55rem; }
+
+@media (max-width: 640px) {
+  .room-photo-section { padding: 0.75rem; }
+  .room-photo-header { align-items: flex-start; flex-direction: column; }
+  .room-photo-suggestion-header { flex-direction: column; align-items: flex-start; }
+  .room-photo-suggestion-list li label { grid-template-columns: auto 1fr; }
+}
