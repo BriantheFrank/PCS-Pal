@@ -8,6 +8,7 @@ import {
   INVENTORY_STORAGE_KEY,
   buildInventoryLabelSettingsSnapshot,
   buildNewInventoryItem,
+  buildNewInventoryRoom,
   getCategoryDefinition,
   loadInventoryState,
   normalizeInventoryState,
@@ -17,6 +18,10 @@ import {
   saveInventoryState,
 } from "@/inventory-data";
 import { useNativeAuth } from "@/components/auth/native-auth-provider";
+import { LocalOnlyNotice } from "@/components/inventory/local-only-notice";
+import { RoomPhotoGrid } from "@/components/inventory/room-photo-grid";
+import { RoomPhotoUploader } from "@/components/inventory/room-photo-uploader";
+import { useRoomPhotos } from "@/components/inventory/use-room-photos";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser-client";
 
 const SYNC_DELAY_MS = 600;
@@ -467,9 +472,68 @@ export function InventoryHeading() {
   return <h1>{heading}</h1>;
 }
 
+function RoomPhotoManager({ room, userId, moveProfile, pendingFiles, onFileSelection }) {
+  const { photos, photoCount, status, isSaving, addPhotos, removePhoto } = useRoomPhotos({
+    userId,
+    moveProfile,
+    roomId: room.id,
+    roomName: room.name,
+  });
+
+  useEffect(() => {
+    if (!pendingFiles?.length) {
+      return;
+    }
+
+    let active = true;
+    const run = async () => {
+      await addPhotos(pendingFiles);
+      if (active) {
+        onFileSelection([]);
+      }
+    };
+
+    void run();
+    return () => {
+      active = false;
+    };
+  }, [addPhotos, onFileSelection, pendingFiles]);
+
+  const handleDelete = (photoId) => {
+    const confirmed = window.confirm("Remove this room photo from local device storage?");
+    if (!confirmed) {
+      return;
+    }
+
+    removePhoto(photoId);
+  };
+
+  return (
+    <section className="room-photo-section">
+      <div className="room-photo-header">
+        <h4>Room photos</h4>
+        <span className="inventory-room-meta">{photoCount} saved</span>
+      </div>
+      <LocalOnlyNotice />
+      <RoomPhotoUploader
+        roomName={room.name}
+        disabled={isSaving}
+        onCapture={onFileSelection}
+        onUpload={onFileSelection}
+      />
+      {status.message ? (
+        <p className="auth-status" data-tone={status.tone} aria-live="polite">
+          {status.message}
+        </p>
+      ) : null}
+      <RoomPhotoGrid photos={photos} roomName={room.name} onDelete={handleDelete} />
+    </section>
+  );
+}
+
 export function NativeInventoryPage() {
   const router = useRouter();
-  const { status, user, errorMessage } = useNativeAuth();
+  const { status, user, errorMessage, currentMoveProfile } = useNativeAuth();
   const [inventory, setInventory] = useState(() => normalizeInventoryState({ rooms: [] }));
   const [inventoryReady, setInventoryReady] = useState(false);
   const [currentQuery, setCurrentQuery] = useState("");
@@ -480,6 +544,7 @@ export function NativeInventoryPage() {
   const [activeLabelItem, setActiveLabelItem] = useState(null);
   const [labelSettings, setLabelSettings] = useState(null);
   const [labelActionStatus, setLabelActionStatus] = useState(initialStatus);
+  const [roomPhotoAction, setRoomPhotoAction] = useState({});
   const inventoryRef = useRef(inventory);
   const syncTimerRef = useRef(null);
   const labelPanelRef = useRef(null);
@@ -739,7 +804,7 @@ export function NativeInventoryPage() {
     }
 
     const draft = cloneInventoryState(inventoryRef.current);
-    draft.rooms.push({ name, items: [] });
+    draft.rooms.push(buildNewInventoryRoom({ name }));
     commitInventory(draft);
     setActiveMenuItemId(null);
     setActiveRoomMenuIndex(null);
@@ -1195,6 +1260,18 @@ export function NativeInventoryPage() {
     .filter(Boolean);
 
   const previewValues = getPreviewLabelValues(labelSettings || {});
+  const handleRoomPhotoSelection = (event, roomId) => {
+    const files = event.target.files;
+    if (!files?.length || !roomId) {
+      return;
+    }
+
+    setRoomPhotoAction((current) => ({
+      ...current,
+      [roomId]: Array.from(files),
+    }));
+    event.target.value = "";
+  };
   return (
     <main className="container inventory-grid">
       <section className="inventory-controls">
@@ -1375,6 +1452,20 @@ export function NativeInventoryPage() {
               <p className="inventory-room-weight">
                 Estimated Weight for {room.name}: {room.roomWeight} lbs
               </p>
+              <RoomPhotoManager
+                room={room}
+                userId={user.id}
+                moveProfile={currentMoveProfile}
+                pendingFiles={roomPhotoAction[room.id]}
+                onFileSelection={(eventOrFiles) => {
+                  if (Array.isArray(eventOrFiles)) {
+                    setRoomPhotoAction((current) => ({ ...current, [room.id]: eventOrFiles }));
+                    return;
+                  }
+
+                  handleRoomPhotoSelection(eventOrFiles, room.id);
+                }}
+              />
               {filteredItems.length === 0 ? (
                 <p className="inventory-empty">No matching items yet.</p>
               ) : (
