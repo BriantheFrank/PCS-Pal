@@ -27,33 +27,14 @@ export default function LogisticsPage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="organizer" />}>
-        <p className="eyebrow">Move Organizer</p>
+        <p className="eyebrow">Logistics</p>
         <LogisticsHeading />
-        <p className="subtitle">
-          Use this page to map out your travel, lodging, arrival timing, and the first tasks you
-          need to handle at your new duty station.
-        </p>
+        <p className="subtitle">Track appointments, travel windows, and arrival milestones in one timeline.</p>
       </SiteHeader>
 
       <NativeLogisticsPage />
 
-      <section className="container info-panel">
-        <h2>How to use this logistics workspace</h2>
-        <p>
-          Best for: Families coordinating travel days, temporary lodging, check-in timing, and
-          arrival-week planning.
-        </p>
-        <p>
-          Start by: Adding your expected travel window, temporary lodging plan, and first-day
-          arrival priorities.
-        </p>
-        <p>
-          Need a broader workflow view?{" "}
-          <a className="card-link" href="/organizer">
-            Go back to organizer -&gt;
-          </a>
-        </p>
-      </section>
+
 
       <SiteFooter>
         <p className="footer-tip">

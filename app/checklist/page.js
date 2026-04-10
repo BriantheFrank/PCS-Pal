@@ -30,14 +30,9 @@ export default function ChecklistPage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="pcs-checklist-guide" />}>
-        <p className="eyebrow">U.S. Military PCS Toolkit</p>
+        <p className="eyebrow">Checklist</p>
         <ChecklistHeading />
-        <p className="subtitle">
-          Use this checklist to keep track of what needs to happen before, during, and after your PCS. If this is your first move, start here.
-        </p>
-        <p className="subtitle">
-          Best for first-time movers, families moving with kids, and anyone trying to stay organized before pack-out and arrival.
-        </p>
+        <p className="subtitle">Track required tasks by phase so you always know what to do next.</p>
       </SiteHeader>
 
       <NativeChecklistPage pageData={pageData} />

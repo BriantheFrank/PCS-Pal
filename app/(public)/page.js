@@ -14,54 +14,38 @@ const title = "Military PCS Move Planning Guide";
 const description =
   "PCS Pal helps military families plan a PCS with a clear checklist, inventory tracker, travel and arrival planning, and base guides.";
 
-const START_HERE_CARDS = [
+const CORE_TOOLS = [
   {
-    href: "/military-pcs-checklist",
-    title: "Checklist",
-    body: "Track what needs to happen before pack-out, during travel, and after arrival.",
-    cta: "Start with the checklist",
+    href: "/checklist",
+    title: "PCS Checklist",
+    body: "Track what must get done before, during, and after your move.",
+    cta: "Open checklist",
   },
   {
-    href: "/pcs-inventory-label-tracking",
-    title: "Inventory",
-    body: "Keep room-by-room lists, label boxes, and note high-value items for easier unpacking and claims.",
-    cta: "Organize your inventory",
+    href: "/inventory",
+    title: "Inventory & Labels",
+    body: "Keep rooms, boxes, and high-value items organized with printable labels.",
+    cta: "Open inventory",
   },
   {
-    href: "/pcs-move-logistics-planning",
-    title: "Logistics",
-    body: "Plan travel, lodging, arrival timing, and the first tasks you need to handle at the new duty station.",
-    cta: "Plan travel and arrival",
+    href: "/logistics",
+    title: "Logistics Planner",
+    body: "Track travel days, appointments, and arrival milestones in one timeline.",
+    cta: "Open logistics",
   },
   {
     href: "/bases",
     title: "Base Guides",
-    body: "Find the most useful arrival information for your installation, including lodging, housing, transportation, and important offices.",
-    cta: "Explore base guides",
+    body: "Research your next duty station with practical arrival info.",
+    cta: "Browse bases",
   },
 ];
 
-const COMMON_QUESTIONS = [
-  {
-    label: "What should I hand-carry instead of packing?",
-    href: "/guides/hand-carry-essentials",
-  },
-  {
-    label: "What documents do I need for housing, medical, and school?",
-    href: "/guides/pcs-documents-checklist",
-  },
-  {
-    label: "What happens if household goods are delayed?",
-    href: "/pcs-move-logistics-planning",
-  },
-  {
-    label: "How do I prepare for a move with kids or pets?",
-    href: "/guides/moving-with-kids-and-pets",
-  },
-  {
-    label: "What should I do in the first week after arrival?",
-    href: "/bases",
-  },
+const MOVE_STAGES = [
+  { title: "Before the move", detail: "Start your checklist and collect key documents." },
+  { title: "Packing and inventory", detail: "Track rooms, boxes, and high-value items." },
+  { title: "Travel and arrival", detail: "Plan route, lodging, and check-in appointments." },
+  { title: "Settling in", detail: "Use base guides for housing, services, and local setup." },
 ];
 
 export const metadata = buildPageMetadata({
@@ -92,38 +76,28 @@ export default function HomePage() {
 
       <SiteHeader topBar={<LandingTopBar active="home" />}>
         <p className="eyebrow">PCS Pal</p>
-        <h1>Plan your PCS move with less stress and fewer surprises</h1>
+        <h1>Plan your military move in one place.</h1>
         <p className="subtitle">
-          PCS Pal helps military families organize the move, keep track of household goods, plan travel and
-          arrival, and quickly find the base information they will actually need.
+          PCS Pal helps military families stay organized with a checklist, inventory tracking, logistics planning, and base research.
         </p>
+        <div className="landing-workspace-actions">
+          <Link className="landing-primary-action" href="/create-account">
+            Create account
+          </Link>
+          <Link className="landing-secondary-action" href="/dashboard">
+            Open move planner
+          </Link>
+        </div>
       </SiteHeader>
 
       <main className="container" id="main-content">
-        <section className="landing-hero info-panel">
-          <div className="landing-hero-copy">
-            <div className="landing-workspace-actions">
-              <Link className="landing-primary-action" href="/military-pcs-checklist">
-                Start your move plan
-              </Link>
-              <Link className="landing-secondary-action" href="/bases">
-                Explore base guides
-              </Link>
-            </div>
-            <p className="landing-note">
-              New to PCS moves? Start with the checklist. It walks you through what to do first, what to
-              keep with you, and what families commonly forget.
-            </p>
-          </div>
-        </section>
-
-        <section className="info-panel landing-link-hub" aria-labelledby="start-here-title">
+        <section className="info-panel landing-link-hub" aria-labelledby="tools-title">
           <div className="landing-link-hub-heading">
-            <h2 id="start-here-title">Not sure where to begin? Start here.</h2>
-            <p>You do not need to solve the whole move today. Just start with the next step.</p>
+            <h2 id="tools-title">Core tools for your move</h2>
+            <p>Start with one tool now and pick up where you left off anytime.</p>
           </div>
           <div className="card-grid">
-            {START_HERE_CARDS.map((card) => (
+            {CORE_TOOLS.map((card) => (
               <CardLink
                 key={card.href}
                 href={card.href}
@@ -135,52 +109,43 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="info-panel home-questions" aria-labelledby="common-questions-title">
-          <h2 id="common-questions-title">Common PCS questions, answered</h2>
-          <ul className="home-question-list">
-            {COMMON_QUESTIONS.map((question) => (
-              <li key={question.label}>
-                <Link className="text-link" href={question.href}>
-                  {question.label}
-                </Link>
-              </li>
+        <section className="info-panel" aria-labelledby="stages-title">
+          <h2 id="stages-title">How PCS Pal helps through each move stage</h2>
+          <div className="card-grid">
+            {MOVE_STAGES.map((stage) => (
+              <article className="nav-card" key={stage.title}>
+                <h3>{stage.title}</h3>
+                <p>{stage.detail}</p>
+              </article>
             ))}
-          </ul>
+          </div>
         </section>
 
-        <section className="info-panel" aria-labelledby="value-block-title">
-          <h2 id="value-block-title">Built for real PCS stress points</h2>
-          <ul className="legal-page-list">
-            <li>Keep major move tasks in one place.</li>
-            <li>Track what was packed and where it went.</li>
-            <li>Save important arrival links and base information.</li>
-            <li>Reduce the odds of forgotten documents, missing items, or last-minute scrambling.</li>
-          </ul>
-        </section>
-
-        <section className="info-panel" aria-labelledby="account-title">
-          <h2 id="account-title">Create an account to save your move</h2>
+        <section className="info-panel" aria-labelledby="base-preview-title">
+          <h2 id="base-preview-title">Destination research without the guesswork</h2>
           <p>
-            Use an account if you want your checklist, inventory, and plans to stay synced across devices.
+            Base guides highlight housing, nearby towns, key offices, and practical links so you can prepare before travel day.
           </p>
+          <Link className="text-link" href="/bases">
+            Explore destination base guides →
+          </Link>
+        </section>
+
+        <section className="info-panel" aria-labelledby="closing-cta-title">
+          <h2 id="closing-cta-title">Ready to start your move plan?</h2>
+          <p>Create an account to save progress across checklist, inventory, logistics, and base research.</p>
           <div className="landing-workspace-actions">
             <Link className="landing-primary-action" href="/create-account">
-              Create account
+              Get started
             </Link>
             <Link className="landing-secondary-action" href="/sign-in">
               Sign in
             </Link>
           </div>
-          <p className="landing-note">You can still browse the public guides without an account.</p>
         </section>
       </main>
 
-      <SiteFooter>
-        <p className="footer-tip">
-          Start with the checklist, then move through inventory, logistics, and base guides one step at a
-          time.
-        </p>
-      </SiteFooter>
+      <SiteFooter />
     </>
   );
 }

@@ -36,7 +36,7 @@ export default function BasesPage() {
       />
 
       <SiteHeader topBar={<LandingTopBar active="bases" />}>
-        <p className="eyebrow">Base Guides</p>
+        <p className="eyebrow">Destination Base Guides</p>
         <BasesHeading />
         <p className="subtitle">
           Use this section to quickly find the most important arrival information for your

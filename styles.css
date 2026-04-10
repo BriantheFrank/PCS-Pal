@@ -4190,3 +4190,116 @@ h1 {
 
   .tool-action-bar .label-action { flex: 1 1 180px; }
 }
+
+/* 2026 UX refresh: calmer typography, tighter hierarchy, mobile-first action visibility */
+:root {
+  --text-3xl: clamp(2.5rem, 1rem + 4vw, 5rem);
+  --text-hero: clamp(3rem, 0.5rem + 7vw, 6rem);
+  --space-5: 1.25rem;
+  --space-10: 2.5rem;
+  --space-20: 5rem;
+  --color-bg: #f6f6f3;
+  --color-surface: #fdfdfb;
+  --color-surface-2: #ffffff;
+  --color-text: #1f2933;
+  --color-text-muted: #56616f;
+  --color-border: #d7dde4;
+  --color-primary: #1f5f67;
+  --color-primary-hover: #174d53;
+  --color-primary-active: #10393e;
+  --color-primary-highlight: #e9f2f3;
+  --color-accent-highlight: #f3f5ef;
+  --font-display: "Cabinet Grotesk", "Avenir Next", sans-serif;
+  --font-body: "Satoshi", "Inter", "Segoe UI", sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+}
+
+h1,
+h2,
+h3,
+.hero-title {
+  font-family: var(--font-display);
+}
+
+h1 {
+  font-size: var(--text-xl);
+  letter-spacing: -0.02em;
+}
+
+h2 { font-size: var(--text-lg); }
+h3 { font-size: var(--text-base); }
+
+.top-bar {
+  position: sticky;
+  top: var(--space-2);
+  z-index: 300;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 16px;
+}
+
+.primary-nav a,
+.site-nav a,
+.account-trigger,
+.landing-primary-action,
+.landing-secondary-action,
+.site-nav-toggle {
+  font-size: var(--text-sm);
+  min-height: 44px;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  max-width: 65ch;
+}
+
+main.container {
+  display: grid;
+  gap: var(--space-4);
+  padding-bottom: var(--space-10);
+}
+
+.info-panel {
+  padding: var(--space-5);
+}
+
+.nav-card,
+.base-card {
+  padding: var(--space-5);
+  text-decoration: none;
+}
+
+.card-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.site-footer {
+  margin-top: var(--space-8);
+  padding: var(--space-8) 0;
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    padding-top: var(--space-3);
+  }
+
+  h1 {
+    font-size: var(--text-lg);
+  }
+
+  .top-bar {
+    top: 0;
+    border-radius: 12px;
+  }
+
+  .info-panel,
+  .nav-card,
+  .base-card {
+    padding: var(--space-4);
+  }
+}
