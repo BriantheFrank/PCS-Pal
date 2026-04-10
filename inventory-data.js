@@ -141,6 +141,8 @@ const normalizeInventoryItem = (item, roomName) => {
     weight: coerceWeight(item?.weight, getCategoryDefinition(category).defaultWeight),
     includeInEstimate:
       typeof item?.includeInEstimate === "boolean" ? item.includeInEstimate : true,
+    quantity: Math.max(1, Number.parseInt(item?.quantity ?? 1, 10) || 1),
+    isFragile: typeof item?.isFragile === "boolean" ? item.isFragile : false,
     isHighValue: typeof item?.isHighValue === "boolean" ? item.isHighValue : false,
   };
 
@@ -153,6 +155,21 @@ const normalizeInventoryItem = (item, roomName) => {
 
   if (typeof item?.editMode === "string" && item.editMode) {
     normalizedItem.editMode = item.editMode;
+  }
+
+  if (typeof item?.source === "string" && item.source.trim()) {
+    normalizedItem.source = item.source.trim();
+  }
+
+  if (item?.sourceContext && typeof item.sourceContext === "object") {
+    normalizedItem.sourceContext = {
+      extractionJobId: normalizeText(item.sourceContext.extractionJobId),
+      roomId: normalizeText(item.sourceContext.roomId),
+      localPhotoIds: Array.isArray(item.sourceContext.localPhotoIds)
+        ? item.sourceContext.localPhotoIds.map((value) => normalizeText(value)).filter(Boolean)
+        : [],
+      reviewedAt: normalizeText(item.sourceContext.reviewedAt),
+    };
   }
 
   return normalizedItem;
@@ -236,6 +253,8 @@ export const buildNewInventoryItem = ({ label, category, notes }) => {
     notes: normalizeText(notes),
     weight: nextCategory.defaultWeight,
     includeInEstimate: true,
+    quantity: 1,
+    isFragile: false,
     isHighValue: false,
   };
 };
